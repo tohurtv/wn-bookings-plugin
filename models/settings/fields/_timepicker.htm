@@ -1,0 +1,10 @@
+<input
+    type="time"
+    name="{{ fieldName }}"
+    id="{{ fieldId }}"
+    value="{{ fieldValue }}"
+    class="form-control"
+    {% for attr, val in field.attributes %}
+        {{ attr }}="{{ val }}"
+    {% endfor %}
+>
