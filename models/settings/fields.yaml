@@ -67,13 +67,19 @@ tabs:
                         form:
                             fields:
                                 from:
-                                    label: From
-                                    type: datepicker
-                                    span: left
+                                     label: From
+                                     type: text
+                                     span: left
+                                     placeholder: "HH:MM"
+                                     attributes:
+                                         type: time
                                 to:
-                                    label: To
-                                    type: datepicker
-                                    span: right
+                                     label: To
+                                     type: text
+                                     span: right
+                                     placeholder: "HH:MM"
+                                     attributes:
+                                         type: time
 
         first_weekday:
             tab: tohur.bookings::lang.settings.tabs.working_days
