@@ -17,4 +17,28 @@ class Settings extends Model
     public $rules = [
         'returning_mark' => 'numeric'
     ];
+    public $jsonable = ['working_schedule'];
+
+public static function getWorkingHoursByDay(string $day): array
+{
+    $settings = self::instance();
+    $schedule = $settings->working_schedule ?? [];
+
+    $hours = [];
+
+    foreach ($schedule as $entry) {
+        if (strtolower($entry['day']) !== strtolower($day)) {
+            continue;
+        }
+
+        foreach (($entry['time_blocks'] ?? []) as $block) {
+            $hours[] = [
+                'from' => $block['from'],
+                'to'   => $block['to'],
+            ];
+        }
+    }
+
+    return $hours;
+}
 }

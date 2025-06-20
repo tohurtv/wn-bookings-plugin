@@ -6,12 +6,14 @@ tabs:
             comment: tohur.bookings::lang.settings.booking_interval.comment
             default: 15
             span: full
+
         booking_length:
             tab: tohur.bookings::lang.settings.tabs.datetime
             label: tohur.bookings::lang.settings.booking_length.label
             comment: tohur.bookings::lang.settings.booking_length.comment
             default: 2
             span: left
+
         booking_length_unit:
             tab: tohur.bookings::lang.settings.tabs.datetime
             label: '&nbsp;'
@@ -23,12 +25,14 @@ tabs:
                 hours: tohur.bookings::lang.settings.booking_length_unit.options.hours
                 days: tohur.bookings::lang.settings.booking_length_unit.options.days
                 weeks: tohur.bookings::lang.settings.booking_length_unit.options.weeks
+
         formats_date:
             tab: tohur.bookings::lang.settings.tabs.datetime
             label: tohur.bookings::lang.settings.formats_date.label
             default: d/m/Y
             span: left
             comment: tohur.bookings::lang.settings.formats_date.comment
+
         formats_time:
             tab: tohur.bookings::lang.settings.tabs.datetime
             label: tohur.bookings::lang.settings.formats_time.label
@@ -36,36 +40,41 @@ tabs:
             span: right
             comment: tohur.bookings::lang.settings.formats_time.comment
 
-        work_time_from:
+        working_schedule:
             tab: tohur.bookings::lang.settings.tabs.working_days
-            label: tohur.bookings::lang.settings.work_time_from.label
-            comment: tohur.bookings::lang.settings.work_time_from.comment
-            default: '10:00'
-            span: left
-        work_time_to:
-            tab: tohur.bookings::lang.settings.tabs.working_days
-            label: tohur.bookings::lang.settings.work_time_to.label
-            comment: tohur.bookings::lang.settings.work_time_to.comment
-            default: '18:00'
-            span: right
-        work_days:
-            tab: tohur.bookings::lang.settings.tabs.working_days
-            label: tohur.bookings::lang.settings.work_days.label
-            type: checkboxlist
-            default:
-                - monday
-                - tuesday
-                - wednesday
-                - thursday
-                - friday
-            options:
-                sunday: tohur.bookings::lang.settings.work_days.sunday
-                monday: tohur.bookings::lang.settings.work_days.monday
-                tuesday: tohur.bookings::lang.settings.work_days.tuesday
-                wednesday: tohur.bookings::lang.settings.work_days.wednesday
-                thursday: tohur.bookings::lang.settings.work_days.thursday
-                friday: tohur.bookings::lang.settings.work_days.friday
-                saturday: tohur.bookings::lang.settings.work_days.saturday
+            label: tohur.bookings::lang.settings.working_schedule.label
+            type: repeater
+            prompt: Add Working Day
+            form:
+                fields:
+                    day:
+                        label: Day
+                        type: dropdown
+                        span: left
+                        options:
+                            sunday: Sunday
+                            monday: Monday
+                            tuesday: Tuesday
+                            wednesday: Wednesday
+                            thursday: Thursday
+                            friday: Friday
+                            saturday: Saturday
+
+                    time_blocks:
+                        label: Time Blocks
+                        type: repeater
+                        prompt: Add Time Block
+                        form:
+                            fields:
+                                from:
+                                    label: From
+                                    type: timepicker
+                                    span: left
+                                to:
+                                    label: To
+                                    type: timepicker
+                                    span: right
+
         first_weekday:
             tab: tohur.bookings::lang.settings.tabs.working_days
             label: tohur.bookings::lang.settings.first_weekday.label
@@ -77,14 +86,17 @@ tabs:
             label: tohur.bookings::lang.settings.admin_confirmation_enable.label
             type: switch
             default: false
+
         admin_confirmation_email:
             tab: tohur.bookings::lang.settings.tabs.admin
             label: tohur.bookings::lang.settings.admin_confirmation_email.label
             comment: tohur.bookings::lang.settings.admin_confirmation_email.comment
+
         admin_confirmation_name:
             tab: tohur.bookings::lang.settings.tabs.admin
             label: tohur.bookings::lang.settings.admin_confirmation_name.label
             comment: tohur.bookings::lang.settings.admin_confirmation_name.comment
+
         admin_confirmation_locale:
             tab: tohur.bookings::lang.settings.tabs.admin
             label: tohur.bookings::lang.settings.admin_confirmation_locale.label
