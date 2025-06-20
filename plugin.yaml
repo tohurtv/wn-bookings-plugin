@@ -1,7 +1,7 @@
 plugin:
     name: 'tohur.bookings::lang.plugin.name'
     description: 'tohur.bookings::lang.plugin.description'
-    author: 'Vojta Svoboda'
+    author: 'Joshua Webb'
     icon: icon-calendar-o
 permissions:
     tohur.bookings.bookings:
