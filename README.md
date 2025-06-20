@@ -5,7 +5,7 @@
 [![Code Coverage](https://scrutinizer-ci.com/g/tohurtv/wn-bookings-plugin/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/tohurtv/wn-bookings-plugin/?branch=master)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/tohurtv/wn-bookings-plugin/blob/master/LICENSE)
 
-Provide booking form with bookings management. You should also check related plugin: [backend calendar](http://wintercms.com/tohurtv/tohur-bookingscalendar).
+Provide booking form with bookings management.
 
 Key features:
 
