@@ -1,52 +1,52 @@
-<?php namespace VojtaSvoboda\Reservations;
+<?php namespace Tohur\Bookings;
 
 use Backend;
 use Illuminate\Support\Facades\Validator;
 use System\Classes\PluginBase;
-use VojtaSvoboda\Reservations\Facades\ReservationsFacade;
-use VojtaSvoboda\Reservations\Validators\ReservationsValidators;
+use Tohur\Bookings\Facades\BookingsFacade;
+use Tohur\Bookings\Validators\BookingsValidators;
 
 class Plugin extends PluginBase
 {
     public function boot()
     {
-        $this->app->bind('vojtasvoboda.reservations.facade', ReservationsFacade::class);
+        $this->app->bind('tohur.bookings.facade', BookingsFacade::class);
 
-        // registrate reservations validators
+        // registrate bookings validators
         Validator::resolver(function($translator, $data, $rules, $messages, $customAttributes) {
-            return new ReservationsValidators($translator, $data, $rules, $messages, $customAttributes);
+            return new BookingsValidators($translator, $data, $rules, $messages, $customAttributes);
         });
     }
 
     public function registerNavigation()
     {
         return [
-            'reservations' => [
-                'label'       => 'vojtasvoboda.reservations::lang.plugin.menu_label',
-                'url'         => Backend::url('vojtasvoboda/reservations/reservations'),
+            'bookings' => [
+                'label'       => 'tohur.bookings::lang.plugin.menu_label',
+                'url'         => Backend::url('tohur/bookings/bookings'),
                 'icon'        => 'icon-calendar-o',
-                'permissions' => ['vojtasvoboda.reservations.*'],
+                'permissions' => ['tohur.bookings.*'],
                 'order'       => 500,
                 'sideMenu' => [
-                    'reservations' => [
-                        'label'       => 'vojtasvoboda.reservations::lang.reservations.menu_label',
-                        'url'         => Backend::url('vojtasvoboda/reservations/reservations'),
+                    'bookings' => [
+                        'label'       => 'tohur.bookings::lang.bookings.menu_label',
+                        'url'         => Backend::url('tohur/bookings/bookings'),
                         'icon'        => 'icon-calendar-o',
-                        'permissions' => ['vojtasvoboda.reservations.reservations'],
+                        'permissions' => ['tohur.bookings.bookings'],
                         'order'       => 100,
                     ],
                     'statuses' => [
-                        'label'       => 'vojtasvoboda.reservations::lang.statuses.menu_label',
+                        'label'       => 'tohur.bookings::lang.statuses.menu_label',
                         'icon'        => 'icon-star',
-                        'url'         => Backend::url('vojtasvoboda/reservations/statuses'),
-                        'permissions' => ['vojtasvoboda.reservations.statuses'],
+                        'url'         => Backend::url('tohur/bookings/statuses'),
+                        'permissions' => ['tohur.bookings.statuses'],
                         'order'       => 200,
                     ],
                     'export' => [
-                        'label'       => 'vojtasvoboda.reservations::lang.export.menu_label',
+                        'label'       => 'tohur.bookings::lang.export.menu_label',
                         'icon'        => 'icon-sign-out',
-                        'url'         => Backend::url('vojtasvoboda/reservations/reservations/export'),
-                        'permissions' => ['vojtasvoboda.reservations.export'],
+                        'url'         => Backend::url('tohur/bookings/bookings/export'),
+                        'permissions' => ['tohur.bookings.export'],
                         'order'       => 300,
                     ],
                 ],
@@ -57,15 +57,15 @@ class Plugin extends PluginBase
     public function registerComponents()
     {
         return [
-            'VojtaSvoboda\Reservations\Components\ReservationForm' => 'reservationForm',
+            'Tohur\Bookings\Components\BookingForm' => 'bookingForm',
         ];
     }
 
     public function registerReportWidgets()
     {
         return [
-            'VojtaSvoboda\Reservations\ReportWidgets\Reservations' => [
-                'label'   => 'vojtasvoboda.reservations::lang.reservations.widget_label',
+            'Tohur\Bookings\ReportWidgets\Bookings' => [
+                'label'   => 'tohur.bookings::lang.bookings.widget_label',
                 'context' => 'dashboard',
             ],
         ];
@@ -74,16 +74,16 @@ class Plugin extends PluginBase
     public function registerMailTemplates()
     {
         return [
-            'vojtasvoboda.reservations::mail.reservation-cs' => 'Reservation confirmation CS',
-            'vojtasvoboda.reservations::mail.reservation-en' => 'Reservation confirmation EN',
-            'vojtasvoboda.reservations::mail.reservation-es' => 'Reservation confirmation ES',
-            'vojtasvoboda.reservations::mail.reservation-fr' => 'Reservation confirmation FR',
-            'vojtasvoboda.reservations::mail.reservation-ru' => 'Reservation confirmation RU',
-            'vojtasvoboda.reservations::mail.reservation-admin-cs' => 'Reservation confirmation for admin CS',
-            'vojtasvoboda.reservations::mail.reservation-admin-en' => 'Reservation confirmation for admin EN',
-            'vojtasvoboda.reservations::mail.reservation-admin-es' => 'Reservation confirmation for admin ES',
-            'vojtasvoboda.reservations::mail.reservation-admin-fr' => 'Reservation confirmation for admin FR',
-            'vojtasvoboda.reservations::mail.reservation-admin-ru' => 'Reservation confirmation for admin RU',
+            'tohur.bookings::mail.booking-cs' => 'Booking confirmation CS',
+            'tohur.bookings::mail.booking-en' => 'Booking confirmation EN',
+            'tohur.bookings::mail.booking-es' => 'Booking confirmation ES',
+            'tohur.bookings::mail.booking-fr' => 'Booking confirmation FR',
+            'tohur.bookings::mail.booking-ru' => 'Booking confirmation RU',
+            'tohur.bookings::mail.booking-admin-cs' => 'Booking confirmation for admin CS',
+            'tohur.bookings::mail.booking-admin-en' => 'Booking confirmation for admin EN',
+            'tohur.bookings::mail.booking-admin-es' => 'Booking confirmation for admin ES',
+            'tohur.bookings::mail.booking-admin-fr' => 'Booking confirmation for admin FR',
+            'tohur.bookings::mail.booking-admin-ru' => 'Booking confirmation for admin RU',
         ];
     }
 
@@ -91,11 +91,11 @@ class Plugin extends PluginBase
     {
         return [
             'settings' => [
-                'category' => 'vojtasvoboda.reservations::lang.plugin.category',
-                'label' => 'vojtasvoboda.reservations::lang.plugin.name',
-                'description' => 'vojtasvoboda.reservations::lang.settings.description',
+                'category' => 'tohur.bookings::lang.plugin.category',
+                'label' => 'tohur.bookings::lang.plugin.name',
+                'description' => 'tohur.bookings::lang.settings.description',
                 'icon' => 'icon-calendar-o',
-                'class' => 'VojtaSvoboda\Reservations\Models\Settings',
+                'class' => 'Tohur\Bookings\Models\Settings',
                 'order' => 100,
             ],
         ];

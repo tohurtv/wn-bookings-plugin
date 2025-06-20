@@ -3,37 +3,37 @@
 return [
 
     'plugin' => [
-        'name' => 'Reservations',
-        'category' => 'Reservations',
-        'description' => 'Quick reservations plugin.',
-        'menu_label' => 'Reservations',
+        'name' => 'Bookings',
+        'category' => 'Bookings',
+        'description' => 'Quick bookings plugin.',
+        'menu_label' => 'Bookings',
     ],
 
     'permission' => [
-        'tab_label' => 'Reservations',
-        'reservations' => 'Reservations management',
+        'tab_label' => 'Bookings',
+        'bookings' => 'Bookings management',
         'statuses' => 'Statuses management',
-        'export' => 'Reservations export',
+        'export' => 'Bookings export',
     ],
 
-    'reservations' => [
-        'menu_label' => 'Reservations',
-        'widget_label' => 'Reservations',
+    'bookings' => [
+        'menu_label' => 'Bookings',
+        'widget_label' => 'Bookings',
         'bulk_actions' => 'Bulk actions',
         'approved' => 'Approve',
-        'approved_question' => 'Are you sure to switch reservations as Approved?',
+        'approved_question' => 'Are you sure to switch bookings as Approved?',
         'closed' => 'Close',
-        'closed_question' => 'Are you sure to switch reservations as Closed?',
+        'closed_question' => 'Are you sure to switch bookings as Closed?',
         'received' => 'Received',
-        'received_question' => 'Are you sure to switch reservations as Received?',
+        'received_question' => 'Are you sure to switch bookings as Received?',
         'cancelled' => 'Cancell',
-        'cancelled_question' => 'Are you sure to switch reservations as Cancelled?',
+        'cancelled_question' => 'Are you sure to switch bookings as Cancelled?',
         'delete' => 'Delete',
-        'delete_question' => 'Are you sure to delete selected reservations?',
-        'change_status_success' => 'Reservation states has been successfully changed.',
+        'delete_question' => 'Are you sure to delete selected bookings?',
+        'change_status_success' => 'Booking states has been successfully changed.',
     ],
 
-    'reservation' => [
+    'booking' => [
         'date' => 'Date',
         'time' => 'Time',
         'date_format' => 'd.m.Y H:i:s',
@@ -74,36 +74,36 @@ return [
         'status_filter_tab' => 'Status',
     ],
 
-    'reservationform' => [
-        'name' => 'Reservation form',
-        'description' => 'Form for taking reservations in specific date/time.',
-        'success' => 'Reservation has been successfully sent!',
+    'bookingform' => [
+        'name' => 'Booking form',
+        'description' => 'Form for taking bookings in specific date/time.',
+        'success' => 'Booking has been successfully sent!',
     ],
 
     'mail' => [
-        'cs_label' => 'Reservation confirmation CS',
-        'en_label' => 'Reservation confirmation EN',
-        'es_label' => 'Reservation confirmation ES',
-        'fr_label' => 'Reservation confirmation FR',
-        'ru_label' => 'Reservation confirmation RU',
+        'cs_label' => 'Booking confirmation CS',
+        'en_label' => 'Booking confirmation EN',
+        'es_label' => 'Booking confirmation ES',
+        'fr_label' => 'Booking confirmation FR',
+        'ru_label' => 'Booking confirmation RU',
     ],
 
     'errors' => [
         'empty_date' => 'You have to select pickup date!',
         'empty_hour' => 'You have to select pickup hour!',
-        'please_wait' => 'You can sent only one reservation per 30 seconds, please wait a second.',
+        'please_wait' => 'You can sent only one booking per 30 seconds, please wait a second.',
         'session_expired' => 'Form session expired! Please refresh the page.',
         'exception' => 'We\'re sorry, but something went wrong and the form cannot be sent.',
-        'already_booked' => 'Date :reservation is already booked.',
+        'already_booked' => 'Date :booking is already booked.',
         'days_off' => 'Selected date is day off.',
         'out_of_hours' => 'Selected time is out of hours.',
         'past_date' => 'Selected date is passed.',
     ],
 
     'settings' => [
-        'description' => 'Manage Reservations settings.',
+        'description' => 'Manage Bookings settings.',
         'tabs' => [
-            'plugin'  => 'Reservations settings',
+            'plugin'  => 'Bookings settings',
             'admin'   => 'Admin confirmation',
             'datetime' => 'Date, time settings',
             'returning' => 'Returning customers',
@@ -112,7 +112,7 @@ return [
 
         'returning_mark' => [
             'label'   => 'Mark returning customers',
-            'comment' => 'Mark customers with that number of reservations or more. Disable by value 0.',
+            'comment' => 'Mark customers with that number of bookings or more. Disable by value 0.',
         ],
         'admin_confirmation_enable' => [
             'label'   => 'Enable admin confirmation',
@@ -129,15 +129,15 @@ return [
             'label'   => 'Admin confirmation locale',
             'comment' => 'Locale of confirmation email.',
         ],
-        'reservation_interval' => [
-            'label'   => 'Reservations interval slot (minute)',
-            'comment' => 'Used for reservation form time picker.',
+        'booking_interval' => [
+            'label'   => 'Bookings interval slot (minute)',
+            'comment' => 'Used for booking form time picker.',
         ],
-        'reservation_length' => [
-            'label'   => 'Length of one reservation',
-            'comment' => 'How much time one reservation takes.',
+        'booking_length' => [
+            'label'   => 'Length of one booking',
+            'comment' => 'How much time one booking takes.',
         ],
-        'reservation_length_unit' => [
+        'booking_length_unit' => [
             'options' => [
                 'minutes' => 'minutes',
                 'hours' => 'hours',

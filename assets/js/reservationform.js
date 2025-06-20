@@ -1,9 +1,9 @@
 /**
- * Reservation form.
+ * Booking form.
  *
  * @param $ jQuery
  */
-var reservationform = function($) {
+var bookingform = function($) {
 
     if ($("#date").length > 0) {
         $("#date").pickadate({
@@ -86,4 +86,4 @@ function loadBookedTimes(date) {
     picker.set('disable', dates);
 }
 
-jQuery(document).ready(reservationform);
+jQuery(document).ready(bookingform);

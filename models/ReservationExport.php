@@ -1,22 +1,22 @@
-<?php namespace VojtaSvoboda\Reservations\Models;
+<?php namespace Tohur\Bookings\Models;
 
 use Backend\Facades\BackendAuth;
 use Backend\Models\ExportModel;
 use Config;
 
 /**
- * Reservation's export.
+ * Booking's export.
  *
- * @package VojtaSvoboda\Reservations\Models
+ * @package Tohur\Bookings\Models
  */
-class ReservationExport extends ExportModel
+class BookingExport extends ExportModel
 {
-    public $table = 'vojtasvoboda_reservations_reservations';
+    public $table = 'tohur_bookings_bookings';
 
     public $dates = ['created_at', 'updated_at', 'deleted_at'];
 
     public $belongsTo = [
-        'status' => 'VojtaSvoboda\Reservations\Models\Status',
+        'status' => 'Tohur\Bookings\Models\Status',
     ];
 
     public $fillable = [
@@ -33,7 +33,7 @@ class ReservationExport extends ExportModel
      */
     public function exportData($columns, $sessionKey = null)
     {
-        $query = Reservation::query();
+        $query = Booking::query();
 
         // filter by status
         if ($this->status_enabled) {
@@ -41,14 +41,14 @@ class ReservationExport extends ExportModel
         }
 
         // prepare columns
-        $reservations = $query->get();
-        $reservations->each(function($item) use ($columns)
+        $bookings = $query->get();
+        $bookings->each(function($item) use ($columns)
         {
             $item->addVisible($columns);
             $item->status_id = $item->status->name;
         });
 
-        return $reservations->toArray();
+        return $bookings->toArray();
     }
 
     /**

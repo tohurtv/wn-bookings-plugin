@@ -1,4 +1,4 @@
-<?php namespace VojtaSvoboda\Reservations\Tests\Models;
+<?php namespace Tohur\Bookings\Tests\Models;
 
 use App;
 use Carbon\Carbon;
@@ -6,12 +6,12 @@ use Config;
 use Illuminate\Support\Facades\Validator;
 use PluginTestCase;
 use October\Rain\Database\ModelException;
-use VojtaSvoboda\Reservations\Facades\ReservationsFacade;
-use VojtaSvoboda\Reservations\Models\Reservation;
-use VojtaSvoboda\Reservations\Models\Status;
-use VojtaSvoboda\Reservations\Validators\ReservationsValidators;
+use Tohur\Bookings\Facades\BookingsFacade;
+use Tohur\Bookings\Models\Booking;
+use Tohur\Bookings\Models\Status;
+use Tohur\Bookings\Validators\BookingsValidators;
 
-class ReservationTest extends PluginTestCase
+class BookingTest extends PluginTestCase
 {
     private $defaultStatus;
 
@@ -19,59 +19,59 @@ class ReservationTest extends PluginTestCase
     {
         parent::setUp();
 
-        $this->app->bind('vojtasvoboda.reservations.facade', ReservationsFacade::class);
+        $this->app->bind('tohur.bookings.facade', BookingsFacade::class);
 
-        // registrate reservations validators
+        // registrate bookings validators
         Validator::resolver(function($translator, $data, $rules, $messages, $customAttributes) {
-            return new ReservationsValidators($translator, $data, $rules, $messages, $customAttributes);
+            return new BookingsValidators($translator, $data, $rules, $messages, $customAttributes);
         });
     }
 
     /**
      * Get tested model.
      *
-     * @return Reservation
+     * @return Booking
      */
     public function getModel()
     {
-        return App::make(Reservation::class);
+        return App::make(Booking::class);
     }
 
     public function testBeforeCreate()
     {
         $model = $this->getModel();
 
-        // create reservation
-        $reservation = $model->create($this->getTestingReservationData());
-        $this->assertNotEmpty($reservation->hash, 'Reservation hash is empty.');
-        $this->assertNotEmpty($reservation->number, 'Number hash is empty.');
-        $this->assertSame(App::getLocale(), $reservation->locale, 'Reservation locale should be same as app locale.');
-        $this->assertNotEmpty($reservation->ip, 'IP address is empty.');
-        $this->assertNotEmpty($reservation->user_agent, 'User Agent is empty.');
-        $this->assertSame($this->getDefaultStatus(), $reservation->status, 'Reservation status should be ' . $this->getDefaultStatus()->name . '.');
+        // create booking
+        $booking = $model->create($this->getTestingBookingData());
+        $this->assertNotEmpty($booking->hash, 'Booking hash is empty.');
+        $this->assertNotEmpty($booking->number, 'Number hash is empty.');
+        $this->assertSame(App::getLocale(), $booking->locale, 'Booking locale should be same as app locale.');
+        $this->assertNotEmpty($booking->ip, 'IP address is empty.');
+        $this->assertNotEmpty($booking->user_agent, 'User Agent is empty.');
+        $this->assertSame($this->getDefaultStatus(), $booking->status, 'Booking status should be ' . $this->getDefaultStatus()->name . '.');
     }
 
     public function testIsDateAvailableFailing()
     {
         $model = $this->getModel();
 
-        // create reservation
-        $model->create($this->getTestingReservationData());
+        // create booking
+        $model->create($this->getTestingBookingData());
 
-        // try to do second reservation with same date and time
-        $this->setExpectedException(ModelException::class, 'vojtasvoboda.reservations::lang.errors.already_booked');
-        $model->create($this->getTestingReservationData());
+        // try to do second booking with same date and time
+        $this->setExpectedException(ModelException::class, 'tohur.bookings::lang.errors.already_booked');
+        $model->create($this->getTestingBookingData());
     }
 
     public function testIsDateAvailablePassed()
     {
         $model = $this->getModel();
 
-        // create reservation
-        $model->create($this->getTestingReservationData());
+        // create booking
+        $model->create($this->getTestingBookingData());
 
-        // try to do second reservation with same date and time after 2 hours
-        $data = $this->getTestingReservationData();
+        // try to do second booking with same date and time after 2 hours
+        $data = $this->getTestingBookingData();
         $nextMonday = Carbon::parse('next monday')->format('Y-m-d 13:00');
         $data['date'] = Carbon::createFromFormat('Y-m-d H:i', $nextMonday);
         $model->create($data);
@@ -81,19 +81,19 @@ class ReservationTest extends PluginTestCase
     {
         $model = $this->getModel();
 
-        // create reservation
-        $reservation = $model->create($this->getTestingReservationData());
+        // create booking
+        $booking = $model->create($this->getTestingBookingData());
 
         // cancel status
-        $cancelledStatuses = Config::get('vojtasvoboda.reservations::config.statuses.cancelled', ['cancelled']);
+        $cancelledStatuses = Config::get('tohur.bookings::config.statuses.cancelled', ['cancelled']);
         $statusIdent = empty($cancelledStatuses) ? 'cancelled' : $cancelledStatuses[0];
 
-        // cancell reservation
-        $reservation->status = Status::where('ident', $statusIdent)->first();
-        $reservation->save();
+        // cancell booking
+        $booking->status = Status::where('ident', $statusIdent)->first();
+        $booking->save();
 
-        // try to do second reservation with same date and time
-        $data = $this->getTestingReservationData();
+        // try to do second booking with same date and time
+        $data = $this->getTestingBookingData();
         $model->create($data);
     }
 
@@ -101,9 +101,9 @@ class ReservationTest extends PluginTestCase
     {
         $model = $this->getModel();
 
-        $reservation = $model->create($this->getTestingReservationData());
-        $this->assertFalse($reservation->isCancelled());
-        $this->assertTrue($reservation->isCancelled('cancelled'));
+        $booking = $model->create($this->getTestingBookingData());
+        $this->assertFalse($booking->isCancelled());
+        $this->assertTrue($booking->isCancelled('cancelled'));
     }
 
     public function testGetHash()
@@ -119,7 +119,7 @@ class ReservationTest extends PluginTestCase
     public function testGetEmptyHash()
     {
         $model = $this->getModel();
-        Config::set('vojtasvoboda.reservations::config.hash', 0);
+        Config::set('tohur.bookings::config.hash', 0);
         $this->assertNull($model->getUniqueHash());
     }
 
@@ -136,7 +136,7 @@ class ReservationTest extends PluginTestCase
     public function testGetEmptyNumber()
     {
         $model = $this->getModel();
-        Config::set('vojtasvoboda.reservations::config.number.min', 0);
+        Config::set('tohur.bookings::config.number.min', 0);
         $this->assertNull($model->getUniqueNumber());
     }
 
@@ -144,40 +144,40 @@ class ReservationTest extends PluginTestCase
     {
         $model = $this->getModel();
 
-        // create reservation
-        $reservation = $model->create($this->getTestingReservationData());
-        $reservations = $model->notCancelled()->get();
-        $this->assertNotEmpty($reservations);
+        // create booking
+        $booking = $model->create($this->getTestingBookingData());
+        $bookings = $model->notCancelled()->get();
+        $this->assertNotEmpty($bookings);
 
-        // change reservation to cancelled
-        $reservation->status = Status::where('ident', 'cancelled')->first();
-        $reservation->save();
-        $reservations = $model->notCancelled()->get();
-        $this->assertEmpty($reservations);
+        // change booking to cancelled
+        $booking->status = Status::where('ident', 'cancelled')->first();
+        $booking->save();
+        $bookings = $model->notCancelled()->get();
+        $this->assertEmpty($bookings);
     }
 
     public function testScopeCurrentDate()
     {
         $model = $this->getModel();
 
-        // create reservation
-        $reservation = $model->create($this->getTestingReservationData());
-        $reservations = $model->currentDate()->get();
-        $this->assertNotEmpty($reservations);
+        // create booking
+        $booking = $model->create($this->getTestingBookingData());
+        $bookings = $model->currentDate()->get();
+        $this->assertNotEmpty($bookings);
 
-        // change reservation to the past
-        $reservation->date = Carbon::parse('-1 month');
-        $reservation->save();
-        $reservations = $model->currentDate()->get();
-        $this->assertEmpty($reservations);
+        // change booking to the past
+        $booking->date = Carbon::parse('-1 month');
+        $booking->save();
+        $bookings = $model->currentDate()->get();
+        $this->assertEmpty($bookings);
     }
 
     /**
-     * Get testing reservation data.
+     * Get testing booking data.
      *
      * @return array
      */
-    private function getTestingReservationData()
+    private function getTestingBookingData()
     {
         $nextMonday = Carbon::parse('next monday')->format('Y-m-d 11:00');
 

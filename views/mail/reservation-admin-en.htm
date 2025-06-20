@@ -1,19 +1,19 @@
-subject = "New reservation"
+subject = "New booking"
 layout = "default"
 ==
 <p>
-    New reservation in system:<br />
+    New booking in system:<br />
     <br />
-    Date and time: {{ reservation.date | date("d.m.Y H:i") }}<br />
+    Date and time: {{ booking.date | date("d.m.Y H:i") }}<br />
     <br />
-    Address: {{ reservation.street }}<br />
-    Name: {{ reservation.name }} {{ reservation.lastname }}<br />
-    Email: {{ reservation.email }}<br />
-    Phone: {{ reservation.phone }}<br />
+    Address: {{ booking.street }}<br />
+    Name: {{ booking.name }} {{ booking.lastname }}<br />
+    Email: {{ booking.email }}<br />
+    Phone: {{ booking.phone }}<br />
     <br />
-    Message: {{ reservation.message }}<br />
+    Message: {{ booking.message }}<br />
     <br />
-    Created at: {{ reservation.created_at | date("d.m.Y H:i") }}<br />
+    Created at: {{ booking.created_at | date("d.m.Y H:i") }}<br />
     <br />
-    Number of reservations with this email: {{ reservationsCount }}<br />
+    Number of bookings with this email: {{ bookingsCount }}<br />
 </p>

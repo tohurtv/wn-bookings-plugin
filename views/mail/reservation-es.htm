@@ -6,18 +6,18 @@ layout = "default"
     <br />
     Muchas gracias por su reserva. A continuación puede revisar los datos de la misma:<br />
     <br />
-    Fecha y hora: {{ reservation.date | date("d/m/Y H:i") }}<br />
+    Fecha y hora: {{ booking.date | date("d/m/Y H:i") }}<br />
     <br />
-    Dirección: {{ reservation.street }}<br />
-    Nombre: {{ reservation.name }} {{ reservation.lastname }}<br />
-    Email: {{ reservation.email }}<br />
-    Teléfono: {{ reservation.phone }}<br />
+    Dirección: {{ booking.street }}<br />
+    Nombre: {{ booking.name }} {{ booking.lastname }}<br />
+    Email: {{ booking.email }}<br />
+    Teléfono: {{ booking.phone }}<br />
     <br />
-    Su mensaje: {{ reservation.message }}<br />
+    Su mensaje: {{ booking.message }}<br />
     <br />
-    Registrada el {{ reservation.created_at | date("d/m/Y H:i") }}. Le enviaremos una confirmación con la mayor brevedad posible.<br />
+    Registrada el {{ booking.created_at | date("d/m/Y H:i") }}. Le enviaremos una confirmación con la mayor brevedad posible.<br />
     <br />
-    {% if reservationsCount == 1 %}
+    {% if bookingsCount == 1 %}
     ¡Esperamos que haya tenido una buena experiencia en su primera reserva!
     <br />
     {% endif %}

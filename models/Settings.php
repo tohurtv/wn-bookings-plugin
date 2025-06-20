@@ -1,4 +1,4 @@
-<?php namespace VojtaSvoboda\Reservations\Models;
+<?php namespace Tohur\Bookings\Models;
 
 use Config;
 use October\Rain\Database\Model;
@@ -10,7 +10,7 @@ class Settings extends Model
 
     public $implement = ['System.Behaviors.SettingsModel'];
 
-    public $settingsCode = 'vojtasvoboda_reservations_settings';
+    public $settingsCode = 'tohur_bookings_settings';
 
     public $settingsFields = 'fields.yaml';
 

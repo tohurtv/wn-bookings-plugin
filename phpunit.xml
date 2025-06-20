@@ -11,7 +11,7 @@
          syntaxCheck="true"
     >
     <testsuites>
-        <testsuite name="VojtaSvoboda.Reservations Test Suite">
+        <testsuite name="Tohur.Bookings Test Suite">
             <directory>./tests</directory>
         </testsuite>
     </testsuites>

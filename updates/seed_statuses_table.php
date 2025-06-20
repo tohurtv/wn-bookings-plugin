@@ -1,8 +1,8 @@
-<?php namespace VojtaSvoboda\Reservations\Updates;
+<?php namespace Tohur\Bookings\Updates;
 
 use File;
-use VojtaSvoboda\Reservations\Models\Status;
-use VojtaSvoboda\Reservations\Updates\Classes\Seeder;
+use Tohur\Bookings\Models\Status;
+use Tohur\Bookings\Updates\Classes\Seeder;
 use Yaml;
 
 class SeedStatusesTable extends Seeder

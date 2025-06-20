@@ -1,11 +1,11 @@
-name: Reservation
-modelClass: VojtaSvoboda\Reservations\Models\Reservation
-form: $/vojtasvoboda/reservations/models/reservation/fields.yaml
-defaultRedirect: vojtasvoboda/reservations/reservations
+name: Booking
+modelClass: Tohur\Bookings\Models\Booking
+form: $/tohur/bookings/models/booking/fields.yaml
+defaultRedirect: tohur/bookings/bookings
 create:
-    redirect: 'vojtasvoboda/reservations/reservations/update/:id'
-    redirectClose: vojtasvoboda/reservations/reservations
+    redirect: 'tohur/bookings/bookings/update/:id'
+    redirectClose: tohur/bookings/bookings
 update:
-    redirect: vojtasvoboda/reservations/reservations
-    redirectClose: vojtasvoboda/reservations/reservations
+    redirect: tohur/bookings/bookings
+    redirectClose: tohur/bookings/bookings
 preview: {  }

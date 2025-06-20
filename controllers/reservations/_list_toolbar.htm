@@ -1,6 +1,6 @@
 <div data-control="toolbar">
     <div class="btn-group">
-        <a href="<?= Backend::url('vojtasvoboda/reservations/reservations/create') ?>" class="btn btn-primary oc-icon-plus">
+        <a href="<?= Backend::url('tohur/bookings/bookings/create') ?>" class="btn btn-primary oc-icon-plus">
             <?= e(trans('backend::lang.form.create')) ?>
         </a>
     </div>
@@ -15,7 +15,7 @@
             data-trigger-condition="checked"
             data-request-success="$(this).prop('disabled', true).next().prop('disabled', true)"
             data-stripe-load-indicator>
-            <?= e(trans('vojtasvoboda.reservations::lang.reservations.bulk_actions')) ?>
+            <?= e(trans('tohur.bookings::lang.bookings.bulk_actions')) ?>
         </button>
         <button
             type="button"
@@ -26,22 +26,22 @@
             data-toggle="dropdown">
             <span class="caret"></span>
         </button>
-        <ul class="dropdown-menu" data-dropdown-title="<?= e(trans('vojtasvoboda.reservations::lang.reservations.bulk_actions')) ?>">
+        <ul class="dropdown-menu" data-dropdown-title="<?= e(trans('tohur.bookings::lang.bookings.bulk_actions')) ?>">
             <li>
-                <a href="javascript:;" class="oc-icon-check" data-action="approved" data-confirm="<?= e(trans('vojtasvoboda.reservations::lang.reservations.approved_question')) ?>"><?= e(trans('vojtasvoboda.reservations::lang.reservations.approved')) ?></a>
+                <a href="javascript:;" class="oc-icon-check" data-action="approved" data-confirm="<?= e(trans('tohur.bookings::lang.bookings.approved_question')) ?>"><?= e(trans('tohur.bookings::lang.bookings.approved')) ?></a>
             </li>
             <li>
-                <a href="javascript:;" class="oc-icon-home" data-action="closed" data-confirm="<?= e(trans('vojtasvoboda.reservations::lang.reservations.closed_question')) ?>"><?= e(trans('vojtasvoboda.reservations::lang.reservations.closed')) ?></a>
+                <a href="javascript:;" class="oc-icon-home" data-action="closed" data-confirm="<?= e(trans('tohur.bookings::lang.bookings.closed_question')) ?>"><?= e(trans('tohur.bookings::lang.bookings.closed')) ?></a>
             </li>
             <li>
-                <a href="javascript:;" class="oc-icon-spinner" data-action="received" data-confirm="<?= e(trans('vojtasvoboda.reservations::lang.reservations.received_question')) ?>"><?= e(trans('vojtasvoboda.reservations::lang.reservations.received')) ?></a>
+                <a href="javascript:;" class="oc-icon-spinner" data-action="received" data-confirm="<?= e(trans('tohur.bookings::lang.bookings.received_question')) ?>"><?= e(trans('tohur.bookings::lang.bookings.received')) ?></a>
             </li>
             <li>
-                <a href="javascript:;" class="oc-icon-times" data-action="cancelled" data-confirm="<?= e(trans('vojtasvoboda.reservations::lang.reservations.cancelled_question')) ?>"><?= e(trans('vojtasvoboda.reservations::lang.reservations.cancelled')) ?></a>
+                <a href="javascript:;" class="oc-icon-times" data-action="cancelled" data-confirm="<?= e(trans('tohur.bookings::lang.bookings.cancelled_question')) ?>"><?= e(trans('tohur.bookings::lang.bookings.cancelled')) ?></a>
             </li>
             <li role="separator" class="divider"></li>
             <li>
-                <a href="javascript:;" class="oc-icon-trash" data-action="delete" data-confirm="<?= e(trans('vojtasvoboda.reservations::lang.reservations.delete_question')) ?>"><?= e(trans('vojtasvoboda.reservations::lang.reservations.delete')) ?></a>
+                <a href="javascript:;" class="oc-icon-trash" data-action="delete" data-confirm="<?= e(trans('tohur.bookings::lang.bookings.delete_question')) ?>"><?= e(trans('tohur.bookings::lang.bookings.delete')) ?></a>
             </li>
         </ul>
     </div>

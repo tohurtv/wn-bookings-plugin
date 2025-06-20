@@ -1,8 +1,8 @@
-<?php namespace VojtaSvoboda\Reservations\Tests\Variables;
+<?php namespace Tohur\Bookings\Tests\Variables;
 
 use PluginTestCase;
-use VojtaSvoboda\Reservations\Classes\Variables;
-use VojtaSvoboda\Reservations\Models\Settings;
+use Tohur\Bookings\Classes\Variables;
+use Tohur\Bookings\Models\Settings;
 
 class VariablesTest extends PluginTestCase
 {
@@ -12,17 +12,17 @@ class VariablesTest extends PluginTestCase
         $this->assertSame('d/m/Y H:i', $result);
     }
 
-    public function testGetReservationLength()
+    public function testGetBookingLength()
     {
-        $result = Variables::getReservationLength();
+        $result = Variables::getBookingLength();
         $this->assertSame('2 hours', $result);
     }
 
-    public function testGetReservationLengthAfterSet()
+    public function testGetBookingLengthAfterSet()
     {
-        Settings::set('reservation_length', 90);
-        Settings::set('reservation_length_unit', 'minutes');
-        $result = Variables::getReservationLength();
+        Settings::set('booking_length', 90);
+        Settings::set('booking_length_unit', 'minutes');
+        $result = Variables::getBookingLength();
         $this->assertSame('90 minutes', $result);
     }
 }

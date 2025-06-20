@@ -6,18 +6,18 @@ layout = "default"
     <br />
     multumim pentru rezervarea ta. Mai jos este un sumar:<br />
     <br />
-    Data si ora : {{ reservation.date | date("d.m.Y H:i") }}<br />
+    Data si ora : {{ booking.date | date("d.m.Y H:i") }}<br />
     <br />
-    Adresa: {{ reservation.street }}<br />
-    Nume: {{ reservation.name }} {{ reservation.lastname }}<br />
-    Email: {{ reservation.email }}<br />
-    Telefon: {{ reservation.phone }}<br />
+    Adresa: {{ booking.street }}<br />
+    Nume: {{ booking.name }} {{ booking.lastname }}<br />
+    Email: {{ booking.email }}<br />
+    Telefon: {{ booking.phone }}<br />
     <br />
-    Message: {{ reservation.message }}<br />
+    Message: {{ booking.message }}<br />
     <br />
-    Am primit rezervarea ta pentru {{ reservation.created_at | date("d.m.Y H:i") }} si va vom trimite confirmarea cat de curand.<br />
+    Am primit rezervarea ta pentru {{ booking.created_at | date("d.m.Y H:i") }} si va vom trimite confirmarea cat de curand.<br />
     <br />
-    {% if reservationsCount == 1 %}
+    {% if bookingsCount == 1 %}
     Speram sa fii multumit de serviciile noastre
     <br />
     {% endif %}

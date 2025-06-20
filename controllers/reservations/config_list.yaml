@@ -1,8 +1,8 @@
-title: Reservation
-modelClass: VojtaSvoboda\Reservations\Models\Reservation
-list: $/vojtasvoboda/reservations/models/reservation/columns.yaml
+title: Booking
+modelClass: Tohur\Bookings\Models\Booking
+list: $/tohur/bookings/models/booking/columns.yaml
 filter: config_filter.yaml
-recordUrl: 'vojtasvoboda/reservations/reservations/update/:id'
+recordUrl: 'tohur/bookings/bookings/update/:id'
 noRecordsMessage: 'backend::lang.list.no_records'
 recordsPerPage: 200
 showSetup: true

@@ -1,21 +1,21 @@
-<?php namespace VojtaSvoboda\Reservations\Validators;
+<?php namespace Tohur\Bookings\Validators;
 
 use App;
 use Carbon\Carbon;
 use Illuminate\Validation\Validator;
-use VojtaSvoboda\Reservations\Facades\ReservationsFacade;
-use VojtaSvoboda\Reservations\Models\Reservation;
-use VojtaSvoboda\Reservations\Models\Status;
+use Tohur\Bookings\Facades\BookingsFacade;
+use Tohur\Bookings\Models\Booking;
+use Tohur\Bookings\Models\Status;
 
 /**
- * Custom Reservations validator.
+ * Custom Bookings validator.
  *
- * @package VojtaSvoboda\Reservations\Validators
+ * @package Tohur\Bookings\Validators
  */
-class ReservationsValidators extends Validator
+class BookingsValidators extends Validator
 {
     /**
-     * Validate reservation. Called on date attribute. Validate date availability.
+     * Validate booking. Called on date attribute. Validate date availability.
      *
      * Other available variables: $this->translator, $this->data, $this->rules a $this->messages.
      *
@@ -24,7 +24,7 @@ class ReservationsValidators extends Validator
      *
      * @return bool
      */
-	public function validateReservation($attribute, $value)
+	public function validateBooking($attribute, $value)
 	{
 	    if ($attribute === 'date') {
             return $this->validateDateAttribute($value);
@@ -43,45 +43,45 @@ class ReservationsValidators extends Validator
 	protected function validateDateAttribute($value)
     {
         $date = $this->getDateAsCarbon($value);
-        $reservationId = isset($this->data['id']) ? $this->data['id'] : null;
+        $bookingId = isset($this->data['id']) ? $this->data['id'] : null;
 
-        // disable validation for cancelled reservations
-        if ($reservationId !== null) {
-            $reservation = Reservation::findOrFail($reservationId);
-            if ($this->isReservationCancelled($reservation)) {
+        // disable validation for cancelled bookings
+        if ($bookingId !== null) {
+            $booking = Booking::findOrFail($bookingId);
+            if ($this->isBookingCancelled($booking)) {
                 return true;
             }
         }
 
-        return $this->getFacade()->isDateAvailable($date, $reservationId);
+        return $this->getFacade()->isDateAvailable($date, $bookingId);
     }
 
     /**
-     * Replace placeholder :reservation with custom text.
+     * Replace placeholder :booking with custom text.
      *
      * @param string $message
      *
      * @return string
      */
-    protected function replaceReservation($message)
+    protected function replaceBooking($message)
     {
         $date = $this->getDateAsCarbon($this->data['date']);
 
-        return str_replace(':reservation', $date->format('d.m.Y H:i'), $message);
+        return str_replace(':booking', $date->format('d.m.Y H:i'), $message);
     }
 
     /**
-     * Returns if reservation is cancelled or going to be cancelled.
+     * Returns if booking is cancelled or going to be cancelled.
      *
-     * @param Reservation $reservation
+     * @param Booking $booking
      *
      * @return bool
      */
-    private function isReservationCancelled($reservation)
+    private function isBookingCancelled($booking)
     {
         $futureStatus = Status::findOrFail($this->data['status_id']);
 
-        return $reservation->isCancelled($futureStatus->ident);
+        return $booking->isCancelled($futureStatus->ident);
     }
 
     /**
@@ -97,12 +97,12 @@ class ReservationsValidators extends Validator
     }
 
     /**
-     * Get Reservations facade.
+     * Get Bookings facade.
      *
-     * @return ReservationsFacade
+     * @return BookingsFacade
      */
     private function getFacade()
     {
-        return App::make('vojtasvoboda.reservations.facade');
+        return App::make('tohur.bookings.facade');
     }
 }

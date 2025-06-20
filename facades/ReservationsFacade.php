@@ -1,4 +1,4 @@
-<?php namespace VojtaSvoboda\Reservations\Facades;
+<?php namespace Tohur\Bookings\Facades;
 
 use Auth;
 use Carbon\Carbon;
@@ -9,25 +9,25 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use October\Rain\Exception\ApplicationException;
 use October\Rain\Exception\ValidationException;
-use VojtaSvoboda\Reservations\Classes\DatesResolver;
-use VojtaSvoboda\Reservations\Classes\Variables;
-use VojtaSvoboda\Reservations\Mailers\ReservationAdminMailer;
-use VojtaSvoboda\Reservations\Mailers\ReservationMailer;
-use VojtaSvoboda\Reservations\Models\Reservation;
-use VojtaSvoboda\Reservations\Models\Settings;
-use VojtaSvoboda\Reservations\Models\Status;
+use Tohur\Bookings\Classes\DatesResolver;
+use Tohur\Bookings\Classes\Variables;
+use Tohur\Bookings\Mailers\BookingAdminMailer;
+use Tohur\Bookings\Mailers\BookingMailer;
+use Tohur\Bookings\Models\Booking;
+use Tohur\Bookings\Models\Settings;
+use Tohur\Bookings\Models\Status;
 
 /**
- * Public reservations facade.
+ * Public bookings facade.
  *
- * Usage: App::make(ReservationsFacade::class);
+ * Usage: App::make(BookingsFacade::class);
  *
- * @package VojtaSvoboda\Reservations\Facades
+ * @package Tohur\Bookings\Facades
  */
-class ReservationsFacade
+class BookingsFacade
 {
-    /** @var Reservation $reservations */
-    private $reservations;
+    /** @var Booking $bookings */
+    private $bookings;
 
     /** @var Status $statuses */
     private $statuses;
@@ -38,26 +38,26 @@ class ReservationsFacade
     /** @var array $returningUsersCache */
     private $returningUsersCache;
 
-    /** @var ReservationMailer $mailer */
+    /** @var BookingMailer $mailer */
     private $mailer;
 
-    /** @var ReservationAdminMailer $adminMailer */
+    /** @var BookingAdminMailer $adminMailer */
     private $adminMailer;
 
     /**
-     * ReservationsFacade constructor.
+     * BookingsFacade constructor.
      *
-     * @param Reservation $reservations
+     * @param Booking $bookings
      * @param Status $statuses
      * @param DatesResolver $resolver
-     * @param ReservationMailer $mailer
-     * @param ReservationAdminMailer $adminMailer
+     * @param BookingMailer $mailer
+     * @param BookingAdminMailer $adminMailer
      */
     public function __construct(
-        Reservation $reservations, Status $statuses, DatesResolver $resolver,
-        ReservationMailer $mailer, ReservationAdminMailer $adminMailer
+        Booking $bookings, Status $statuses, DatesResolver $resolver,
+        BookingMailer $mailer, BookingAdminMailer $adminMailer
     ) {
-        $this->reservations = $reservations;
+        $this->bookings = $bookings;
         $this->statuses = $statuses;
         $this->datesResolver = $resolver;
         $this->mailer = $mailer;
@@ -65,16 +65,16 @@ class ReservationsFacade
     }
 
     /**
-     * Create and store reservation.
+     * Create and store booking.
      *
      * @param array $data
      *
-     * @return Reservation $reservation
+     * @return Booking $booking
      *
      * @throws ApplicationException
      * @throws ValidationException
      */
-    public function storeReservation($data)
+    public function storeBooking($data)
     {
         // check number of sends
         $this->checkLimits();
@@ -83,52 +83,52 @@ class ReservationsFacade
         $data['date'] = $this->transformDateTime($data);
 
         // place for extending
-        Event::fire('vojtasvoboda.reservations.processReservation', [&$data]);
+        Event::fire('tohur.bookings.processBooking', [&$data]);
 
-        // create reservation
-        $reservation = $this->reservations->create($data);
+        // create booking
+        $booking = $this->bookings->create($data);
 
         // send mails to client and admin
-        $this->sendMails($reservation);
+        $this->sendMails($booking);
 
-        return $reservation;
+        return $booking;
     }
 
     /**
      * Send mail to client and admin.
      *
-     * @param Reservation $reservation
+     * @param Booking $booking
      */
-    public function sendMails($reservation)
+    public function sendMails($booking)
     {
-        // calculate reservations by same email
-        $sameCount = $this->getReservationsCountByMail($reservation->email);
+        // calculate bookings by same email
+        $sameCount = $this->getBookingsCountByMail($booking->email);
 
-        // send reservation confirmation to customer
-        $this->mailer->send($reservation, $sameCount);
+        // send booking confirmation to customer
+        $this->mailer->send($booking, $sameCount);
 
-        // send reservation confirmation to admin
-        $this->adminMailer->send($reservation, $sameCount);
+        // send booking confirmation to admin
+        $this->adminMailer->send($booking, $sameCount);
     }
 
     /**
-     * Get all reservations.
+     * Get all bookings.
      *
      * @return Collection
      */
-    public function getReservations()
+    public function getBookings()
     {
-        return $this->reservations->all();
+        return $this->bookings->all();
     }
 
     /**
-     * Get all active (not cancelled) reservations.
+     * Get all active (not cancelled) bookings.
      *
      * @return Collection
      */
-    public function getActiveReservations()
+    public function getActiveBookings()
     {
-        return $this->reservations->notCancelled()->currentDate()->get();
+        return $this->bookings->notCancelled()->currentDate()->get();
     }
 
     /**
@@ -138,38 +138,38 @@ class ReservationsFacade
      */
     public function getReservedDates()
     {
-        $reservations = $this->getActiveReservations();
+        $bookings = $this->getActiveBookings();
 
-        return $this->datesResolver->getDatesFromReservations($reservations);
+        return $this->datesResolver->getDatesFromBookings($bookings);
     }
 
     /**
-     * Get all reservations by given date interval.
+     * Get all bookings by given date interval.
      *
      * @param Carbon $since Date from.
      * @param Carbon $till Date to.
      *
      * @return mixed
      */
-    public function getReservationsByInterval(Carbon $since, Carbon $till)
+    public function getBookingsByInterval(Carbon $since, Carbon $till)
     {
-        return $this->reservations->whereBetween('date', [$since, $till])->get();
+        return $this->bookings->whereBetween('date', [$since, $till])->get();
     }
 
     /**
-     * Get reservations count by one email.
+     * Get bookings count by one email.
      *
      * @param $email
      *
      * @return int
      */
-    public function getReservationsCountByMail($email)
+    public function getBookingsCountByMail($email)
     {
-        return $this->reservations->where('email', $email)->notCancelled()->count();
+        return $this->bookings->where('email', $email)->notCancelled()->count();
     }
 
     /**
-     * Is user returning or not? You have to set this parameter at Backend Reservations setting.
+     * Is user returning or not? You have to set this parameter at Backend Bookings setting.
      *
      * @param $email
      *
@@ -186,7 +186,7 @@ class ReservationsFacade
         // load emails count
         if ($this->returningUsersCache === null) {
             $items = $this
-                ->reservations
+                ->bookings
                 ->select(DB::raw('email, count(*) as count'))
                 ->groupBy('email')
                 ->get();
@@ -203,7 +203,7 @@ class ReservationsFacade
     }
 
     /**
-     * Bulk reservation state change.
+     * Bulk booking state change.
      *
      * @param array $ids
      * @param string $ident
@@ -216,35 +216,35 @@ class ReservationsFacade
             return;
         }
 
-        // go through reservations
+        // go through bookings
         foreach ($ids as $id)
         {
-            $reservation = $this->reservations->find($id);
-            if (!$reservation) {
+            $booking = $this->bookings->find($id);
+            if (!$booking) {
                 continue;
             }
 
-            $reservation->status = $status;
-            $reservation->save();
+            $booking->status = $status;
+            $booking->save();
         }
     }
 
     /**
-     * Bulk reservations delete.
+     * Bulk bookings delete.
      *
      * @param array $ids
      */
     public function bulkDelete($ids)
     {
-        // go through reservations
+        // go through bookings
         foreach ($ids as $id)
         {
-            $reservation = $this->reservations->find($id);
-            if (!$reservation) {
+            $booking = $this->bookings->find($id);
+            if (!$booking) {
                 continue;
             }
 
-            $reservation->delete();
+            $booking->delete();
         }
     }
 
@@ -261,12 +261,12 @@ class ReservationsFacade
     {
         // validate date
         if (empty($data['date'])) {
-            throw new ApplicationException(Lang::get('vojtasvoboda.reservations::lang.errors.empty_date'));
+            throw new ApplicationException(Lang::get('tohur.bookings::lang.errors.empty_date'));
         }
 
         // validate time
         if (empty($data['time'])) {
-            throw new ApplicationException(Lang::get('vojtasvoboda.reservations::lang.errors.empty_hour'));
+            throw new ApplicationException(Lang::get('tohur.bookings::lang.errors.empty_hour'));
         }
 
         // convert input to datetime format
@@ -275,12 +275,12 @@ class ReservationsFacade
 
         // validate date + time > current
         if ($dateTime->timestamp < Carbon::now()->timestamp) {
-            throw new ApplicationException(Lang::get('vojtasvoboda.reservations::lang.errors.past_date'));
+            throw new ApplicationException(Lang::get('tohur.bookings::lang.errors.past_date'));
         }
 
         // validate days off
         if (!in_array($dateTime->dayOfWeek, $this->getWorkingDays())) {
-            throw new ApplicationException(Lang::get('vojtasvoboda.reservations::lang.errors.days_off'));
+            throw new ApplicationException(Lang::get('tohur.bookings::lang.errors.days_off'));
         }
 
         // validate out of hours
@@ -292,7 +292,7 @@ class ReservationsFacade
         $workTimeTo   = $workTime['to']['hour'] * 60 + $workTime['to']['minute'];
 
         if ($timeToMinute < $workTimeFrom || $timeToMinute > $workTimeTo) {
-            throw new ApplicationException(Lang::get('vojtasvoboda.reservations::lang.errors.out_of_hours'));
+            throw new ApplicationException(Lang::get('tohur.bookings::lang.errors.out_of_hours'));
         }
 
         return $dateTime;
@@ -342,19 +342,19 @@ class ReservationsFacade
      * Returns if given date is available.
      *
      * @param Carbon $date
-     * @param int $exceptId Except reservation ID.
+     * @param int $exceptId Except booking ID.
      *
      * @return bool
      */
     public function isDateAvailable($date, $exceptId = null)
     {
-        // get boundary dates for given reservation date
+        // get boundary dates for given booking date
         $boundaries = $this->datesResolver->getBoundaryDates($date);
 
-        // get all reservations in this date
-        $query = $this->reservations->notCancelled()->whereBetween('date', $boundaries);
+        // get all bookings in this date
+        $query = $this->bookings->notCancelled()->whereBetween('date', $boundaries);
 
-        // if updating reservation, we should skip existing reservation
+        // if updating booking, we should skip existing booking
         if ($exceptId !== null) {
             $query->where('id', '!=', $exceptId);
         }
@@ -363,30 +363,30 @@ class ReservationsFacade
     }
 
     /**
-     * Check reservations amount limit per time.
+     * Check bookings amount limit per time.
      *
      * @throws ApplicationException
      */
     private function checkLimits()
     {
         if ($this->isCreatedWhileAgo()) {
-            throw new ApplicationException(Lang::get('vojtasvoboda.reservations::lang.errors.please_wait'));
+            throw new ApplicationException(Lang::get('tohur.bookings::lang.errors.please_wait'));
         }
     }
 
     /**
-     * Try to find some reservation in less then given limit (default 30 seconds).
+     * Try to find some booking in less then given limit (default 30 seconds).
      *
      * @return boolean
      */
     public function isCreatedWhileAgo()
     {
         // protection time
-        $time = Config::get('vojtasvoboda.reservations::config.protection_time', '-30 seconds');
+        $time = Config::get('tohur.bookings::config.protection_time', '-30 seconds');
         $timeLimit = Carbon::parse($time)->toDateTimeString();
 
         // try to find some message
-        $item = $this->reservations->machine()->where('created_at', '>', $timeLimit)->first();
+        $item = $this->bookings->machine()->where('created_at', '>', $timeLimit)->first();
 
         return $item !== null;
     }

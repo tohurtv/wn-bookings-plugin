@@ -1,7 +1,7 @@
-<?php namespace VojtaSvoboda\Reservations\Classes;
+<?php namespace Tohur\Bookings\Classes;
 
 use Config;
-use VojtaSvoboda\Reservations\Models\Settings;
+use Tohur\Bookings\Models\Settings;
 
 class Variables
 {
@@ -12,31 +12,31 @@ class Variables
 
     public static function getDateFormat()
     {
-        $default = Config::get('vojtasvoboda.reservations::config.formats.date', 'd/m/Y');
+        $default = Config::get('tohur.bookings::config.formats.date', 'd/m/Y');
 
         return Settings::get('formats_date', $default);
     }
 
     public static function getTimeFormat()
     {
-        $default = Config::get('vojtasvoboda.reservations::config.formats.time', 'H:i');
+        $default = Config::get('tohur.bookings::config.formats.time', 'H:i');
 
         return Settings::get('formats_time', $default);
     }
 
-    public static function getReservationInterval()
+    public static function getBookingInterval()
     {
-        $default = Config::get('vojtasvoboda.reservations::config.reservation.interval', 15);
+        $default = Config::get('tohur.bookings::config.booking.interval', 15);
 
-        return (int) Settings::get('reservation_interval', $default);
+        return (int) Settings::get('booking_interval', $default);
     }
 
-    public static function getReservationLength()
+    public static function getBookingLength()
     {
-        $default = Config::get('vojtasvoboda.reservations::config.reservation.length', '2 hours');
+        $default = Config::get('tohur.bookings::config.booking.length', '2 hours');
 
-        $length = Settings::get('reservation_length');
-        $unit = Settings::get('reservation_length_unit');
+        $length = Settings::get('booking_length');
+        $unit = Settings::get('booking_length_unit');
 
         if (empty($length) || empty($unit)) {
             return $default;

@@ -1,4 +1,4 @@
-<?php namespace VojtaSvoboda\Reservations\Mailers;
+<?php namespace Tohur\Bookings\Mailers;
 
 use App;
 use Config;
@@ -21,7 +21,7 @@ class BaseMailer
         if ($locale === null) {
             $locale = App::getLocale();
         }
-        $identBase = 'vojtasvoboda.reservations::mail.' . $name . '-';
+        $identBase = 'tohur.bookings::mail.' . $name . '-';
 
         if (file_exists(__DIR__ . '/../views/mail/' . $name . '-' . $locale . '.htm')) {
             return $identBase . $locale;
@@ -38,8 +38,8 @@ class BaseMailer
     public function initRecipients()
     {
         $recipients = [];
-        $recipients['bcc_email'] = Config::get('vojtasvoboda.reservations::config.mail.bcc_email');
-        $recipients['bcc_name'] = Config::get('vojtasvoboda.reservations::config.mail.bcc_name');
+        $recipients['bcc_email'] = Config::get('tohur.bookings::config.mail.bcc_email');
+        $recipients['bcc_name'] = Config::get('tohur.bookings::config.mail.bcc_name');
 
         return $recipients;
     }

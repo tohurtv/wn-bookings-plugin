@@ -1,43 +1,43 @@
-<?php namespace VojtaSvoboda\Reservations\Classes;
+<?php namespace Tohur\Bookings\Classes;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 
 /**
- * Class DatesResolver transform reservations to booked time slots, grouped by date.
+ * Class DatesResolver transform bookings to booked time slots, grouped by date.
  *
- * @package VojtaSvoboda\Reservations\Classes
+ * @package Tohur\Bookings\Classes
  */
 class DatesResolver
 {
     /**
-     * Returns reserved time slots from non cancelled reservations.
+     * Returns reserved time slots from non cancelled bookings.
      *
-     * If you have reservations at 13.10.2016 at 11:00 and also at 13:00, both with 2 hours lenght, this method return
+     * If you have bookings at 13.10.2016 at 11:00 and also at 13:00, both with 2 hours lenght, this method return
      * all booked slots - from 09:15 to 14:45 (when you have 15 minutes slot lenght).
      *
      * ------------ 11:00 ------------- 13:00 --------------
      *
-     * Because nearest reservation can be done at 09:00 with 2 hours lenghts and next reservation at 15:00.
+     * Because nearest booking can be done at 09:00 with 2 hours lenghts and next booking at 15:00.
      *
-     * @param Collection $reservations
+     * @param Collection $bookings
      *
      * @return array
      */
-    public function getDatesFromReservations(Collection $reservations)
+    public function getDatesFromBookings(Collection $bookings)
     {
         // init
-        $interval = Variables::getReservationInterval();
-        $length = Variables::getReservationLength();
+        $interval = Variables::getBookingInterval();
+        $length = Variables::getBookingLength();
         $dateFormat = 'd/m/Y';
         $timeFormat = 'H:i';
 
-        // sort reservations by date and count time slots before reservation and during the reservation
+        // sort bookings by date and count time slots before booking and during the booking
         $dates = [];
-        foreach ($reservations as $reservation) {
+        foreach ($bookings as $booking) {
             // init dates
-            $startDate = $this->getStartDate($reservation, $length, $interval);
-            $endDate = $this->getEndDate($reservation, $length);
+            $startDate = $this->getStartDate($booking, $length, $interval);
+            $endDate = $this->getEndDate($booking, $length);
 
             // save each booked interval
             while ($startDate < $endDate) {
@@ -60,8 +60,8 @@ class DatesResolver
      */
     public function getBoundaryDates(Carbon $date)
     {
-        // reservation length
-        $length = Variables::getReservationLength();
+        // booking length
+        $length = Variables::getBookingLength();
 
         // boundary dates before and after
         $startDatetime = $this->getBoundaryBefore($date, $length);
@@ -71,7 +71,7 @@ class DatesResolver
     }
 
     /**
-     * Get boundary date before reservation date.
+     * Get boundary date before booking date.
      *
      * @param Carbon $date
      * @param string $length
@@ -88,7 +88,7 @@ class DatesResolver
     }
 
     /**
-     * Get boundary date after reservation date.
+     * Get boundary date after booking date.
      *
      * @param Carbon $date
      * @param string $length
@@ -105,17 +105,17 @@ class DatesResolver
     }
 
     /**
-     * Get reservation imaginary start date.
+     * Get booking imaginary start date.
      *
-     * @param $reservation
+     * @param $booking
      * @param $length
      * @param $interval
      *
      * @return mixed
      */
-    protected function getStartDate($reservation, $length, $interval)
+    protected function getStartDate($booking, $length, $interval)
     {
-        $startDate = $reservation->date;
+        $startDate = $booking->date;
         $startDate->modify('-' . $length);
         $startDate->modify('+' . $interval . ' minutes');
 
@@ -123,16 +123,16 @@ class DatesResolver
     }
 
     /**
-     * Get reservation imaginary end date.
+     * Get booking imaginary end date.
      *
-     * @param $reservation
+     * @param $booking
      * @param $length
      *
      * @return mixed
      */
-    protected function getEndDate($reservation, $length)
+    protected function getEndDate($booking, $length)
     {
-        $endDate = clone $reservation->date;
+        $endDate = clone $booking->date;
         $endDate->modify('+' . $length);
 
         return $endDate;
@@ -163,26 +163,26 @@ class DatesResolver
     }
 
     /**
-     * Get reservation interval length.
+     * Get booking interval length.
      *
      * @return string
      *
-     * @deprecated Use Variables::getReservationInterval() instead.
+     * @deprecated Use Variables::getBookingInterval() instead.
      */
     protected function getInterval()
     {
-        return Variables::getReservationInterval();
+        return Variables::getBookingInterval();
     }
 
     /**
-     * Get reservation length.
+     * Get booking length.
      *
      * @return string
      *
-     * @deprecated Use Variables::getReservationLength() instead.
+     * @deprecated Use Variables::getBookingLength() instead.
      */
     protected function getLength()
     {
-        return Variables::getReservationLength();
+        return Variables::getBookingLength();
     }
 }

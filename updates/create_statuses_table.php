@@ -1,4 +1,4 @@
-<?php namespace VojtaSvoboda\Reservations\Updates;
+<?php namespace Tohur\Bookings\Updates;
 
 use Schema;
 use October\Rain\Database\Schema\Blueprint;
@@ -8,7 +8,7 @@ class CreateStatusesTable extends Migration
 {
     public function up()
     {
-        Schema::create('vojtasvoboda_reservations_statuses', function(Blueprint $table)
+        Schema::create('tohur_bookings_statuses', function(Blueprint $table)
         {
             $table->engine = 'InnoDB';
             $table->increments('id');
@@ -26,6 +26,6 @@ class CreateStatusesTable extends Migration
 
     public function down()
     {
-        Schema::dropIfExists('vojtasvoboda_reservations_statuses');
+        Schema::dropIfExists('tohur_bookings_statuses');
     }
 }

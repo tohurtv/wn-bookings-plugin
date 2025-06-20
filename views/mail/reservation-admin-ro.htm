@@ -4,16 +4,16 @@ layout = "default"
 <p>
     Rezervare noua in sistem:<br />
     <br />
-    Data si ora: {{ reservation.date | date("d.m.Y H:i") }}<br />
+    Data si ora: {{ booking.date | date("d.m.Y H:i") }}<br />
     <br />
-    Adresa: {{ reservation.street }}<br />
-    Nume: {{ reservation.name }} {{ reservation.lastname }}<br />
-    Email: {{ reservation.email }}<br />
-    Telefon: {{ reservation.phone }}<br />
+    Adresa: {{ booking.street }}<br />
+    Nume: {{ booking.name }} {{ booking.lastname }}<br />
+    Email: {{ booking.email }}<br />
+    Telefon: {{ booking.phone }}<br />
     <br />
-    Mesaj: {{ reservation.message }}<br />
+    Mesaj: {{ booking.message }}<br />
     <br />
-    Creat la data: {{ reservation.created_at | date("d.m.Y H:i") }}<br />
+    Creat la data: {{ booking.created_at | date("d.m.Y H:i") }}<br />
     <br />
-    Numar de rezervari de la acet email: {{ reservationsCount }}<br />
+    Numar de rezervari de la acet email: {{ bookingsCount }}<br />
 </p>

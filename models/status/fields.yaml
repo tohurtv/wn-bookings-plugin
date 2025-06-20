@@ -1,12 +1,12 @@
 fields:
     name:
-        label: vojtasvoboda.reservations::lang.status.name
+        label: tohur.bookings::lang.status.name
         span: full
         disabled: 0
         required: 1
         type: text
     ident:
-        label: vojtasvoboda.reservations::lang.status.ident
+        label: tohur.bookings::lang.status.ident
         span: full
         required: 1
         context:
@@ -16,9 +16,9 @@ fields:
             type: slug
         type: text
     color:
-        label: vojtasvoboda.reservations::lang.status.color
+        label: tohur.bookings::lang.status.color
         type: colorpicker
     enabled:
-        label: vojtasvoboda.reservations::lang.status.enabled
+        label: tohur.bookings::lang.status.enabled
         span: full
         type: checkbox

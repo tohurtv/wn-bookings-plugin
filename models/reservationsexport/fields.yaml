@@ -2,16 +2,16 @@ tabs:
     fields:
 
         status_enabled:
-            label: vojtasvoboda.reservations::lang.export.status_filter
+            label: tohur.bookings::lang.export.status_filter
             type: checkbox
             default: false
-            tab: vojtasvoboda.reservations::lang.export.status_filter_tab
+            tab: tohur.bookings::lang.export.status_filter_tab
         status_id:
-            label: vojtasvoboda.reservations::lang.export.status_filter_label
+            label: tohur.bookings::lang.export.status_filter_label
             span: full
             type: dropdown
             required: true
-            tab: vojtasvoboda.reservations::lang.export.status_filter_tab
+            tab: tohur.bookings::lang.export.status_filter_tab
             trigger:
                 action: show
                 field: status_enabled

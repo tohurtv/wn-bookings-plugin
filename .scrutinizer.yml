@@ -7,15 +7,15 @@ build:
             - find . -delete
             - git clone https://github.com/octobercms/october.git .
             - composer install --no-interaction --prefer-source
-            - mkdir -p ./plugins/vojtasvoboda/reservations
-            - cd plugins/vojtasvoboda/reservations && git clone https://github.com/vojtasvoboda/oc-reservations-plugin.git .
+            - mkdir -p ./plugins/tohur/bookings
+            - cd plugins/tohur/bookings && git clone https://github.com/tohur/oc-bookings-plugin.git .
             - composer install
     tests:
         override:
             -
                 command: 'phpunit --coverage-clover=coverage'
                 coverage:
-                    file: './plugins/vojtasvoboda/reservations/coverage'
+                    file: './plugins/tohur/bookings/coverage'
                     format: 'php-clover'
 checks:
     php:

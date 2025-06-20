@@ -1,4 +1,4 @@
-<?php namespace VojtaSvoboda\Reservations\Updates\Classes;
+<?php namespace Tohur\Bookings\Updates\Classes;
 
 use Exception;
 use Seeder as BaseSeeder;
@@ -69,8 +69,8 @@ class Seeder extends BaseSeeder
     /**
      * Get folder, where seed can be overwritten.
      *
-     * - default folder e.g. /plugins/vojtasvoboda/reservations/updates/sources/products.yaml
-     * - overwritten e.g.  /resources/vojtasvoboda/reservations/updates/sources/products.yaml
+     * - default folder e.g. /plugins/tohur/bookings/updates/sources/products.yaml
+     * - overwritten e.g.  /resources/tohur/bookings/updates/sources/products.yaml
      *
      * @param string $defaultPath Default folder path.
      *

@@ -1,8 +1,8 @@
 {
-  "name": "oc-reservations-plugin",
+  "name": "oc-bookings-plugin",
   "version": "1.1.0",
-  "description": "Quick reservations plugin.",
-  "main": "assets/js/reservationform.js",
+  "description": "Quick bookings plugin.",
+  "main": "assets/js/bookingform.js",
   "directories": {
     "test": "tests"
   },
@@ -17,12 +17,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vojtasvoboda/oc-reservations-plugin.git"
+    "url": "git+https://github.com/tohur/oc-bookings-plugin.git"
   },
   "author": "Vojta Svoboda",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/vojtasvoboda/oc-reservations-plugin/issues"
+    "url": "https://github.com/tohur/oc-bookings-plugin/issues"
   },
-  "homepage": "https://github.com/vojtasvoboda/oc-reservations-plugin#readme"
+  "homepage": "https://github.com/tohur/oc-bookings-plugin#readme"
 }

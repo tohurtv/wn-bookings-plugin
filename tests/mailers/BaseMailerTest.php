@@ -1,9 +1,9 @@
-<?php namespace VojtaSvoboda\Reservations\Tests\Mailers;
+<?php namespace Tohur\Bookings\Tests\Mailers;
 
 use App;
 use PluginTestCase;
-use VojtaSvoboda\Reservations\Mailers\BaseMailer;
-use VojtaSvoboda\Reservations\Mailers\ReservationMailer;
+use Tohur\Bookings\Mailers\BaseMailer;
+use Tohur\Bookings\Mailers\BookingMailer;
 
 class BaseMailerTest extends PluginTestCase
 {
@@ -21,18 +21,18 @@ class BaseMailerTest extends PluginTestCase
     {
         $model = $this->getModel();
 
-        $ident = $model->getTemplateIdent('reservation');
+        $ident = $model->getTemplateIdent('booking');
         $locale = App::getLocale();
 
-        $this->assertEquals('vojtasvoboda.reservations::mail.reservation-' . $locale, $ident);
+        $this->assertEquals('tohur.bookings::mail.booking-' . $locale, $ident);
     }
 
     public function testGetTemplateIdentWithLocale()
     {
         $model = $this->getModel();
 
-        $ident = $model->getTemplateIdent('reservation-admin', 'cs');
+        $ident = $model->getTemplateIdent('booking-admin', 'cs');
 
-        $this->assertEquals('vojtasvoboda.reservations::mail.reservation-admin-cs', $ident);
+        $this->assertEquals('tohur.bookings::mail.booking-admin-cs', $ident);
     }
 }

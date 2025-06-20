@@ -1,4 +1,4 @@
-<?php namespace VojtaSvoboda\Reservations\Models;
+<?php namespace Tohur\Bookings\Models;
 
 use App;
 use Carbon\Carbon;
@@ -11,22 +11,22 @@ use Request;
 use Str;
 
 /**
- * Reservation class.
+ * Booking class.
  *
- * @package VojtaSvoboda\Reservations\Models
+ * @package Tohur\Bookings\Models
  */
-class Reservation extends Model
+class Booking extends Model
 {
     use SoftDeleteTrait;
 
     use ValidationTrait;
 
     /** @var string $table The database table used by the model */
-    public $table = 'vojtasvoboda_reservations_reservations';
+    public $table = 'tohur_bookings_bookings';
 
     /** @var array Rules */
     public $rules = [
-        'date' => 'required|date|reservation',
+        'date' => 'required|date|booking',
         'locale' => 'max:20',
         'email' => 'required|email',
         'name' => 'required|max:300',
@@ -38,7 +38,7 @@ class Reservation extends Model
     ];
 
     public $customMessages = [
-        'reservation' => 'vojtasvoboda.reservations::lang.errors.already_booked',
+        'booking' => 'tohur.bookings::lang.errors.already_booked',
     ];
 
     public $fillable = [
@@ -49,11 +49,11 @@ class Reservation extends Model
     public $dates = ['date', 'created_at', 'updated_at', 'deleted_at'];
 
     public $belongsTo = [
-        'status' => 'VojtaSvoboda\Reservations\Models\Status',
+        'status' => 'Tohur\Bookings\Models\Status',
     ];
 
     /**
-     * Before create reservation.
+     * Before create booking.
      */
     public function beforeCreate()
     {
@@ -72,7 +72,7 @@ class Reservation extends Model
     }
 
     /**
-     * If reservation is cancelled.
+     * If booking is cancelled.
      *
      * @param string $statusIdent
      *
@@ -83,13 +83,13 @@ class Reservation extends Model
         if ($statusIdent === null) {
             $statusIdent = $this->status->ident;
         }
-        $cancelledStatuses = Config::get('vojtasvoboda.reservations::config.statuses.cancelled', ['cancelled']);
+        $cancelledStatuses = Config::get('tohur.bookings::config.statuses.cancelled', ['cancelled']);
 
         return in_array($statusIdent, $cancelledStatuses);
     }
 
     /**
-     * Scope for getting non cancelled reservations.
+     * Scope for getting non cancelled bookings.
      *
      * @param $query
      *
@@ -97,7 +97,7 @@ class Reservation extends Model
      */
     public function scopeNotCancelled($query)
     {
-        $cancelledStatuses = Config::get('vojtasvoboda.reservations::config.statuses.cancelled', ['cancelled']);
+        $cancelledStatuses = Config::get('tohur.bookings::config.statuses.cancelled', ['cancelled']);
 
         return $query->whereHas('status', function($query) use ($cancelledStatuses) {
             $query->whereNotIn('ident', $cancelledStatuses);
@@ -105,7 +105,7 @@ class Reservation extends Model
     }
 
     /**
-     * Scope for getting current date reservations.
+     * Scope for getting current date bookings.
      *
      * @param $query
      *
@@ -133,43 +133,43 @@ class Reservation extends Model
     }
 
     /**
-     * Get default reservation status.
+     * Get default booking status.
      *
      * @return Status
      */
     public function getDefaultStatus()
     {
-        $statusIdent = Config::get('vojtasvoboda.reservations::config.statuses.received', 'received');
+        $statusIdent = Config::get('tohur.bookings::config.statuses.received', 'received');
 
         return Status::where('ident', $statusIdent)->first();
     }
 
     /**
-     * Generate unique hash for each reservation.
+     * Generate unique hash for each booking.
      *
      * @return string|null
      */
     public function getUniqueHash()
     {
-        $length = Config::get('vojtasvoboda.reservations::config.hash', 32);
+        $length = Config::get('tohur.bookings::config.hash', 32);
         if ($length == 0) {
             return null;
         }
 
-        return substr(md5('reservations-' . Str::random($length)), 0, $length);
+        return substr(md5('bookings-' . Str::random($length)), 0, $length);
     }
 
     /**
-     * Generate unique number for each reservation. With this hash you can reference
-     * concrete reservation instead of using internal Reservation ID.
+     * Generate unique number for each booking. With this hash you can reference
+     * concrete booking instead of using internal Booking ID.
      *
      * @return string|null
      */
     public function getUniqueNumber()
     {
     	// init
-        $min = Config::get('vojtasvoboda.reservations::config.number.min', 123456);
-        $max = Config::get('vojtasvoboda.reservations::config.number.max', 999999);
+        $min = Config::get('tohur.bookings::config.number.min', 123456);
+        $max = Config::get('tohur.bookings::config.number.max', 999999);
         if ($min == 0 || $max == 0) {
             return null;
         }

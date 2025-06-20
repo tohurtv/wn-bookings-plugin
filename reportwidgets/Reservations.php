@@ -1,25 +1,25 @@
-<?php namespace VojtaSvoboda\Reservations\ReportWidgets;
+<?php namespace Tohur\Bookings\ReportWidgets;
 
 use Backend\Classes\ReportWidgetBase;
 use Carbon\Carbon;
 use DB;
 use Exception;
 use October\Rain\Exception\ApplicationException;
-use VojtaSvoboda\Reservations\Models\Reservation;
+use Tohur\Bookings\Models\Booking;
 
 /**
- * Reservations report widget.
+ * Bookings report widget.
  *
- * @package VojtaSvoboda\Reservations\ReportWidgets
+ * @package Tohur\Bookings\ReportWidgets
  */
-class Reservations extends ReportWidgetBase
+class Bookings extends ReportWidgetBase
 {
     public function defineProperties()
     {
         return [
             'title' => [
-                'title' => 'Reservations',
-                'default' => 'Reservations',
+                'title' => 'Bookings',
+                'default' => 'Bookings',
                 'type' => 'string',
                 'validationPattern' => '^.+$',
                 'validationMessage' => 'Widget title is required.',
@@ -41,17 +41,17 @@ class Reservations extends ReportWidgetBase
     public function render()
     {
         $error = false;
-        $reservations = [];
+        $bookings = [];
 
         try {
-            $reservations = $this->loadData();
+            $bookings = $this->loadData();
 
         } catch (Exception $ex) {
             $error = $ex->getMessage();
         }
 
         $this->vars['error'] = $error;
-        $this->vars['reservations'] = $reservations;
+        $this->vars['bookings'] = $bookings;
 
         return $this->makePartial('widget');
     }
@@ -68,9 +68,9 @@ class Reservations extends ReportWidgetBase
             throw new ApplicationException('Invalid days value: ' . $days);
         }
 
-        // get all reservations for gived days
+        // get all bookings for gived days
         $interval = Carbon::now()->subDays($days)->toDateTimeString();
-        $items = Reservation::where('created_at', '>=', $interval)->get();
+        $items = Booking::where('created_at', '>=', $interval)->get();
 
         // parse data
         $all = $this->sortItemsToDays($items);

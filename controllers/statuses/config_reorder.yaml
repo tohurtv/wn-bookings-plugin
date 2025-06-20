@@ -1,5 +1,5 @@
 title: Statuses
-modelClass: VojtaSvoboda\Reservations\Models\Status
+modelClass: Tohur\Bookings\Models\Status
 nameFrom: name
 toolbar:
     buttons: reorder_toolbar

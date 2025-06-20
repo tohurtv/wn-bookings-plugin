@@ -1,20 +1,20 @@
-<?php namespace VojtaSvoboda\Reservations\Mailers;
+<?php namespace Tohur\Bookings\Mailers;
 
 use App;
 use Mail;
 use Request;
-use VojtaSvoboda\Reservations\Models\Reservation;
-use VojtaSvoboda\Reservations\Models\Settings;
+use Tohur\Bookings\Models\Booking;
+use Tohur\Bookings\Models\Settings;
 
-class ReservationAdminMailer extends BaseMailer
+class BookingAdminMailer extends BaseMailer
 {
     /**
-     * Send reservation confirmation mail.
+     * Send booking confirmation mail.
      *
-     * @param Reservation $reservation
-     * @param int $reservationsCount
+     * @param Booking $booking
+     * @param int $bookingsCount
      */
-    public function send(Reservation $reservation, $reservationsCount = 0)
+    public function send(Booking $booking, $bookingsCount = 0)
     {
         // init
         $locale = App::getLocale();
@@ -30,13 +30,13 @@ class ReservationAdminMailer extends BaseMailer
             return;
         }
 
-        $template = $this->getTemplateIdent('reservation-admin', $templateLocale);
+        $template = $this->getTemplateIdent('booking-admin', $templateLocale);
 
         $templateParameters = [
             'site' => $appUrl,
-            'reservation' => $reservation,
+            'booking' => $booking,
             'locale' => $locale,
-            'reservationsCount' => $reservationsCount,
+            'bookingsCount' => $bookingsCount,
         ];
 
         if (App::environment() === 'testing') {

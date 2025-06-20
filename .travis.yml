@@ -13,12 +13,12 @@ sudo: false
 
 before_script:
   - git clone https://github.com/octobercms/october.git
-  - mkdir -p ./october/plugins/vojtasvoboda/reservations
-  - mv !(october) october/plugins/vojtasvoboda/reservations
+  - mkdir -p ./october/plugins/tohur/bookings
+  - mv !(october) october/plugins/tohur/bookings
   - cd october
   - composer self-update
   - travis_retry composer install --no-interaction --prefer-source
-  - cd plugins/vojtasvoboda/reservations
+  - cd plugins/tohur/bookings
   - composer install
   - npm install
 

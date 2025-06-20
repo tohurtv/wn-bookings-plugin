@@ -6,18 +6,18 @@ layout = "default"
     <br />
     спасибо за вашу бронь. Ниже указаны введённые Вами данные:<br />
     <br />
-    Дата и время: {{ reservation.date | date("d.m.Y H:i") }}<br />
+    Дата и время: {{ booking.date | date("d.m.Y H:i") }}<br />
     <br />
-    Адрес: {{ reservation.street }}<br />
-    Имя: {{ reservation.name }} {{ reservation.lastname }}<br />
-    Email: {{ reservation.email }}<br />
-    Телефон: {{ reservation.phone }}<br />
+    Адрес: {{ booking.street }}<br />
+    Имя: {{ booking.name }} {{ booking.lastname }}<br />
+    Email: {{ booking.email }}<br />
+    Телефон: {{ booking.phone }}<br />
     <br />
-    Комментарий: {{ reservation.message }}<br />
+    Комментарий: {{ booking.message }}<br />
     <br />
-    Мы получили Ваше бронирование {{ reservation.created_at | date("d.m.Y H:i") }} и пришлём Вам подтверждение как можно скорее.<br />
+    Мы получили Ваше бронирование {{ booking.created_at | date("d.m.Y H:i") }} и пришлём Вам подтверждение как можно скорее.<br />
     <br />
-    {% if reservationsCount == 1 %}
+    {% if bookingsCount == 1 %}
     Мы надеемся, что вам понравится у нас!
     <br />
     {% endif %}

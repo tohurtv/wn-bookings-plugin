@@ -6,18 +6,18 @@ layout = "default"
     <br />
     merci pour votre réservation. Ci-dessous, vous trouverez le récapitulatif de la réservation :<br />
     <br />
-    Date et heure : {{ reservation.date | date("d.m.Y H:i") }}<br />
+    Date et heure : {{ booking.date | date("d.m.Y H:i") }}<br />
     <br />
-    Nom : {{ reservation.name }} {{ reservation.lastname }}<br />
-    Adresse : {{ reservation.street }}<br />
-    Email : {{ reservation.email }}<br />
-    Téléphone : {{ reservation.phone }}<br />
+    Nom : {{ booking.name }} {{ booking.lastname }}<br />
+    Adresse : {{ booking.street }}<br />
+    Email : {{ booking.email }}<br />
+    Téléphone : {{ booking.phone }}<br />
     <br />
-    Vorte message : {{ reservation.message }}<br />
+    Vorte message : {{ booking.message }}<br />
     <br />
-    Nous acceptons votre réservation pour le {{ reservation.created_at | date("d.m.Y H:i") }} et nous vous ferons parvenir une confirmation dans les plus brefs délais.<br />
+    Nous acceptons votre réservation pour le {{ booking.created_at | date("d.m.Y H:i") }} et nous vous ferons parvenir une confirmation dans les plus brefs délais.<br />
     <br />
-    {% if reservationsCount == 1 %}
+    {% if bookingsCount == 1 %}
     Nous espérons que vous apprécierez votre première expérience !
     <br />
     {% endif %}

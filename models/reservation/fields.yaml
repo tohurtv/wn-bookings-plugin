@@ -1,35 +1,35 @@
 fields:
     date:
-        label: vojtasvoboda.reservations::lang.reservation.date
+        label: tohur.bookings::lang.booking.date
         span: left
         type: datepicker
         mode: datetime
         required: true
         minDate: 2016-08-01
     status:
-        label: vojtasvoboda.reservations::lang.reservation.status
+        label: tohur.bookings::lang.booking.status
         nameFrom: name
         descriptionFrom: description
         span: right
         type: relation
         required: true
     name:
-        label: vojtasvoboda.reservations::lang.reservation.name
+        label: tohur.bookings::lang.booking.name
         span: left
         type: text
     street:
-        label: vojtasvoboda.reservations::lang.reservation.street
+        label: tohur.bookings::lang.booking.street
         span: right
         type: text
     email:
-        label: vojtasvoboda.reservations::lang.reservation.email
+        label: tohur.bookings::lang.booking.email
         span: left
         type: text
     phone:
-        label: vojtasvoboda.reservations::lang.reservation.phone
+        label: tohur.bookings::lang.booking.phone
         span: right
         type: text
     message:
-        label: vojtasvoboda.reservations::lang.reservation.message
+        label: tohur.bookings::lang.booking.message
         type: text
         span: full

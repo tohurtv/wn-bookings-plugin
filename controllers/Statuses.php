@@ -1,9 +1,9 @@
-<?php namespace VojtaSvoboda\Reservations\Controllers;
+<?php namespace Tohur\Bookings\Controllers;
 
 use Backend\Classes\Controller;
 use BackendMenu;
 use Flash;
-use VojtaSvoboda\Reservations\Models\Status;
+use Tohur\Bookings\Models\Status;
 
 class Statuses extends Controller
 {
@@ -18,14 +18,14 @@ class Statuses extends Controller
     public $reorderConfig = 'config_reorder.yaml';
 
     public $requiredPermissions = [
-        'vojtasvoboda.reservations.statuses',
+        'tohur.bookings.statuses',
     ];
 
     public function __construct()
     {
         parent::__construct();
 
-        BackendMenu::setContext('VojtaSvoboda.Reservations', 'reservations', 'statuses');
+        BackendMenu::setContext('Tohur.Bookings', 'bookings', 'statuses');
     }
 
     /**

@@ -1,4 +1,4 @@
-<?php namespace VojtaSvoboda\ReservationsUnits\Updates;
+<?php namespace Tohur\BookingsUnits\Updates;
 
 use Schema;
 use October\Rain\Database\Schema\Blueprint;
@@ -8,10 +8,10 @@ class UpdateStatusesSortOrderColumn extends Migration
 {
     public function up()
     {
-        $type = Schema::getColumnType('vojtasvoboda_reservations_statuses', 'sort_order');
+        $type = Schema::getColumnType('tohur_bookings_statuses', 'sort_order');
 
         if ($type === 'boolean') {
-            Schema::table('vojtasvoboda_reservations_statuses', function (Blueprint $table) {
+            Schema::table('tohur_bookings_statuses', function (Blueprint $table) {
                 $table->smallInteger('sort_order')->change();
             });
         }

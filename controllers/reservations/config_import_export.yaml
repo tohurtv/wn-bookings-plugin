@@ -1,5 +1,5 @@
 export:
     title: Export
-    modelClass: VojtaSvoboda\Reservations\Models\ReservationExport
-    list: $/vojtasvoboda/reservations/models/reservationsexport/columns.yaml
-    form: $/vojtasvoboda/reservations/models/reservationsexport/fields.yaml
+    modelClass: Tohur\Bookings\Models\BookingExport
+    list: $/tohur/bookings/models/bookingsexport/columns.yaml
+    form: $/tohur/bookings/models/bookingsexport/fields.yaml

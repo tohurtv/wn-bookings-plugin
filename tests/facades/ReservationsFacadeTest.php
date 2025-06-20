@@ -1,145 +1,145 @@
-<?php namespace VojtaSvoboda\Reservations\Tests\Facades;
+<?php namespace Tohur\Bookings\Tests\Facades;
 
 use App;
 use Carbon\Carbon;
 use Config;
 use Illuminate\Support\Facades\Validator;
 use PluginTestCase;
-use VojtaSvoboda\Reservations\Facades\ReservationsFacade;
-use VojtaSvoboda\Reservations\Models\Settings;
-use VojtaSvoboda\Reservations\Validators\ReservationsValidators;
+use Tohur\Bookings\Facades\BookingsFacade;
+use Tohur\Bookings\Models\Settings;
+use Tohur\Bookings\Validators\BookingsValidators;
 
-class ReservationsFacadeTest extends PluginTestCase
+class BookingsFacadeTest extends PluginTestCase
 {
     public function setUp()
     {
         parent::setUp();
 
-        $this->app->bind('vojtasvoboda.reservations.facade', ReservationsFacade::class);
+        $this->app->bind('tohur.bookings.facade', BookingsFacade::class);
 
-        // registrate reservations validators
+        // registrate bookings validators
         Validator::resolver(function($translator, $data, $rules, $messages, $customAttributes) {
-            return new ReservationsValidators($translator, $data, $rules, $messages, $customAttributes);
+            return new BookingsValidators($translator, $data, $rules, $messages, $customAttributes);
         });
     }
 
     /**
      * Returns tested class.
      *
-     * @return ReservationsFacade
+     * @return BookingsFacade
      */
     public function getModel()
     {
-        return App::make(ReservationsFacade::class);
+        return App::make(BookingsFacade::class);
     }
 
-    public function testStoreEmptyReservation()
+    public function testStoreEmptyBooking()
     {
         $model = $this->getModel();
 
         $this->setExpectedException('October\Rain\Exception\ApplicationException');
-        $model->storeReservation([]);
+        $model->storeBooking([]);
     }
 
-    public function testStoreReservationWithoutTime()
+    public function testStoreBookingWithoutTime()
     {
         $model = $this->getModel();
 
         $this->setExpectedException('October\Rain\Exception\ApplicationException');
         $nextMonday = Carbon::parse('next monday')->format('d/m/Y');
-        $model->storeReservation([
+        $model->storeBooking([
             'date' => $nextMonday,
         ]);
     }
 
-    public function testStoreReservationDaysOff()
+    public function testStoreBookingDaysOff()
     {
         $model = $this->getModel();
         $default = Settings::get('work_days', ['monday', 'tuesday', 'wednesday', 'thursday', 'friday']);
         Settings::set('work_days', []);
 
-        $data = $this->getTestingReservationData();
+        $data = $this->getTestingBookingData();
         foreach (['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'] as $dayOfWeek) {
             $exceptionTest = null;
             try {
                 $data['date'] = Carbon::parse('next '.$dayOfWeek)->format('d/m/Y');
-                $model->storeReservation($data);
+                $model->storeBooking($data);
             } catch (\Exception $exception) {
                 $exceptionTest = $exception;
             }
             $this->assertEquals('October\Rain\Exception\ApplicationException', get_class($exceptionTest));
-            $this->assertEquals('vojtasvoboda.reservations::lang.errors.days_off', $exceptionTest->getMessage());
+            $this->assertEquals('tohur.bookings::lang.errors.days_off', $exceptionTest->getMessage());
         }
 
         Settings::set('work_days', $default);
     }
 
-    public function testStoreReservationWorkingDays()
+    public function testStoreBookingWorkingDays()
     {
-        $default = Config::get('vojtasvoboda.reservations::config.protection_time', '-30 seconds');
-        Config::set('vojtasvoboda.reservations::config.protection_time', '0 seconds');
+        $default = Config::get('tohur.bookings::config.protection_time', '-30 seconds');
+        Config::set('tohur.bookings::config.protection_time', '0 seconds');
         $model = $this->getModel();
         Settings::set('work_days', ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']);
 
-        $data = $this->getTestingReservationData();
+        $data = $this->getTestingBookingData();
         foreach (['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'] as $dayOfWeek) {
             $data['date'] = Carbon::parse('next '.$dayOfWeek)->format('d/m/Y');
-            $model->storeReservation($data);
+            $model->storeBooking($data);
         }
 
-        Config::set('vojtasvoboda.reservations::config.protection_time', $default);
+        Config::set('tohur.bookings::config.protection_time', $default);
     }
 
-    public function testStoreReservationOutOfHours()
+    public function testStoreBookingOutOfHours()
     {
         $model = $this->getModel();
 
-        $data = $this->getTestingReservationData();
+        $data = $this->getTestingBookingData();
         $data['time'] = '19:00';
 
         $this->setExpectedException('October\Rain\Exception\ApplicationException');
-        $model->storeReservation($data);
+        $model->storeBooking($data);
     }
 
-    public function testStoreReservationInThePast()
+    public function testStoreBookingInThePast()
     {
         $model = $this->getModel();
 
-        $data = $this->getTestingReservationData();
+        $data = $this->getTestingBookingData();
         $data['date'] = Carbon::parse("last monday - 7 days")->format('d/m/Y');
 
         $this->setExpectedException('October\Rain\Exception\ApplicationException');
-        $model->storeReservation($data);
+        $model->storeBooking($data);
     }
 
-    public function testStoreReservation()
+    public function testStoreBooking()
     {
         $model = $this->getModel();
-        $reservation = $model->storeReservation($this->getTestingReservationData());
+        $booking = $model->storeBooking($this->getTestingBookingData());
 
         // check status
-        $defaultStatusIdent = Config::get('vojtasvoboda.reservations::config.statuses.received', 'received');
-        $this->assertEquals($defaultStatusIdent, $reservation->status->ident);
+        $defaultStatusIdent = Config::get('tohur.bookings::config.statuses.received', 'received');
+        $this->assertEquals($defaultStatusIdent, $booking->status->ident);
 
         // check locale
         $locale = App::getLocale();
-        $this->assertEquals($locale, $reservation->locale);
+        $this->assertEquals($locale, $booking->locale);
 
         // check date and time
-        $testingData = $this->getTestingReservationData();
+        $testingData = $this->getTestingBookingData();
         $inputDate = $testingData['date'] . ' ' . $testingData['time'];
         $dateTime = Carbon::createFromFormat('d/m/Y H:i', $inputDate);
-        $this->assertEquals($dateTime, $reservation->date);
+        $this->assertEquals($dateTime, $booking->date);
     }
 
-    public function testDoubleStoreReservationUnder30Seconds()
+    public function testDoubleStoreBookingUnder30Seconds()
     {
         $model = $this->getModel();
-        $testingData = $this->getTestingReservationData();
-        $model->storeReservation($testingData);
+        $testingData = $this->getTestingBookingData();
+        $model->storeBooking($testingData);
 
         $this->setExpectedException('October\Rain\Exception\ApplicationException');
-        $model->storeReservation($testingData);
+        $model->storeBooking($testingData);
     }
 
     public function testTransformDateTime()
@@ -157,17 +157,17 @@ class ReservationsFacadeTest extends PluginTestCase
         $this->assertEquals($nextMonday->format('Y-m-d').' 15:45:00', $date->format('Y-m-d H:i:s'));
     }
 
-    public function testGetReservationsCountByMail()
+    public function testGetBookingsCountByMail()
     {
         $model = $this->getModel();
 
-        // create one reservation with test@test.cz email
-        $model->storeReservation($this->getTestingReservationData());
+        // create one booking with test@test.cz email
+        $model->storeBooking($this->getTestingBookingData());
 
-        $count = $model->getReservationsCountByMail('vojtasvoboda.cz@gmail.com');
+        $count = $model->getBookingsCountByMail('tohur.cz@gmail.com');
         $this->assertEquals(0, $count);
 
-        $count = $model->getReservationsCountByMail('test@test.cz');
+        $count = $model->getBookingsCountByMail('test@test.cz');
         $this->assertEquals(1, $count);
     }
 
@@ -178,20 +178,20 @@ class ReservationsFacadeTest extends PluginTestCase
         // enable Returning Customers function
         Settings::set('returning_mark', 1);
 
-        // is returning without any reservation?
+        // is returning without any booking?
         $isReturning = $model->isUserReturning('test@test.cz');
-        $this->assertEquals(false, $isReturning, 'There is no reservation, so customer cant be returning.');
+        $this->assertEquals(false, $isReturning, 'There is no booking, so customer cant be returning.');
 
-        // create one reservation with test@test.cz email
-        $model->storeReservation($this->getTestingReservationData());
+        // create one booking with test@test.cz email
+        $model->storeBooking($this->getTestingBookingData());
 
-        // is returning without any reservation?
-        $isReturning = $model->isUserReturning('vojtasvoboda.cz@gmail.com');
-        $this->assertEquals(false, $isReturning, 'Email vojtasvoboda.cz@gmail.com does not has any reservation, so it should not be marked as returning customer.');
+        // is returning without any booking?
+        $isReturning = $model->isUserReturning('tohur.cz@gmail.com');
+        $this->assertEquals(false, $isReturning, 'Email tohur.cz@gmail.com does not has any booking, so it should not be marked as returning customer.');
 
-        // is returning with one reservation?
+        // is returning with one booking?
         $isReturning = $model->isUserReturning('test@test.cz');
-        $this->assertEquals(true, $isReturning, 'Email test@test.cz has one reservation, so it should be marked as returning customer.');
+        $this->assertEquals(true, $isReturning, 'Email test@test.cz has one booking, so it should be marked as returning customer.');
     }
 
     public function testIsCreatedWhileAgo()
@@ -201,14 +201,14 @@ class ReservationsFacadeTest extends PluginTestCase
 
         $this->assertFalse($exists);
 
-        // create fake reservation
-        $model->storeReservation($this->getTestingReservationData());
+        // create fake booking
+        $model->storeBooking($this->getTestingBookingData());
         $exists = $model->isCreatedWhileAgo();
 
         $this->assertTrue($exists);
     }
 
-    private function getTestingReservationData()
+    private function getTestingBookingData()
     {
         $nextMonday = Carbon::parse('next monday')->format('d/m/Y');
 

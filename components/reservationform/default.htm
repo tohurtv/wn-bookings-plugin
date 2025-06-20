@@ -12,7 +12,7 @@
     var booked = JSON.parse('{{ dates | raw }}');
     var dateFormat = '{{ settings.formats_date }}';
     var timeFormat = '{{ settings.formats_time }}';
-    var timeInterval = {{ settings.reservation_interval }};
+    var timeInterval = {{ settings.booking_interval }};
     var firstDay = {{ settings.first_weekday }};
     var disableDays = "{{ settings.work_days|join(',') }}";
     var startWork = '{{ settings.work_time_from }}';
@@ -20,7 +20,7 @@
 </script>
 
 <form
-    class="reservationform form"
+    class="bookingform form"
     method="post"
     data-request="{{ __SELF__ }}::onSubmit"
     data-request-update="'{{ __SELF__ }}::success': '#result'"
@@ -28,35 +28,35 @@
     id="{{__SELF__}}"{% if sent %} class="sent"{% endif %}>
 
     <div class="form-group">
-        <label for="date">{{ 'vojtasvoboda.reservations::lang.reservation.date'|trans }}</label>
+        <label for="date">{{ 'tohur.bookings::lang.booking.date'|trans }}</label>
         <input id="date" name="date" class="form-control datepicker" type="text" value="{{ post.date }}" />
     </div>
     <div class="form-group">
-        <label for="time">{{ 'vojtasvoboda.reservations::lang.reservation.time'|trans }}</label>
+        <label for="time">{{ 'tohur.bookings::lang.booking.time'|trans }}</label>
         <input id="time" name="time" class="form-control" type="text" value="{{ post.time }}" />
     </div>
     <div class="form-group">
-        <label for="email">{{ 'vojtasvoboda.reservations::lang.reservation.email'|trans }}</label>
-        <input id="email" name="email" class="form-control" type="text" placeholder="{{ 'vojtasvoboda.reservations::lang.reservation.email'|trans }}" value="{{ post.email }}" />
+        <label for="email">{{ 'tohur.bookings::lang.booking.email'|trans }}</label>
+        <input id="email" name="email" class="form-control" type="text" placeholder="{{ 'tohur.bookings::lang.booking.email'|trans }}" value="{{ post.email }}" />
     </div>
     <div class="form-group">
-        <label for="name">{{ 'vojtasvoboda.reservations::lang.reservation.name'|trans }}</label>
-        <input id="name" name="name" class="form-control" type="text" placeholder="{{ 'vojtasvoboda.reservations::lang.reservation.name'|trans }}" value="{{ post.name }}" />
+        <label for="name">{{ 'tohur.bookings::lang.booking.name'|trans }}</label>
+        <input id="name" name="name" class="form-control" type="text" placeholder="{{ 'tohur.bookings::lang.booking.name'|trans }}" value="{{ post.name }}" />
     </div>
     <div class="form-group">
-        <label for="street">{{ 'vojtasvoboda.reservations::lang.reservation.street'|trans }}</label>
-        <input id="street" name="street" class="form-control" type="text" placeholder="{{ 'vojtasvoboda.reservations::lang.reservation.street'|trans }}" value="{{ post.street }}" />
+        <label for="street">{{ 'tohur.bookings::lang.booking.street'|trans }}</label>
+        <input id="street" name="street" class="form-control" type="text" placeholder="{{ 'tohur.bookings::lang.booking.street'|trans }}" value="{{ post.street }}" />
     </div>
     <div class="form-group">
-        <label for="phone">{{ 'vojtasvoboda.reservations::lang.reservation.phone'|trans }}</label>
-        <input id="phone" name="phone" class="form-control" type="text" placeholder="{{ 'vojtasvoboda.reservations::lang.reservation.phone'|trans }}" value="{{ post.phone }}" />
+        <label for="phone">{{ 'tohur.bookings::lang.booking.phone'|trans }}</label>
+        <input id="phone" name="phone" class="form-control" type="text" placeholder="{{ 'tohur.bookings::lang.booking.phone'|trans }}" value="{{ post.phone }}" />
     </div>
     <div class="form-group">
-        <label for="message">{{ 'vojtasvoboda.reservations::lang.reservation.message'|trans }}</label>
-        <textarea id="message" name="message" class="form-control" placeholder="{{ 'vojtasvoboda.reservations::lang.reservation.message'|trans }}">{{ post.message }}</textarea>
+        <label for="message">{{ 'tohur.bookings::lang.booking.message'|trans }}</label>
+        <textarea id="message" name="message" class="form-control" placeholder="{{ 'tohur.bookings::lang.booking.message'|trans }}">{{ post.message }}</textarea>
     </div>
 
     {{ form_token() }}
-    <button type="submit" name="{{ __SELF__ }}-submit" class="btn btn-success" value="1" id="submit">{{ 'vojtasvoboda.reservations::lang.reservation.submit'|trans }}</button>
+    <button type="submit" name="{{ __SELF__ }}-submit" class="btn btn-success" value="1" id="submit">{{ 'tohur.bookings::lang.booking.submit'|trans }}</button>
 
 </form>

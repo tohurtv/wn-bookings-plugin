@@ -1,15 +1,15 @@
 plugin:
-    name: 'vojtasvoboda.reservations::lang.plugin.name'
-    description: 'vojtasvoboda.reservations::lang.plugin.description'
+    name: 'tohur.bookings::lang.plugin.name'
+    description: 'tohur.bookings::lang.plugin.description'
     author: 'Vojta Svoboda'
     icon: icon-calendar-o
 permissions:
-    vojtasvoboda.reservations.reservations:
-        tab: vojtasvoboda.reservations::lang.permission.tab_label
-        label: vojtasvoboda.reservations::lang.permission.reservations
-    vojtasvoboda.reservations.statuses:
-        tab: vojtasvoboda.reservations::lang.permission.tab_label
-        label: vojtasvoboda.reservations::lang.permission.statuses
-    vojtasvoboda.reservations.export:
-        tab: vojtasvoboda.reservations::lang.permission.tab_label
-        label: vojtasvoboda.reservations::lang.permission.export
+    tohur.bookings.bookings:
+        tab: tohur.bookings::lang.permission.tab_label
+        label: tohur.bookings::lang.permission.bookings
+    tohur.bookings.statuses:
+        tab: tohur.bookings::lang.permission.tab_label
+        label: tohur.bookings::lang.permission.statuses
+    tohur.bookings.export:
+        tab: tohur.bookings::lang.permission.tab_label
+        label: tohur.bookings::lang.permission.export

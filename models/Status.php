@@ -1,4 +1,4 @@
-<?php namespace VojtaSvoboda\Reservations\Models;
+<?php namespace Tohur\Bookings\Models;
 
 use Model;
 use October\Rain\Database\Traits\SoftDelete as SoftDeletingTrait;
@@ -8,7 +8,7 @@ use October\Rain\Database\Traits\Validation as ValidationTrait;
 /**
  * Status class.
  *
- * @package VojtaSvoboda\Reservations\Models
+ * @package Tohur\Bookings\Models
  */
 class Status extends Model
 {
@@ -19,12 +19,12 @@ class Status extends Model
     use ValidationTrait;
 
     /** @var string $table The database table used by the model */
-    public $table = 'vojtasvoboda_reservations_statuses';
+    public $table = 'tohur_bookings_statuses';
 
     /** @var array Rules */
     public $rules = [
         'name' => 'required|max:255',
-        'ident' => 'required|unique:vojtasvoboda_reservations_statuses',
+        'ident' => 'required|unique:tohur_bookings_statuses',
         'color' => 'max:7',
         'enabled' => 'boolean',
     ];
@@ -34,7 +34,7 @@ class Status extends Model
 
     /** @var array Relations */
     public $belongsTo = [
-        'reservations' => ['VojtaSvoboda\Reservations\Models\Reservation'],
+        'bookings' => ['Tohur\Bookings\Models\Booking'],
     ];
 
     /**

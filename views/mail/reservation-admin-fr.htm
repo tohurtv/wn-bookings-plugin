@@ -4,16 +4,16 @@ layout = "default"
 <p>
     Nouvelle réservation :<br />
     <br />
-    Date et heure : {{ reservation.date | date("d.m.Y H:i") }}<br />
+    Date et heure : {{ booking.date | date("d.m.Y H:i") }}<br />
     <br />
-    Adresse : {{ reservation.street }}<br />
-    Nom : {{ reservation.name }} {{ reservation.lastname }}<br />
-    Email : {{ reservation.email }}<br />
-    Téléphone : {{ reservation.phone }}<br />
+    Adresse : {{ booking.street }}<br />
+    Nom : {{ booking.name }} {{ booking.lastname }}<br />
+    Email : {{ booking.email }}<br />
+    Téléphone : {{ booking.phone }}<br />
     <br />
-    Message : {{ reservation.message }}<br />
+    Message : {{ booking.message }}<br />
     <br />
-    Créer le : {{ reservation.created_at | date("d.m.Y H:i") }}<br />
+    Créer le : {{ booking.created_at | date("d.m.Y H:i") }}<br />
     <br />
-    Nombre de réservations avec cet email : {{ reservationsCount }}<br />
+    Nombre de réservations avec cet email : {{ bookingsCount }}<br />
 </p>

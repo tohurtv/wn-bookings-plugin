@@ -4,16 +4,16 @@ layout = "default"
 <p>
     Новоя бронь в системе:<br />
     <br />
-    Дата и время: {{ reservation.date | date("d.m.Y H:i") }}<br />
+    Дата и время: {{ booking.date | date("d.m.Y H:i") }}<br />
     <br />
-    Адрес: {{ reservation.street }}<br />
-    Имя: {{ reservation.name }} {{ reservation.lastname }}<br />
-    Email: {{ reservation.email }}<br />
-    Телефон: {{ reservation.phone }}<br />
+    Адрес: {{ booking.street }}<br />
+    Имя: {{ booking.name }} {{ booking.lastname }}<br />
+    Email: {{ booking.email }}<br />
+    Телефон: {{ booking.phone }}<br />
     <br />
-    Комментарий: {{ reservation.message }}<br />
+    Комментарий: {{ booking.message }}<br />
     <br />
-    Создано: {{ reservation.created_at | date("d.m.Y H:i") }}<br />
+    Создано: {{ booking.created_at | date("d.m.Y H:i") }}<br />
     <br />
-    Количество резервирований по этому email: {{ reservationsCount }}<br />
+    Количество резервирований по этому email: {{ bookingsCount }}<br />
 </p>

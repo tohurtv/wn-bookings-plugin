@@ -1,20 +1,20 @@
-<?php namespace VojtaSvoboda\Reservations\Updates;
+<?php namespace Tohur\Bookings\Updates;
 
 use Schema;
 use October\Rain\Database\Schema\Blueprint;
 use October\Rain\Database\Updates\Migration;
 
-class CreateReservationsTable extends Migration
+class CreateBookingsTable extends Migration
 {
     public function up()
     {
-        Schema::create('vojtasvoboda_reservations_reservations', function(Blueprint $table)
+        Schema::create('tohur_bookings_bookings', function(Blueprint $table)
         {
             $table->engine = 'InnoDB';
             $table->increments('id');
 
             $table->integer('status_id')->unsigned()->nullable();
-            $table->foreign('status_id')->references('id')->on('vojtasvoboda_reservations_statuses');
+            $table->foreign('status_id')->references('id')->on('tohur_bookings_statuses');
 
             $table->datetime('date')->nullable();
 
@@ -44,10 +44,10 @@ class CreateReservationsTable extends Migration
 
     public function down()
     {
-        Schema::table('vojtasvoboda_reservations_reservations', function($table)
+        Schema::table('tohur_bookings_bookings', function($table)
         {
-            $table->dropForeign('vojtasvoboda_reservations_reservations_status_id_foreign');
+            $table->dropForeign('tohur_bookings_bookings_status_id_foreign');
         });
-        Schema::dropIfExists('vojtasvoboda_reservations_reservations');
+        Schema::dropIfExists('tohur_bookings_bookings');
     }
 }

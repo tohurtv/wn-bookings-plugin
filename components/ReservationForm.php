@@ -1,4 +1,4 @@
-<?php namespace VojtaSvoboda\Reservations\Components;
+<?php namespace Tohur\Bookings\Components;
 
 use App;
 use Cms\Classes\ComponentBase;
@@ -11,17 +11,17 @@ use October\Rain\Exception\ApplicationException;
 use October\Rain\Exception\ValidationException;
 use Redirect;
 use Session;
-use VojtaSvoboda\Reservations\Classes\Variables;
-use VojtaSvoboda\Reservations\Facades\ReservationsFacade;
+use Tohur\Bookings\Classes\Variables;
+use Tohur\Bookings\Facades\BookingsFacade;
 
 /**
- * Reservation Form component.
+ * Booking Form component.
  *
- * @package VojtaSvoboda\Reservations\Components
+ * @package Tohur\Bookings\Components
  */
-class ReservationForm extends ComponentBase
+class BookingForm extends ComponentBase
 {
-    const PATH_PICKADATE_COMPRESSED = '/plugins/vojtasvoboda/reservations/assets/vendor/pickadate/lib/compressed/';
+    const PATH_PICKADATE_COMPRESSED = '/plugins/tohur/bookings/assets/vendor/pickadate/lib/compressed/';
 
     protected $pickerLang = [
         'cs' => 'cs_CZ',
@@ -33,8 +33,8 @@ class ReservationForm extends ComponentBase
     public function componentDetails()
 	{
 		return [
-			'name' => 'vojtasvoboda.reservations::lang.reservationform.name',
-			'description' => 'vojtasvoboda.reservations::lang.reservationform.description',
+			'name' => 'tohur.bookings::lang.bookingform.name',
+			'description' => 'tohur.bookings::lang.bookingform.description',
 		];
 	}
 
@@ -45,11 +45,11 @@ class ReservationForm extends ComponentBase
     {
         // check CSRF token
         if (Session::token() !== Input::get('_token')) {
-            throw new ApplicationException(Lang::get('vojtasvoboda.reservations::lang.errors.session_expired'));
+            throw new ApplicationException(Lang::get('tohur.bookings::lang.errors.session_expired'));
         }
 
         $data = Input::all();
-        $this->getFacade()->storeReservation($data);
+        $this->getFacade()->storeBooking($data);
     }
 
     /**
@@ -64,13 +64,13 @@ class ReservationForm extends ComponentBase
 
             // check CSRF token
             if (Session::token() !== Input::get('_token')) {
-                $error = Lang::get('vojtasvoboda.reservations::lang.errors.session_expired');
+                $error = Lang::get('tohur.bookings::lang.errors.session_expired');
 
             } else {
                 try {
                     $data = Input::all();
-                    $facade->storeReservation($data);
-                    $msg = Lang::get('vojtasvoboda.reservations::lang.reservationform.success');
+                    $facade->storeBooking($data);
+                    $msg = Lang::get('tohur.bookings::lang.bookingform.success');
                     Flash::success($msg);
 
                     return Redirect::to($this->page->url . '#' . $this->alias, 303);
@@ -83,7 +83,7 @@ class ReservationForm extends ComponentBase
 
                 } catch(Exception $e) {
                     Log::error($e->getMessage());
-                    $error = Lang::get('vojtasvoboda.reservations::lang.errors.exception');
+                    $error = Lang::get('tohur.bookings::lang.errors.exception');
                 }
             }
 		}
@@ -120,7 +120,7 @@ class ReservationForm extends ComponentBase
         return [
             'formats_date' => Variables::getDateFormat(),
             'formats_time' => Variables::getTimeFormat(),
-            'reservation_interval' => Variables::getReservationInterval(),
+            'booking_interval' => Variables::getBookingInterval(),
             'first_weekday' => Variables::getFirstWeekday(),
             'work_time_from' => Variables::getWorkTimeFrom(),
             'work_time_to' => Variables::getWorkTimeTo(),
@@ -146,15 +146,15 @@ class ReservationForm extends ComponentBase
             $this->addJs(self::PATH_PICKADATE_COMPRESSED.'translations/'.$translation.'.js');
         }
 
-        $this->addJs('/plugins/vojtasvoboda/reservations/assets/js/convert.js');
-        $this->addJs('/plugins/vojtasvoboda/reservations/assets/js/reservationform.js');
+        $this->addJs('/plugins/tohur/bookings/assets/js/convert.js');
+        $this->addJs('/plugins/tohur/bookings/assets/js/bookingform.js');
     }
 
     /**
-     * @return ReservationsFacade
+     * @return BookingsFacade
      */
     protected function getFacade()
     {
-        return App::make(ReservationsFacade::class);
+        return App::make(BookingsFacade::class);
     }
 }

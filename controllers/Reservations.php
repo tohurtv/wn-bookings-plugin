@@ -1,15 +1,15 @@
-<?php namespace VojtaSvoboda\Reservations\Controllers;
+<?php namespace Tohur\Bookings\Controllers;
 
 use App;
 use Backend\Classes\Controller;
 use BackendMenu;
 use Flash;
 use Lang;
-use VojtaSvoboda\Reservations\Facades\ReservationsFacade;
-use VojtaSvoboda\Reservations\Models\Reservation;
-use VojtaSvoboda\Reservations\Models\Status;
+use Tohur\Bookings\Facades\BookingsFacade;
+use Tohur\Bookings\Models\Booking;
+use Tohur\Bookings\Models\Status;
 
-class Reservations extends Controller
+class Bookings extends Controller
 {
     public $implement = [
         'Backend\Behaviors\ListController',
@@ -25,15 +25,15 @@ class Reservations extends Controller
     private $stateNames;
 
     public $requiredPermissions = [
-        'vojtasvoboda.reservations.reservations',
+        'tohur.bookings.bookings',
     ];
 
     public function __construct()
     {
         parent::__construct();
 
-        $action = $this->action == 'export' ? 'export' : 'reservations';
-        BackendMenu::setContext('VojtaSvoboda.Reservations', 'reservations', $action);
+        $action = $this->action == 'export' ? 'export' : 'bookings';
+        BackendMenu::setContext('Tohur.Bookings', 'bookings', $action);
     }
 
     /**
@@ -41,14 +41,14 @@ class Reservations extends Controller
      */
     public function index()
     {
-        $this->addJs('/plugins/vojtasvoboda/reservations/assets/js/bulk-actions.js');
+        $this->addJs('/plugins/tohur/bookings/assets/js/bulk-actions.js');
         $this->asExtension('ListController')->index();
     }
 
     /**
-     * Override displaying reservation listing.
+     * Override displaying booking listing.
      *
-     * @param Reservation $record
+     * @param Booking $record
      * @param string $columnName
      *
      * @return string
@@ -83,7 +83,7 @@ class Reservations extends Controller
                 $this->getFacade()->bulkStateChange($checkedIds, $bulkAction);
             }
 
-            $msg = Lang::get('vojtasvoboda.reservations::lang.reservations.change_status_success');
+            $msg = Lang::get('tohur.bookings::lang.bookings.change_status_success');
             Flash::success($msg);
         }
 
@@ -105,11 +105,11 @@ class Reservations extends Controller
     /**
      * Get facade providing all plugin logic.
      *
-     * @return ReservationsFacade
+     * @return BookingsFacade
      */
     private function getFacade()
     {
-        return App::make(ReservationsFacade::class);
+        return App::make(BookingsFacade::class);
     }
 
     /**
