@@ -1,9 +1,9 @@
 <?php namespace Tohur\Bookings\Models;
 
 use Model;
-use Winter\Rain\Database\Traits\SoftDelete as SoftDeletingTrait;
-use Winter\Rain\Database\Traits\Sortable as SortableTrait;
-use Winter\Rain\Database\Traits\Validation as ValidationTrait;
+use Winter\Storm\Database\Traits\SoftDelete as SoftDeletingTrait;
+use Winter\Storm\Database\Traits\Sortable as SortableTrait;
+use Winter\Storm\Database\Traits\Validation as ValidationTrait;
 
 /**
  * Status class.

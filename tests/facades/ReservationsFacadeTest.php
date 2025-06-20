@@ -37,7 +37,7 @@ class BookingsFacadeTest extends PluginTestCase
     {
         $model = $this->getModel();
 
-        $this->setExpectedException('Winter\Rain\Exception\ApplicationException');
+        $this->setExpectedException('Winter\Storm\Exception\ApplicationException');
         $model->storeBooking([]);
     }
 
@@ -45,7 +45,7 @@ class BookingsFacadeTest extends PluginTestCase
     {
         $model = $this->getModel();
 
-        $this->setExpectedException('Winter\Rain\Exception\ApplicationException');
+        $this->setExpectedException('Winter\Storm\Exception\ApplicationException');
         $nextMonday = Carbon::parse('next monday')->format('d/m/Y');
         $model->storeBooking([
             'date' => $nextMonday,
@@ -67,7 +67,7 @@ class BookingsFacadeTest extends PluginTestCase
             } catch (\Exception $exception) {
                 $exceptionTest = $exception;
             }
-            $this->assertEquals('Winter\Rain\Exception\ApplicationException', get_class($exceptionTest));
+            $this->assertEquals('Winter\Storm\Exception\ApplicationException', get_class($exceptionTest));
             $this->assertEquals('tohur.bookings::lang.errors.days_off', $exceptionTest->getMessage());
         }
 
@@ -97,7 +97,7 @@ class BookingsFacadeTest extends PluginTestCase
         $data = $this->getTestingBookingData();
         $data['time'] = '19:00';
 
-        $this->setExpectedException('Winter\Rain\Exception\ApplicationException');
+        $this->setExpectedException('Winter\Storm\Exception\ApplicationException');
         $model->storeBooking($data);
     }
 
@@ -108,7 +108,7 @@ class BookingsFacadeTest extends PluginTestCase
         $data = $this->getTestingBookingData();
         $data['date'] = Carbon::parse("last monday - 7 days")->format('d/m/Y');
 
-        $this->setExpectedException('Winter\Rain\Exception\ApplicationException');
+        $this->setExpectedException('Winter\Storm\Exception\ApplicationException');
         $model->storeBooking($data);
     }
 
@@ -138,7 +138,7 @@ class BookingsFacadeTest extends PluginTestCase
         $testingData = $this->getTestingBookingData();
         $model->storeBooking($testingData);
 
-        $this->setExpectedException('Winter\Rain\Exception\ApplicationException');
+        $this->setExpectedException('Winter\Storm\Exception\ApplicationException');
         $model->storeBooking($testingData);
     }
 

@@ -1,8 +1,8 @@
 <?php namespace Tohur\Bookings\Updates;
 
 use Schema;
-use Winter\Rain\Database\Schema\Blueprint;
-use Winter\Rain\Database\Updates\Migration;
+use Winter\Storm\Database\Schema\Blueprint;
+use Winter\Storm\Database\Updates\Migration;
 
 class CreateBookingsTable extends Migration
 {
