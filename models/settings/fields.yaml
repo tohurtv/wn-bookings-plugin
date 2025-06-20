@@ -53,7 +53,7 @@ tabs:
             label: tohur.bookings::lang.settings.work_time_to.label
             comment: tohur.bookings::lang.settings.work_time_to.comment
             type: partial
-            path: $/tohur/bookings/models/settings/_timepicker.htm
+            path: $/tohur/bookings/models/settings/fields/_timepicker.htm
             default: '18:00'
             span: right
             attributes:
