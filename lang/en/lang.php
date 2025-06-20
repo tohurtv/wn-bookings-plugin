@@ -174,5 +174,9 @@ return [
             'saturday'  => 'Saturday',
             'sunday'    => 'Sunday',
         ],
+        'working_schedule' => [
+            'label'   => 'Working Schedule',
+            'comment' => 'Define daily working hours. You can add multiple time blocks per day to account for breaks, lunches, etc.',
+        ],
     ],
 ];
