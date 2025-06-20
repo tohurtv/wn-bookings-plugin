@@ -68,11 +68,11 @@ tabs:
                             fields:
                                 from:
                                     label: From
-                                    type: timepicker
+                                    type: datepicker
                                     span: left
                                 to:
                                     label: To
-                                    type: timepicker
+                                    type: datepicker
                                     span: right
 
         first_weekday:
