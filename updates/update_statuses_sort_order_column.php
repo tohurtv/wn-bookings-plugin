@@ -1,8 +1,8 @@
 <?php namespace Tohur\BookingsUnits\Updates;
 
 use Schema;
-use October\Rain\Database\Schema\Blueprint;
-use October\Rain\Database\Updates\Migration;
+use Winter\Rain\Database\Schema\Blueprint;
+use Winter\Rain\Database\Updates\Migration;
 
 class UpdateStatusesSortOrderColumn extends Migration
 {

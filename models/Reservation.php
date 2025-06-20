@@ -4,9 +4,9 @@ use App;
 use Carbon\Carbon;
 use Config;
 use Model;
-use October\Rain\Database\Traits\SoftDelete as SoftDeleteTrait;
-use October\Rain\Database\Traits\Validation as ValidationTrait;
-use October\Rain\Exception\ApplicationException;
+use Winter\Rain\Database\Traits\SoftDelete as SoftDeleteTrait;
+use Winter\Rain\Database\Traits\Validation as ValidationTrait;
+use Winter\Rain\Exception\ApplicationException;
 use Request;
 use Str;
 

@@ -12,10 +12,10 @@ matrix:
 sudo: false
 
 before_script:
-  - git clone https://github.com/octobercms/october.git
-  - mkdir -p ./october/plugins/tohur/bookings
-  - mv !(october) october/plugins/tohur/bookings
-  - cd october
+  - git clone https://github.com/wintercms/winter.git
+  - mkdir -p ./winter/plugins/tohur/bookings
+  - mv !(winter) winter/plugins/tohur/bookings
+  - cd winter
   - composer self-update
   - travis_retry composer install --no-interaction --prefer-source
   - cd plugins/tohur/bookings

@@ -4,7 +4,7 @@ use Backend\Classes\ReportWidgetBase;
 use Carbon\Carbon;
 use DB;
 use Exception;
-use October\Rain\Exception\ApplicationException;
+use Winter\Rain\Exception\ApplicationException;
 use Tohur\Bookings\Models\Booking;
 
 /**

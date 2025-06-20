@@ -5,7 +5,7 @@ use Carbon\Carbon;
 use Config;
 use Illuminate\Support\Facades\Validator;
 use PluginTestCase;
-use October\Rain\Database\ModelException;
+use Winter\Rain\Database\ModelException;
 use Tohur\Bookings\Facades\BookingsFacade;
 use Tohur\Bookings\Models\Booking;
 use Tohur\Bookings\Models\Status;

@@ -5,10 +5,10 @@ build:
     dependencies:
         override:
             - find . -delete
-            - git clone https://github.com/octobercms/october.git .
+            - git clone https://github.com/wintercms/winter.git .
             - composer install --no-interaction --prefer-source
             - mkdir -p ./plugins/tohur/bookings
-            - cd plugins/tohur/bookings && git clone https://github.com/tohur/oc-bookings-plugin.git .
+            - cd plugins/tohur/bookings && git clone https://github.com/tohur/wn-bookings-plugin.git .
             - composer install
     tests:
         override:

@@ -1,8 +1,8 @@
 <?php namespace Tohur\Bookings\Models;
 
 use Config;
-use October\Rain\Database\Model;
-use October\Rain\Database\Traits\Validation as ValidationTrait;
+use Winter\Rain\Database\Model;
+use Winter\Rain\Database\Traits\Validation as ValidationTrait;
 
 class Settings extends Model
 {

@@ -1,5 +1,5 @@
 {
-  "name": "oc-bookings-plugin",
+  "name": "wn-bookings-plugin",
   "version": "1.1.0",
   "description": "Quick bookings plugin.",
   "main": "assets/js/bookingform.js",
@@ -17,12 +17,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tohur/oc-bookings-plugin.git"
+    "url": "git+https://github.com/tohur/wn-bookings-plugin.git"
   },
   "author": "Vojta Svoboda",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/tohur/oc-bookings-plugin/issues"
+    "url": "https://github.com/tohur/wn-bookings-plugin/issues"
   },
-  "homepage": "https://github.com/tohur/oc-bookings-plugin#readme"
+  "homepage": "https://github.com/tohur/wn-bookings-plugin#readme"
 }

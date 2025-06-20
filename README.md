@@ -1,11 +1,11 @@
-# Bookings plugin for OctoberCMS
+# Bookings plugin for WinterCMS
 
-[![Build Status](https://travis-ci.org/tohur/oc-bookings-plugin.svg?branch=master)](https://travis-ci.org/tohur/oc-bookings-plugin)
-[![Codacy](https://img.shields.io/codacy/d46420185c9046db8208ab16d358a0d3.svg)](https://www.codacy.com/app/tohur/oc-bookings-plugin)
-[![Code Coverage](https://scrutinizer-ci.com/g/tohur/oc-bookings-plugin/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/tohur/oc-bookings-plugin/?branch=master)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/tohur/oc-bookings-plugin/blob/master/LICENSE)
+[![Build Status](https://travis-ci.org/tohurtv/wn-bookings-plugin.svg?branch=master)](https://travis-ci.org/tohurtv/wn-bookings-plugin)
+[![Codacy](https://img.shields.io/codacy/d46420185c9046db8208ab16d358a0d3.svg)](https://www.codacy.com/app/tohurtv/wn-bookings-plugin)
+[![Code Coverage](https://scrutinizer-ci.com/g/tohurtv/wn-bookings-plugin/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/tohurtv/wn-bookings-plugin/?branch=master)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/tohurtv/wn-bookings-plugin/blob/master/LICENSE)
 
-Provide booking form with bookings management. You should also check related plugin: [backend calendar](http://octobercms.com/plugin/tohur-bookingscalendar).
+Provide booking form with bookings management. You should also check related plugin: [backend calendar](http://wintercms.com/tohurtv/tohur-bookingscalendar).
 
 Key features:
 
@@ -22,12 +22,10 @@ Technical features:
 - booking form has **AJAX sending** and also non-JS fallback
 - overloadable **data seeding** for statuses
 
-No other plugin dependencies. Tested with the latest stable OctoberCMS build 420 (with Laravel 5.5).
+No other plugin dependencies. Tested with the latest stable WinterCMS build 420 (with Laravel 5.5).
 
 ## Installation
 
-1. Install plugin [Tohur.Bookings](http://octobercms.com/plugin/tohur-bookings)
-2. Insert booking form component to your page. Be sure you have jQuery loaded!
 
 ## Returning Customers
 
@@ -46,9 +44,6 @@ By default, plugin sends confirmation email to customer. But you can also turn o
 - turn the admin confirmation by switch
 - system will send special template 'booking-admin', so feel free edit content of template at **Backend > Settings > Mail > Mail templates**
 
-## Backend calendar
-
-Looking for backend calendar to see your bookings visually? Take a look at [backend calendar](http://octobercms.com/plugin/tohur-bookingscalendar) plugin.
 
 ## Public facade
 
@@ -129,7 +124,7 @@ Receiving "Class 'PluginTestCase' not found" error? Just type `composer dumpauto
 - [ ] Load only future bookings to the datepicker to show reserved slots.
 - [ ] Bookings reminder by email/SMS, before booking
 - [ ] Own function (callback) for generating next booking number.
-- [ ] Sends confirmation email when admin [confirms the booking](https://github.com/tohur/oc-bookings-plugin/issues/2).
+- [ ] Sends confirmation email when admin [confirms the booking](https://github.com/tohurtv/wn-bookings-plugin/issues/2).
 
 **Feel free to send pull request!**
 
@@ -139,4 +134,4 @@ Please send Pull Request to the master branch. Please add also unit tests and ma
 
 ## License
 
-Bookings plugin is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT) same as OctoberCMS platform.
+Bookings plugin is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT) same as WinterCMS platform.
