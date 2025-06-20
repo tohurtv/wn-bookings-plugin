@@ -1,17 +1,17 @@
 {
-    "name": "vojtasvoboda/reservations-plugin",
-    "type": "october-plugin",
+    "name": "tohur/bookings-plugin",
+    "type": "winter-plugin",
     "extra": {
-        "installer-name": "reservations"
+        "installer-name": "bookings"
     },
-    "description": "Reservations plugin for OctoberCMS",
-    "homepage": "https://github.com/vojtasvoboda/oc-reservations-plugin",
-    "keywords": ["october", "plugin", "reservations"],
+    "description": "Bookings plugin for WinterCMS",
+    "homepage": "https://github.com/tohurtv/wn-bookings-plugin",
+    "keywords": ["winter", "plugin", "bookings"],
     "license": "MIT",
     "authors": [
         {
-            "name": "Vojta Svoboda",
-            "email": "vojtasvoboda.cz@gmail.com",
+            "name": "Joshua Webb",
+            "email": "tohur@tohur.xyz",
             "role": "Developer"
         }
     ],
