@@ -14,6 +14,9 @@ class Settings extends Model
 
     public $settingsFields = 'fields.yaml';
 
+    public $rules = [
+        'returning_mark' => 'numeric'
+    ];
     public $jsonable = [
     'working_schedule',
     'working_schedule.*.time_blocks'
