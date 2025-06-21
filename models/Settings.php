@@ -17,7 +17,10 @@ class Settings extends Model
     public $rules = [
         'returning_mark' => 'numeric'
     ];
-    public $jsonable = ['working_schedule'];
+    public $jsonable = [
+    'working_schedule',
+    'working_schedule.*.time_blocks'
+];
 
 public static function getWorkingHoursByDay(string $day): array
 {
