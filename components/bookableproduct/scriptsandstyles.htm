@@ -48,9 +48,13 @@
         return date;
     }
 
-    function formatTime(date) {
-        return date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
-    }
+function formatTime(date) {
+    return date.toLocaleTimeString('en-US', {
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true
+    });
+}
 
     $(function() {
         // Determine which days to disable based on workingSchedule
