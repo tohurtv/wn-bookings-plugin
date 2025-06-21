@@ -75,38 +75,6 @@ function formatTime(date) {
             const dayName = getDayName(selectedDate);
             updateTimeSlots(dayName);
         });
-
-        function updateTimeSlots(dayName) {
-            const times = getTimesForDay(dayName);
-
-            const wrapper = document.getElementById('time-slot-wrapper');
-            const list = document.getElementById('available-times');
-            const bookBtn = document.getElementById('book-now');
-
-            list.innerHTML = '';
-
-            if (times.length === 0) {
-                wrapper.classList.add('d-none');
-                bookBtn.style.display = 'none';
-                return;
-            }
-
-            wrapper.classList.remove('d-none');
-
-            times.forEach(time => {
-                const btn = document.createElement('button');
-                btn.type = 'button';
-                btn.className = 'btn btn-outline-primary';
-                btn.innerText = time;
-                btn.onclick = () => {
-                    document.getElementById('booking_time').value = time;
-                    Array.from(list.children).forEach(c => c.classList.remove('active'));
-                    btn.classList.add('active');
-                    bookBtn.style.display = 'inline-block';
-                };
-                list.appendChild(btn);
-            });
-        }
     });
 </script>
 {% endput %}
