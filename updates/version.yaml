@@ -28,6 +28,6 @@
 1.1.10:
     - Update statuses sort order column from boolean to smallInt
     - update_statuses_sort_order_column.php
-1.0.11:
+1.1.11:
     - Add is_bookable column to mall_products
     - add_is_bookable_to_mall_products.php
