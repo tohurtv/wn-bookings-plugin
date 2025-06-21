@@ -174,9 +174,6 @@ return [
             'saturday'  => 'Saturday',
             'sunday'    => 'Sunday',
         ],
-        'tabs' => [
-            'working_days' => 'Working Days',
-        ],
         'working_schedule' => [
             'label' => 'Working Schedule',
             'prompt_add_day' => 'Add Working Day',
