@@ -37,7 +37,7 @@ class Plugin extends PluginBase
 
         $widget->addTabFields([
             'isbookable' => [
-                'label'   => 'Bookable',
+                'label'   => 'Is bookable',
                 'comment' => 'Indicates whether this product can be booked.',
                 'type'    => 'switch',
                 'tab'     => 'General',
