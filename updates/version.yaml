@@ -40,3 +40,6 @@
 1.1.14:
     - Add order_number column to tohur_bookings_bookings
     - add_order_number_to_bookings.php
+1.1.15:
+    - Add booking_data column to mall_cart_products and hook into the order process
+    - add_booking_data_to_mall_cart_products.php

@@ -79,6 +79,36 @@ class Plugin extends PluginBase
         ]);
     }
 });
+
+Event::listen('offline.mall.cart.productAdded', function ($product, $cartItem) {
+    $bookingTime = post('booking_time');
+
+    if ($bookingTime) {
+        $cartItem->booking_data = [
+            'booking_time' => $bookingTime,
+        ];
+        $cartItem->save();
+    }
+});
+
+Event::listen('offline.mall.order.created', function (\OFFLINE\Mall\Models\Order $order, $cart) {
+    foreach ($order->products as $orderProduct) {
+        $bookingData = $orderProduct->cart_product->booking_data ?? null;
+
+        if ($bookingData && isset($bookingData['booking_time'])) {
+            $product = $orderProduct->product;
+
+            $booking = new \Tohur\Bookings\Models\Booking();
+            $booking->product_id = $product->id;
+            $booking->date = $bookingData['booking_time'];
+            $booking->session_length = $product->session_length ?? 30; // fallback
+            $booking->status_id = 1; // Received
+            $booking->order_number = $order->order_number;
+            $booking->save();
+        }
+    }
+});
+
     }
 
     public function registerNavigation()
