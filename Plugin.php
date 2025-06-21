@@ -126,14 +126,6 @@ Event::listen('mall.order.afterCreate', function (Order $order, $cart) {
         if ($bookingData && isset($bookingData['booking_time'])) {
             $product = $orderProduct->product;
 
-            if (!$product || !is_scalar($product->id)) {
-                logger()->error('Invalid product or product ID', [
-                    'product' => $product,
-                    'order_product_id' => $orderProduct->id,
-                ]);
-                continue;
-            }
-
             $booking = new \Tohur\Bookings\Models\Booking();
             #$booking->product_id = $product->id;
             $booking->date = $bookingData['booking_time'];
