@@ -6,6 +6,7 @@ use System\Classes\PluginBase;
 use Tohur\Bookings\Facades\BookingsFacade;
 use Tohur\Bookings\Validators\BookingsValidators;
 use OFFLINE\Mall\Models\Product;
+use OFFLINE\Mall\Models\CartProduct;
 use Schema;
 use Event;
 
@@ -80,6 +81,11 @@ class Plugin extends PluginBase
     }
 });
 
+    CartProduct::extend(function ($model) {
+        // Ensure the property exists and is an array before modifying
+        $model->addJsonable('booking_data');
+    });
+    
 Event::listen('offline.mall.cart.productAdded', function ($product, $cartItem) {
     $bookingTime = post('booking_time');
 
