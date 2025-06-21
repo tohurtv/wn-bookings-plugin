@@ -100,11 +100,19 @@ Event::listen('mall.cart.product.added', function (\OFFLINE\Mall\Models\CartProd
 
 Event::listen('mall.order.beforeCreate', function (\OFFLINE\Mall\Models\Cart $cart) {
     foreach ($cart->products as $cartProduct) {
-        if (isset($cartProduct->booking_data['booking_time'])) {
-            $cartProduct->data['booking_data'] = $cartProduct->booking_data;
+        if (!empty($cartProduct->booking_data['booking_time'])) {
+            // Ensure data array exists
+            $data = $cartProduct->data ?? [];
+
+            // Add or overwrite booking_data key
+            $data['booking_data'] = $cartProduct->booking_data;
+
+            // Set back the data property so it is copied to order product
+            $cartProduct->data = $data;
         }
     }
 });
+
 
 Event::listen('mall.order.afterCreate', function (\OFFLINE\Mall\Models\Order $order, $cart) {
     foreach ($order->products as $orderProduct) {
