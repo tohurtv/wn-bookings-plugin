@@ -86,7 +86,15 @@ class Plugin extends PluginBase
             'tohur.bookings::mail.booking-admin-ru' => 'Booking confirmation for admin RU',
         ];
     }
-
+public function registerFormWidgets()
+{
+    return [
+        'Tohur\Bookings\FormWidgets\TimePicker' => [
+            'label' => 'Custom Time Picker',
+            'code' => 'tohur_bookings_timepicker',
+        ],
+    ];
+}
     public function registerSettings()
     {
         return [
