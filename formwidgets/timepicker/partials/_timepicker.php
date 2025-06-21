@@ -1,15 +1,14 @@
 <?php
 $parentIndex = $this->parentIndex ?? 0;
 $childIndex = $this->index ?? 0;
-$fieldName = $field->getName();
-$fieldId = $field->getId();
+$keyName = $field->fieldName; // NOT getName()
+$fieldId = $this->getId();
 $fieldValue = $field->value;
 $attributes = $field->attributes ?? [];
 
-$inputName = "working_schedule[{$parentIndex}][time_blocks][{$childIndex}][{$fieldName}]";
+$inputName = "working_schedule[{$parentIndex}][time_blocks][{$childIndex}][{$keyName}]";
 $inputId = "{$fieldId}_{$parentIndex}_{$childIndex}";
 ?>
-
 <input
     type="time"
     id="<?= e($inputId) ?>"
@@ -20,3 +19,4 @@ $inputId = "{$fieldId}_{$parentIndex}_{$childIndex}";
         <?= e($attr) ?>="<?= e($val) ?>"
     <?php endforeach; ?>
 >
+
