@@ -117,26 +117,34 @@ Event::listen('mall.order.beforeCreate', function (Cart $cart) {
     }
 });
 
-Event::listen('mall.order.afterCreate', function (Order $order, Cart $cart) {
+Event::listen('mall.order.afterCreate', function (Order $order, $cart) {
+    $order->load('products.product', 'customer.user', 'billing_address');
+
     foreach ($order->products as $orderProduct) {
-        $bookingData = $orderProduct->data['booking_data'] ?? null;
+        $bookingData = $orderProduct->cart_product->booking_data ?? null;
 
         if ($bookingData && isset($bookingData['booking_time'])) {
             $product = $orderProduct->product;
 
-            $booking = new Booking();
+            if (!$product || !is_scalar($product->id)) {
+                logger()->error('Invalid product or product ID', [
+                    'product' => $product,
+                    'order_product_id' => $orderProduct->id,
+                ]);
+                continue;
+            }
+
+            $booking = new \Tohur\Bookings\Models\Booking();
             $booking->product_id = $product->id;
             $booking->date = $bookingData['booking_time'];
             $booking->session_length = $product->session_length ?? 30;
-            $booking->status_id = 1; // Received
+            $booking->status_id = 1;
             $booking->order_number = $order->order_number;
 
-            // Customer info
             $booking->email = $order->customer->user->email ?? null;
             $booking->name = $order->customer->firstname ?? null;
             $booking->lastname = $order->customer->lastname ?? null;
 
-            // Billing address as default
             $address = $order->billing_address;
             $booking->street = $address->lines ?? null;
             $booking->town = $address->city ?? null;
@@ -146,6 +154,7 @@ Event::listen('mall.order.afterCreate', function (Order $order, Cart $cart) {
         }
     }
 });
+
 
     }
 
