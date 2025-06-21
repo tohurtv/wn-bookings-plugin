@@ -37,7 +37,7 @@
             let to = parseTime(block.to);
 
             while (from < to) {
-                times.push(new Date(from)); // copy to avoid mutation
+                times.push(new Date(from)); // Clone time block
                 from.setMinutes(from.getMinutes() + interval);
             }
         }
@@ -70,7 +70,7 @@
         });
 
         $('#booking-date-picker').on('changeDate', function(e) {
-            selectedDate = e.date; // Save selected date globally
+            selectedDate = e.date;
             const dayName = getDayName(selectedDate);
             updateTimeSlots(dayName);
         });
@@ -111,7 +111,7 @@
 
                     hiddenInput.value = fullDateTime;
 
-                    // Mark active
+                    // Highlight selected button
                     Array.from(list.children).forEach(c => c.classList.remove('active'));
                     btn.classList.add('active');
                 };
@@ -121,6 +121,7 @@
         }
     });
 </script>
+
 {% endput %}
 
 

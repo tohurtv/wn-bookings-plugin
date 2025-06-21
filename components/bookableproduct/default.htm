@@ -1,16 +1,15 @@
 <div class="mb-4">
     <label for="booking-date">Select a Date</label>
-    <div class="input-group input-group-sm w-auto" id="booking-date-picker" data-td-target-input="nearest" data-td-target-toggle="nearest" style="max-width: 250px;">
+    <div class="input-group input-group-sm w-auto" id="booking-date-picker" style="max-width: 250px;">
         <input 
             id="booking-date" 
             name="booking_date" 
             type="text" 
             class="form-control" 
-            data-td-target="#booking-date-picker" 
             autocomplete="off"
             placeholder="Choose date"
         />
-        <span class="input-group-text" data-td-target="#booking-date-picker" data-td-toggle="datetimepicker">
+        <span class="input-group-text">
             <i class="bi bi-calendar3"></i>
         </span>
     </div>
@@ -25,6 +24,5 @@
 
 <input type="hidden" name="booking_time" id="booking_time" value="" />
 
-
-
 {% partial __SELF__ ~ '::scriptsandstyles' %}
+
