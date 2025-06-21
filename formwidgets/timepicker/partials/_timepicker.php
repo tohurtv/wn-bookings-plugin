@@ -8,6 +8,7 @@ $attributes = $field->attributes ?? [];
 input.custom-timepicker {
   background-color: #fff !important;
   color: #212529 !important;
+  width: 100%;
   border: 1px solid #ced4da !important;
   border-radius: 4px !important;
   padding: 6px 10px !important;
