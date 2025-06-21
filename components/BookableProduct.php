@@ -44,14 +44,13 @@ public function defineProperties()
     }
 
     $this->settings = Settings::instance();
-    $this->prepareAvailableSlots();
+    $this->prepareAvailableSlots($this->product);
 
     // Pass data to page
     $this->page['product'] = $this->product;
     $this->page['availableDates'] = $this->availableDates;
     $this->page['availableTimes'] = $this->availableTimes;
     $this->page['settings'] = $this->settings;
-    $this->prepareAvailableSlots($this->product);
 }
 
 protected function prepareAvailableSlots(Product $product)
