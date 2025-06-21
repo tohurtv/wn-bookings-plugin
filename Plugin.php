@@ -83,9 +83,10 @@ class Plugin extends PluginBase
 
     CartProduct::extend(function ($model) {
         // Ensure the property exists and is an array before modifying
+        $model->addFillable('booking_data');
         $model->addJsonable('booking_data');
     });
-    
+
 Event::listen('offline.mall.cart.productAdded', function ($product, $cartItem) {
     $bookingTime = post('booking_time');
 
