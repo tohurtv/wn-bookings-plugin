@@ -21,6 +21,9 @@ class Plugin extends PluginBase
         });
 
      if (!\System\Classes\PluginManager::instance()->exists('OFFLINE.Mall')) {
+        return;
+    }
+
     \OFFLINE\Mall\Models\Product::extend(function ($model) {
         $model->addFillable(['isbookable']);
         $model->casts['isbookable'] = 'boolean';
@@ -76,7 +79,6 @@ class Plugin extends PluginBase
         ]);
     }
 });
-    }
     }
 
     public function registerNavigation()
