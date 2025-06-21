@@ -31,3 +31,6 @@
 1.1.11:
     - Add isbookable column to mall_products
     - add_isbookable_to_mall_products.php
+1.1.12:
+    - Add session_length column to tohur_bookings_bookings
+    - add_session_length_to_bookings.php
