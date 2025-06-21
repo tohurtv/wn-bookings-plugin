@@ -108,7 +108,7 @@ Event::listen('mall.order.beforeCreate', function (\OFFLINE\Mall\Models\Cart $ca
 
 Event::listen('mall.order.afterCreate', function (\OFFLINE\Mall\Models\Order $order, $cart) {
     foreach ($order->products as $orderProduct) {
-        $bookingData = $orderProduct->data['booking_data'] ?? null;
+        $bookingData = $orderProduct->cart_product->booking_data ?? null;
 
         if ($bookingData && isset($bookingData['booking_time'])) {
             $product = $orderProduct->product;
@@ -119,10 +119,24 @@ Event::listen('mall.order.afterCreate', function (\OFFLINE\Mall\Models\Order $or
             $booking->session_length = $product->session_length ?? 30;
             $booking->status_id = 1; // Received
             $booking->order_number = $order->order_number;
+
+            // Customer Info
+            $booking->email = $order->customer->user->email ?? null;
+            $booking->name = $order->customer->firstname ?? null;
+            $booking->lastname = $order->customer->lastname ?? null;
+            $booking->phone = $order->customer->phone ?? null;
+
+            // Address Info (use billing as default)
+            $address = $order->billing_address;
+            $booking->street = $address->lines ?? null;
+            $booking->town = $address->city ?? null;
+            $booking->zip = $address->zip ?? null;
+
             $booking->save();
         }
     }
 });
+
 
     }
 
