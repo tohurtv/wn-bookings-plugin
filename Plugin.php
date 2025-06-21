@@ -98,6 +98,13 @@ Event::listen('mall.cart.product.added', function (\OFFLINE\Mall\Models\CartProd
     }
 });
 
+Event::listen('mall.order.beforeCreate', function (\OFFLINE\Mall\Models\Cart $cart) {
+    foreach ($cart->products as $cartProduct) {
+        if (isset($cartProduct->booking_data['booking_time'])) {
+            $cartProduct->data['booking_data'] = $cartProduct->booking_data;
+        }
+    }
+});
 
 Event::listen('mall.order.afterCreate', function (\OFFLINE\Mall\Models\Order $order, $cart) {
     foreach ($order->products as $orderProduct) {
