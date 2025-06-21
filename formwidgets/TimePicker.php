@@ -10,7 +10,7 @@ class TimePicker extends FormWidgetBase
     {
         // Render the partial with passed variables
         $this->prepareVars();
-        return $this->makePartial('timepicker');
+        return $this->makePartial('_timepicker');
     }
 
     public function prepareVars()
