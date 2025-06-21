@@ -46,17 +46,28 @@ public static function getWorkingHoursByDay(string $day): array
 }
 public function beforeSave()
 {
-    foreach ($this->working_schedule as &$day) {
-        foreach ($day['time_blocks'] as &$block) {
-            if (isset($block['from_raw'])) {
-                $block['from'] = $block['from_raw'];
-                unset($block['from_raw']);
-            }
-            if (isset($block['to_raw'])) {
-                $block['to'] = $block['to_raw'];
-                unset($block['to_raw']);
+    $schedule = $this->working_schedule;  // get a copy
+
+    if (is_array($schedule)) {
+        foreach ($schedule as &$day) {
+            if (!empty($day['time_blocks']) && is_array($day['time_blocks'])) {
+                foreach ($day['time_blocks'] as &$block) {
+                    // For example, normalize or clean values here
+                    if (isset($block['from_raw'])) {
+                        $block['from'] = $block['from_raw'];
+                        unset($block['from_raw']);
+                    }
+                    if (isset($block['to_raw'])) {
+                        $block['to'] = $block['to_raw'];
+                        unset($block['to_raw']);
+                    }
+                }
+                unset($block);
             }
         }
+        unset($day);
+
+        $this->working_schedule = $schedule; // re-assign modified array
     }
 }
 }
