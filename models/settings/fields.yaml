@@ -37,9 +37,11 @@ tabs:
             comment: tohur.bookings::lang.settings.formats_time.comment
 
         working_schedule:
-            label: Working Schedule
+            tab: tohur.bookings::lang.settings.tabs.working_days
+            label: tohur.bookings::lang.settings.working_schedule.label
             type: repeater
-            tab: Schedule
+            prompt: Add Working Day
+            type: repeater
             prompt: Add Day
             form:
                 fields:
