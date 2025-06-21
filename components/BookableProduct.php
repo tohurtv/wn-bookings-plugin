@@ -58,13 +58,14 @@ protected function prepareAvailableSlots()
     $schedule = $this->settings->working_schedule ?: [];
     $interval = (int) $this->settings->booking_interval ?: 15;
 
-    $this->availableDates = []; // e.g. ['monday', 'tuesday', ...]
+    $this->availableDates = [];
     $allTimes = [];
 
-    // Get all future bookings
-    $existingBookings = Booking::where('date', '>=', now())->pluck('date')->map(function ($dt) {
-        return Carbon::parse($dt);
-    });
+    // Get only confirmed future bookings (status_id = 2)
+    $existingBookings = Booking::where('date', '>=', now())
+        ->where('status_id', 2)
+        ->pluck('date')
+        ->map(fn($dt) => Carbon::parse($dt));
 
     foreach ($schedule as $daySchedule) {
         if (empty($daySchedule['day'])) {
@@ -81,8 +82,6 @@ protected function prepareAvailableSlots()
             $to = Carbon::createFromFormat('H:i', $block['to']);
 
             for ($time = $from->copy(); $time->lte($to->copy()->subMinutes($interval)); $time->addMinutes($interval)) {
-
-                // Loop next 30 days to collect available slots by date + time
                 for ($i = 0; $i < 30; $i++) {
                     $dayDate = Carbon::now()->addDays($i);
 
@@ -92,14 +91,13 @@ protected function prepareAvailableSlots()
 
                     $slotDateTime = $dayDate->copy()->setTimeFrom($time);
 
-                    // Check if slot is taken
-                    if ($existingBookings->contains(function ($booking) use ($slotDateTime, $interval) {
+                    // Only skip slots that are actually booked with status_id = 2
+                    if ($existingBookings->contains(function ($booking) use ($slotDateTime) {
                         return $booking->format('Y-m-d H:i') === $slotDateTime->format('Y-m-d H:i');
                     })) {
                         continue;
                     }
 
-                    // Format for frontend (optional: use 12-hour time only)
                     $formatted = $slotDateTime->format('Y-m-d g:i A');
                     if (!in_array($formatted, $allTimes)) {
                         $allTimes[] = $formatted;
