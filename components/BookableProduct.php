@@ -61,11 +61,18 @@ protected function prepareAvailableSlots()
     $this->availableDates = [];
     $allTimes = [];
 
-    // Get only confirmed future bookings (status_id = 2)
+    // Get confirmed future bookings with session_length
     $existingBookings = Booking::where('date', '>=', now())
         ->where('status_id', 2)
-        ->pluck('date')
-        ->map(fn($dt) => Carbon::parse($dt));
+        ->get()
+        ->map(function ($booking) {
+            $start = Carbon::parse($booking->date);
+            $end = $start->copy()->addMinutes($booking->session_length ?? 30);
+            return [
+                'start' => $start,
+                'end'   => $end
+            ];
+        });
 
     foreach ($schedule as $daySchedule) {
         if (empty($daySchedule['day'])) {
@@ -89,16 +96,19 @@ protected function prepareAvailableSlots()
                         continue;
                     }
 
-                    $slotDateTime = $dayDate->copy()->setTimeFrom($time);
+                    $slotStart = $dayDate->copy()->setTimeFrom($time);
+                    $slotEnd = $slotStart->copy()->addMinutes($interval);
 
-                    // Only skip slots that are actually booked with status_id = 2
-                    if ($existingBookings->contains(function ($booking) use ($slotDateTime) {
-                        return $booking->format('Y-m-d H:i') === $slotDateTime->format('Y-m-d H:i');
-                    })) {
+                    // Check for overlap with any existing booking session
+                    $overlaps = $existingBookings->contains(function ($booking) use ($slotStart, $slotEnd) {
+                        return $slotStart->lt($booking['end']) && $slotEnd->gt($booking['start']);
+                    });
+
+                    if ($overlaps) {
                         continue;
                     }
 
-                    $formatted = $slotDateTime->format('Y-m-d g:i A');
+                    $formatted = $slotStart->format('Y-m-d g:i A');
                     if (!in_array($formatted, $allTimes)) {
                         $allTimes[] = $formatted;
                     }
@@ -109,6 +119,7 @@ protected function prepareAvailableSlots()
 
     $this->availableTimes = $allTimes;
 }
+
 
 public function onBookProduct()
 {

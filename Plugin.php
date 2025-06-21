@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Validator;
 use System\Classes\PluginBase;
 use Tohur\Bookings\Facades\BookingsFacade;
 use Tohur\Bookings\Validators\BookingsValidators;
+use OFFLINE\Mall\Models\Product;
+use Schema;
 use Event;
 
 class Plugin extends PluginBase
@@ -19,9 +21,6 @@ class Plugin extends PluginBase
         });
 
      if (!\System\Classes\PluginManager::instance()->exists('OFFLINE.Mall')) {
-        return;
-    }
-
     \OFFLINE\Mall\Models\Product::extend(function ($model) {
         $model->addFillable(['isbookable']);
         $model->casts['isbookable'] = 'boolean';
@@ -44,6 +43,40 @@ class Plugin extends PluginBase
             ],
         ]);
     });
+
+    Event::listen('backend.form.extendFields', function ($widget) {
+    // Only target the correct controller and model
+    if (
+        !$widget->getController() instanceof \OFFLINE\Mall\Controllers\Products ||
+        !$widget->model instanceof Product
+    ) {
+        return;
+    }
+
+    // Check if 'isbookable' column exists
+    if (!Schema::hasColumn('offline_mall_products', 'isbookable')) {
+        return;
+    }
+
+    // Add session length only if the product is bookable
+    if ($widget->model->isbookable) {
+        $widget->addTabFields([
+            'booking_session_length' => [
+                'label'   => 'Booking Session Length',
+                'comment' => 'Duration of each booking slot for this product.',
+                'type'    => 'dropdown',
+                'tab'     => 'offline.mall::lang.product.general',
+                'options' => [
+                    30  => '30 minutes',
+                    60  => '1 hour',
+                    90  => '1.5 hours',
+                    120 => '2 hours',
+                ],
+            ],
+        ]);
+    }
+});
+    }
     }
 
     public function registerNavigation()
