@@ -87,7 +87,7 @@ class Plugin extends PluginBase
         $model->addJsonable('booking_data');
     });
 
-Event::listen('offline.mall.cart.productAdded', function ($product, $cartItem) {
+Event::listen('mall.cart.product.added', function ($product, $cartItem) {
     $bookingTime = post('booking_time');
 
     if ($bookingTime) {
@@ -98,7 +98,7 @@ Event::listen('offline.mall.cart.productAdded', function ($product, $cartItem) {
     }
 });
 
-Event::listen('offline.mall.order.created', function (\OFFLINE\Mall\Models\Order $order, $cart) {
+Event::listen('mall.order.afterCreate', function (\OFFLINE\Mall\Models\Order $order, $cart) {
     foreach ($order->products as $orderProduct) {
         $bookingData = $orderProduct->cart_product->booking_data ?? null;
 
