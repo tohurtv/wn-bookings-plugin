@@ -47,6 +47,7 @@ public function defineProperties()
     $this->page['product'] = $this->product;
     $this->page['availableDates'] = $this->availableDates;
     $this->page['availableTimes'] = $this->availableTimes;
+    $this->page['settings'] = $this->settings;
 }
 
     protected function prepareAvailableSlots()

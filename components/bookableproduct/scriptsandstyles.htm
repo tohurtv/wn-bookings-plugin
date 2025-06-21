@@ -6,8 +6,8 @@
 <script src="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6.9.4/dist/js/tempus-dominus.min.js" crossorigin="anonymous"></script>
 
 <script>
-    const workingSchedule = <?= json_encode($settings->working_schedule) ?>;
-    const interval = <?= (int) $settings->booking_interval ?>;
+    const workingSchedule = {{ settings.working_schedule|json_encode|raw }};
+    const interval = {{ settings.booking_interval|default(15) }};
 
     function getDayName(date) {
         return date.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
