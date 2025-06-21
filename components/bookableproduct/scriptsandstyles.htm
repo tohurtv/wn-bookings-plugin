@@ -19,6 +19,8 @@
     const dayNames = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
     const enabledDays = workingSchedule.map(day => dayNames.indexOf(day.day.toLowerCase()));
 
+    let selectedDate = null;
+
     function getDayName(date) {
         return date.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
     }
@@ -35,7 +37,7 @@
             let to = parseTime(block.to);
 
             while (from < to) {
-                times.push(new Date(from)); // push a copy
+                times.push(new Date(from)); // copy to avoid mutation
                 from.setMinutes(from.getMinutes() + interval);
             }
         }
@@ -68,12 +70,12 @@
         });
 
         $('#booking-date-picker').on('changeDate', function(e) {
-            const selectedDate = e.date;
+            selectedDate = e.date; // Save selected date globally
             const dayName = getDayName(selectedDate);
-            updateTimeSlots(dayName, selectedDate);
+            updateTimeSlots(dayName);
         });
 
-        function updateTimeSlots(dayName, selectedDate) {
+        function updateTimeSlots(dayName) {
             const times = getTimesForDay(dayName);
 
             const wrapper = document.getElementById('time-slot-wrapper');
@@ -81,10 +83,10 @@
             const hiddenInput = document.getElementById('booking_time');
 
             list.innerHTML = '';
+            hiddenInput.value = '';
 
             if (times.length === 0) {
                 wrapper.classList.add('d-none');
-                hiddenInput.value = '';
                 return;
             }
 
@@ -97,14 +99,19 @@
                 btn.innerText = formatTime(time);
 
                 btn.onclick = () => {
-                    // Format full datetime string
-                    const dateStr = selectedDate.toISOString().split('T')[0]; // YYYY-MM-DD
-                    const timeStr = time.toTimeString().split(' ')[0]; // HH:MM:SS
-                    const fullDateTime = `${dateStr} ${timeStr}`;
+                    if (!selectedDate) return;
+
+                    const year = selectedDate.getFullYear();
+                    const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
+                    const day = String(selectedDate.getDate()).padStart(2, '0');
+
+                    const hours = String(time.getHours()).padStart(2, '0');
+                    const minutes = String(time.getMinutes()).padStart(2, '0');
+                    const fullDateTime = `${year}-${month}-${day} ${hours}:${minutes}:00`;
 
                     hiddenInput.value = fullDateTime;
 
-                    // Highlight active button
+                    // Mark active
                     Array.from(list.children).forEach(c => c.classList.remove('active'));
                     btn.classList.add('active');
                 };
@@ -115,4 +122,5 @@
     });
 </script>
 {% endput %}
+
 
