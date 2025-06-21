@@ -108,7 +108,7 @@ Event::listen('mall.order.beforeCreate', function (\OFFLINE\Mall\Models\Cart $ca
 
 Event::listen('mall.order.afterCreate', function (\OFFLINE\Mall\Models\Order $order, $cart) {
     foreach ($order->products as $orderProduct) {
-        $bookingData = $orderProduct->cart_product->booking_data ?? null;
+        $bookingData = $orderProduct->data['booking_data'] ?? null;
 
         if ($bookingData && isset($bookingData['booking_time'])) {
             $product = $orderProduct->product;
@@ -116,7 +116,7 @@ Event::listen('mall.order.afterCreate', function (\OFFLINE\Mall\Models\Order $or
             $booking = new \Tohur\Bookings\Models\Booking();
             $booking->product_id = $product->id;
             $booking->date = $bookingData['booking_time'];
-            $booking->session_length = $product->session_length ?? 30; // fallback
+            $booking->session_length = $product->session_length ?? 30;
             $booking->status_id = 1; // Received
             $booking->order_number = $order->order_number;
             $booking->save();
