@@ -44,7 +44,7 @@ class Booking extends Model
     public $fillable = [
         'status', 'date', 'locale', 'email', 'name', 'lastname',
         'street', 'town', 'zip', 'phone', 'message', 'session_length',
-        'order_id',
+        'order_id', 'product_id',
     ];
 
     public $dates = ['date', 'created_at', 'updated_at', 'deleted_at'];
