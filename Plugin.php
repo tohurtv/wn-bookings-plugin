@@ -16,6 +16,33 @@ class Plugin extends PluginBase
         Validator::resolver(function($translator, $data, $rules, $messages, $customAttributes) {
             return new BookingsValidators($translator, $data, $rules, $messages, $customAttributes);
         });
+
+     if (!\System\Classes\PluginManager::instance()->exists('OFFLINE.Mall')) {
+        return;
+    }
+
+    \OFFLINE\Mall\Models\Product::extend(function ($model) {
+        $model->addFillable(['isbookable']);
+        $model->casts['isbookable'] = 'boolean';
+    });
+
+    Event::listen('backend.form.extendFields', function ($widget) {
+        if (
+            !$widget->getController() instanceof \OFFLINE\Mall\Controllers\Products ||
+            !$widget->model instanceof \OFFLINE\Mall\Models\Product
+        ) {
+            return;
+        }
+
+        $widget->addTabFields([
+            'isbookable' => [
+                'label'   => 'Bookable',
+                'comment' => 'Indicates whether this product can be booked.',
+                'type'    => 'switch',
+                'tab'     => 'General',
+            ],
+        ]);
+    });
     }
 
     public function registerNavigation()
