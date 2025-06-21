@@ -1,0 +1,100 @@
+{% styles %}
+<link href="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6.8.1/dist/css/tempus-dominus.min.css" rel="stylesheet" />
+{% endstyles %}
+
+{% scripts %}
+<script src="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6.8.1/dist/js/tempus-dominus.min.js"></script>
+
+<script>
+    const workingSchedule = <?= json_encode($settings->working_schedule) ?>;
+    const interval = <?= (int) $settings->booking_interval ?>;
+
+    function getDayName(date) {
+        return date.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
+    }
+
+    function getTimesForDay(dayName) {
+        const day = workingSchedule.find(s => s.day.toLowerCase() === dayName);
+        if (!day) return [];
+
+        const times = [];
+        const blocks = day.time_blocks || [];
+
+        for (let block of blocks) {
+            let from = parseTime(block.from);
+            let to = parseTime(block.to);
+
+            while (from < to) {
+                times.push(formatTime(from));
+                from.setMinutes(from.getMinutes() + interval);
+            }
+        }
+
+        return times;
+    }
+
+    function parseTime(timeStr) {
+        const [h, m] = timeStr.split(':');
+        const date = new Date();
+        date.setHours(+h, +m, 0, 0);
+        return date;
+    }
+
+    function formatTime(date) {
+        return date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    // Init date picker
+    new tempusDominus.TempusDominus(document.getElementById('booking-date-picker'), {
+        display: {
+            components: {
+                calendar: true,
+                date: true,
+                clock: false
+            }
+        },
+        useCurrent: false,
+        restrictions: {
+            daysOfWeekDisabled: [0, 1, 2, 3, 4, 5, 6].filter(d => {
+                // disable all days NOT in workingSchedule
+                const dayNames = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
+                return !workingSchedule.some(s => s.day.toLowerCase() === dayNames[d]);
+            })
+        }
+    });
+
+    // On date selected
+    document.getElementById('booking-date').addEventListener('change', function () {
+        const selectedDate = new Date(this.value);
+        const dayName = getDayName(selectedDate);
+        const times = getTimesForDay(dayName);
+
+        const wrapper = document.getElementById('time-slot-wrapper');
+        const list = document.getElementById('available-times');
+        const bookBtn = document.getElementById('book-now');
+
+        list.innerHTML = '';
+
+        if (times.length === 0) {
+            wrapper.classList.add('d-none');
+            return;
+        }
+
+        wrapper.classList.remove('d-none');
+
+        times.forEach(time => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'btn btn-outline-primary';
+            btn.innerText = time;
+            btn.onclick = () => {
+                document.getElementById('booking_time').value = time;
+                Array.from(list.children).forEach(c => c.classList.remove('active'));
+                btn.classList.add('active');
+                bookBtn.style.display = 'inline-block';
+            };
+            list.appendChild(btn);
+        });
+    });
+</script>
+{% endscripts %}

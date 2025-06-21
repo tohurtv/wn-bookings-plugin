@@ -1,21 +1,23 @@
-<div class="bookable-product">
-    <h3>Book this product</h3>
-
-    <form data-request="onBookProduct">
-        <label for="booking_date">Select day:</label>
-        <select id="booking_date" name="booking_date" required>
-            {% for day in __SELF__.availableDates %}
-                <option value="{{ day }}">{{ day|capitalize }}</option>
-            {% endfor %}
-        </select>
-
-        <label for="booking_time">Select time:</label>
-        <select id="booking_time" name="booking_time" required>
-            {% for time in __SELF__.availableTimes %}
-                <option value="{{ time }}">{{ time }}</option>
-            {% endfor %}
-        </select>
-
-        <button type="submit">Book Now</button>
-    </form>
+<div class="mb-4">
+    <label for="booking-date">Select a Date</label>
+    <div class="input-group" id="booking-date-picker" data-td-target-input="nearest" data-td-target-toggle="nearest">
+        <input id="booking-date" name="booking_date" type="text" class="form-control" data-td-target="#booking-date-picker" />
+        <span class="input-group-text" data-td-target="#booking-date-picker" data-td-toggle="datetimepicker">
+            <i class="fa fa-calendar"></i>
+        </span>
+    </div>
 </div>
+
+<div id="time-slot-wrapper" class="d-none">
+    <label>Select a Time Slot</label>
+    <div id="available-times" class="d-flex flex-wrap gap-2 mt-2">
+        <!-- time buttons will appear here -->
+    </div>
+</div>
+
+<input type="hidden" name="booking_time" id="booking_time" value="" />
+
+<div class="mt-4">
+    <button class="btn btn-primary" id="book-now" style="display: none;">Book Now</button>
+</div>
+{% partial partial __SELF__ ~ '::scriptsandstyles' %}
