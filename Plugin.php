@@ -23,8 +23,8 @@ class Plugin extends PluginBase
     }
 
     \OFFLINE\Mall\Models\Product::extend(function ($model) {
-        $model->addFillable(['is_bookable']);
-        $model->casts['is_bookable'] = 'boolean';
+        $model->addFillable(['isbookable']);
+        $model->casts['isbookable'] = 'boolean';
     });
 
     Event::listen('backend.form.extendFields', function ($widget) {

@@ -10,7 +10,7 @@ class AddIsBookableToMallProducts extends Migration
     {
         if (Schema::hasTable('offline_mall_products')) {
             Schema::table('offline_mall_products', function (Blueprint $table) {
-                $table->boolean('is_bookable')->default(false);
+                $table->boolean('isbookable')->default(false);
             });
         }
     }
@@ -19,7 +19,7 @@ class AddIsBookableToMallProducts extends Migration
     {
         if (Schema::hasTable('offline_mall_products')) {
             Schema::table('offline_mall_products', function (Blueprint $table) {
-                $table->dropColumn('is_bookable');
+                $table->dropColumn('isbookable');
             });
         }
     }
