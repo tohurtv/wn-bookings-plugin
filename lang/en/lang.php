@@ -174,9 +174,26 @@ return [
             'saturday'  => 'Saturday',
             'sunday'    => 'Sunday',
         ],
+        'tabs' => [
+            'working_days' => 'Working Days',
+        ],
         'working_schedule' => [
-            'label'   => 'Working Schedule',
-            'comment' => 'Define daily working hours. You can add multiple time blocks per day to account for breaks, lunches, etc.',
+            'label' => 'Working Schedule',
+            'prompt_add_day' => 'Add Working Day',
+            'day' => 'Day',
+            'time_blocks' => 'Time Blocks',
+            'prompt_add_block' => 'Add Time Block',
+            'from' => 'From',
+            'to' => 'To',
+        ],
+        'days' => [
+            'sunday' => 'Sunday',
+            'monday' => 'Monday',
+            'tuesday' => 'Tuesday',
+            'wednesday' => 'Wednesday',
+            'thursday' => 'Thursday',
+            'friday' => 'Friday',
+            'saturday' => 'Saturday',
         ],
     ],
 ];
