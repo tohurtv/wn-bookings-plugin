@@ -87,15 +87,13 @@ class Plugin extends PluginBase
         $model->addJsonable('booking_data');
     });
 
-Event::listen('mall.cart.product.added', function (\OFFLINE\Mall\Models\CartProduct $product, $cartItem) {
+Event::listen('mall.cart.product.added', function (\OFFLINE\Mall\Models\CartProduct $cartItem) {
     $bookingTime = post('booking_time');
 
     if ($bookingTime) {
-        $bookingData = [
+        $cartItem->booking_data = [
             'booking_time' => $bookingTime,
         ];
-
-        $cartItem->booking_data = $bookingData;
         $cartItem->save();
     }
 });
