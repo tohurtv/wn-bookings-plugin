@@ -16,6 +16,8 @@
 <script>
     const workingSchedule = {{ settings.working_schedule|json_encode|raw }};
     const interval = {{ settings.booking_interval|default(15) }};
+    const dayNames = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
+    const enabledDays = workingSchedule.map(day => dayNames.indexOf(day.day.toLowerCase()));
 
     function getDayName(date) {
         return date.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
@@ -33,7 +35,7 @@
             let to = parseTime(block.to);
 
             while (from < to) {
-                times.push(formatTime(from));
+                times.push(new Date(from)); // push a copy
                 from.setMinutes(from.getMinutes() + interval);
             }
         }
@@ -48,19 +50,15 @@
         return date;
     }
 
-function formatTime(date) {
-    return date.toLocaleTimeString('en-US', {
-        hour: 'numeric',
-        minute: '2-digit',
-        hour12: true
-    });
-}
+    function formatTime(date) {
+        return date.toLocaleTimeString('en-US', {
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true
+        });
+    }
 
     $(function() {
-        // Determine which days to disable based on workingSchedule
-        const dayNames = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
-        const enabledDays = workingSchedule.map(day => dayNames.indexOf(day.day.toLowerCase()));
-
         $('#booking-date-picker').datepicker({
             format: 'yyyy-mm-dd',
             startDate: new Date(),
@@ -69,23 +67,24 @@ function formatTime(date) {
             todayHighlight: true
         });
 
-        // When a date is selected
         $('#booking-date-picker').on('changeDate', function(e) {
             const selectedDate = e.date;
             const dayName = getDayName(selectedDate);
-            updateTimeSlots(dayName);
+            updateTimeSlots(dayName, selectedDate);
         });
 
-        function updateTimeSlots(dayName) {
+        function updateTimeSlots(dayName, selectedDate) {
             const times = getTimesForDay(dayName);
 
             const wrapper = document.getElementById('time-slot-wrapper');
             const list = document.getElementById('available-times');
+            const hiddenInput = document.getElementById('booking_time');
 
             list.innerHTML = '';
 
             if (times.length === 0) {
                 wrapper.classList.add('d-none');
+                hiddenInput.value = '';
                 return;
             }
 
@@ -95,15 +94,25 @@ function formatTime(date) {
                 const btn = document.createElement('button');
                 btn.type = 'button';
                 btn.className = 'btn btn-outline-primary';
-                btn.innerText = time;
+                btn.innerText = formatTime(time);
+
                 btn.onclick = () => {
-                    document.getElementById('booking_time').value = time;
+                    // Format full datetime string
+                    const dateStr = selectedDate.toISOString().split('T')[0]; // YYYY-MM-DD
+                    const timeStr = time.toTimeString().split(' ')[0]; // HH:MM:SS
+                    const fullDateTime = `${dateStr} ${timeStr}`;
+
+                    hiddenInput.value = fullDateTime;
+
+                    // Highlight active button
                     Array.from(list.children).forEach(c => c.classList.remove('active'));
                     btn.classList.add('active');
                 };
+
                 list.appendChild(btn);
             });
         }
     });
 </script>
 {% endput %}
+
