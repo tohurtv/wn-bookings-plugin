@@ -91,12 +91,15 @@ Event::listen('mall.cart.product.added', function (\OFFLINE\Mall\Models\CartProd
     $bookingTime = post('booking_time');
 
     if ($bookingTime) {
-        $cartItem->booking_data = [
+        $bookingData = [
             'booking_time' => $bookingTime,
         ];
+
+        $cartItem->booking_data = $bookingData;
         $cartItem->save();
     }
 });
+
 
 Event::listen('mall.order.afterCreate', function (\OFFLINE\Mall\Models\Order $order, $cart) {
     foreach ($order->products as $orderProduct) {
