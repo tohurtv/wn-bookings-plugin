@@ -40,7 +40,7 @@ class Plugin extends PluginBase
                 'label'   => 'Is bookable',
                 'comment' => 'Indicates whether this product can be booked.',
                 'type'    => 'switch',
-                'tab'     => 'General',
+                'tab'     => 'offline.mall::lang.product.general',
             ],
         ]);
     });
