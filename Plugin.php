@@ -132,7 +132,6 @@ Event::listen('mall.order.afterCreate', function (\OFFLINE\Mall\Models\Order $or
             $booking->email = $order->customer->user->email ?? null;
             $booking->name = $order->customer->firstname ?? null;
             $booking->lastname = $order->customer->lastname ?? null;
-            $booking->phone = $order->customer->phone ?? null;
 
             // Address Info (use billing as default)
             $address = $order->billing_address;
