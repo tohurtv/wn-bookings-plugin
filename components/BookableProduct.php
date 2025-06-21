@@ -20,31 +20,34 @@ class BookableProduct extends ComponentBase
         ];
     }
 
-    public function defineProperties()
-    {
-        return [
-            'productId' => [
-                'title' => 'Product ID',
-                'type' => 'string',
-                'required' => true
-            ]
-        ];
-    }
+public function defineProperties()
+{
+    return [
+        'slug' => [
+            'title' => 'Product Slug',
+            'type' => 'string',
+            'default' => '{{ :slug }}',
+        ]
+    ];
+}
 
     public function onRun()
-    {
-        $productId = $this->property('productId');
-        $this->product = Product::find($productId);
+{
+    $slug = $this->property('slug');
+    $this->product = Product::where('slug', $slug)->first();
 
-        $this->settings = Settings::instance();
-
-        if (!$this->product || !$this->product->isbookable) {
-            return;
-        }
-
-        // Prepare available dates & times based on working_schedule and booking_interval
-        $this->prepareAvailableSlots();
+    if (!$this->product || !$this->product->isbookable) {
+        return;
     }
+
+    $this->settings = Settings::instance();
+    $this->prepareAvailableSlots();
+
+    // Pass data to page
+    $this->page['product'] = $this->product;
+    $this->page['availableDates'] = $this->availableDates;
+    $this->page['availableTimes'] = $this->availableTimes;
+}
 
     protected function prepareAvailableSlots()
     {
@@ -77,19 +80,19 @@ class BookableProduct extends ComponentBase
             $this->availableTimes = $times;
         }
     }
-    public function onBookProduct()
+public function onBookProduct()
 {
     $day = post('booking_date');
     $time = post('booking_time');
-    $productId = $this->property('productId');
 
-    // You'd want to validate $day and $time are valid, and then
-    // create your booking record or whatever fits your logic
+    if (!$this->product) {
+        \Flash::error("No bookable product found.");
+        return;
+    }
 
-    // Just a dummy success flash message for now
-    \Flash::success("Booked product #{$productId} for {$day} at {$time}!");
+    // You'd validate day/time here
 
-    // Optionally redirect or do other logic here
+    \Flash::success("Booked {$this->product->name} for {$day} at {$time}!");
 }
 
 }
