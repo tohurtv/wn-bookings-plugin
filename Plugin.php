@@ -7,6 +7,9 @@ use Tohur\Bookings\Facades\BookingsFacade;
 use Tohur\Bookings\Validators\BookingsValidators;
 use OFFLINE\Mall\Models\Product;
 use OFFLINE\Mall\Models\CartProduct;
+use OFFLINE\Mall\Models\Cart;
+use OFFLINE\Mall\Models\Order;
+use Tohur\Bookings\Models\Booking;
 use Schema;
 use Event;
 
@@ -81,59 +84,52 @@ class Plugin extends PluginBase
     }
 });
 
-    CartProduct::extend(function ($model) {
-        // Ensure the property exists and is an array before modifying
-        $model->addFillable('booking_data');
-        $model->addJsonable('booking_data');
-    });
-
-Event::listen('mall.cart.product.added', function (\OFFLINE\Mall\Models\CartProduct $cartItem) {
+Event::listen('mall.cart.product.added', function (CartProduct $cartItem) {
     $bookingTime = post('booking_time');
 
     if ($bookingTime) {
         $cartItem->booking_data = [
             'booking_time' => $bookingTime,
         ];
+
+        // Save booking data into the JSON column
         $cartItem->save();
     }
 });
 
-Event::listen('mall.order.beforeCreate', function (\OFFLINE\Mall\Models\Cart $cart) {
+Event::listen('mall.order.beforeCreate', function (Cart $cart) {
     foreach ($cart->products as $cartProduct) {
         if (!empty($cartProduct->booking_data['booking_time'])) {
-            // Ensure data array exists
-            $data = $cartProduct->data ?? [];
+            // Merge booking_data into the generic `data` array so it carries over to OrderProduct
+            $cartProduct->data = array_merge($cartProduct->data ?? [], [
+                'booking_data' => $cartProduct->booking_data,
+            ]);
 
-            // Add or overwrite booking_data key
-            $data['booking_data'] = $cartProduct->booking_data;
-
-            // Set back the data property so it is copied to order product
-            $cartProduct->data = $data;
+            $cartProduct->save();
         }
     }
 });
 
-
-Event::listen('mall.order.afterCreate', function (\OFFLINE\Mall\Models\Order $order, $cart) {
+Event::listen('mall.order.afterCreate', function (Order $order, Cart $cart) {
     foreach ($order->products as $orderProduct) {
-        $bookingData = $orderProduct->cart_product->booking_data ?? null;
+        $bookingData = $orderProduct->data['booking_data'] ?? null;
 
         if ($bookingData && isset($bookingData['booking_time'])) {
             $product = $orderProduct->product;
 
-            $booking = new \Tohur\Bookings\Models\Booking();
+            $booking = new Booking();
             $booking->product_id = $product->id;
             $booking->date = $bookingData['booking_time'];
             $booking->session_length = $product->session_length ?? 30;
             $booking->status_id = 1; // Received
             $booking->order_number = $order->order_number;
 
-            // Customer Info
+            // Customer info
             $booking->email = $order->customer->user->email ?? null;
             $booking->name = $order->customer->firstname ?? null;
             $booking->lastname = $order->customer->lastname ?? null;
 
-            // Address Info (use billing as default)
+            // Billing address as default
             $address = $order->billing_address;
             $booking->street = $address->lines ?? null;
             $booking->town = $address->city ?? null;
@@ -143,8 +139,6 @@ Event::listen('mall.order.afterCreate', function (\OFFLINE\Mall\Models\Order $or
         }
     }
 });
-
-
     }
 
     public function registerNavigation()
