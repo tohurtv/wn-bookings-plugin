@@ -1,9 +1,9 @@
 {% put styles %}
-<link href="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6.8.1/dist/css/tempus-dominus.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6.9.4/dist/css/tempus-dominus.min.css" crossorigin="anonymous">
 {% endput %}
 
 {% put scripts %}
-<script src="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6.8.1/dist/js/tempus-dominus.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6.9.4/dist/js/tempus-dominus.min.js" crossorigin="anonymous"></script>
 
 <script>
     const workingSchedule = <?= json_encode($settings->working_schedule) ?>;
