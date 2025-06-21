@@ -89,7 +89,7 @@ class Plugin extends PluginBase
         $model->addFillable('booking_data');
         $model->addJsonable('booking_data');
     });
-    
+
 Event::listen('mall.cart.product.added', function (CartProduct $cartItem) {
     $bookingTime = post('booking_time');
 
@@ -106,8 +106,9 @@ Event::listen('mall.cart.product.added', function (CartProduct $cartItem) {
 Event::listen('mall.order.beforeCreate', function (Cart $cart) {
     foreach ($cart->products as $cartProduct) {
         if (!empty($cartProduct->booking_data['booking_time'])) {
-            // Merge booking_data into the generic `data` array so it carries over to OrderProduct
-            $cartProduct->data = array_merge($cartProduct->data ?? [], [
+            $data = is_array($cartProduct->data) ? $cartProduct->data : [];
+
+            $cartProduct->data = array_merge($data, [
                 'booking_data' => $cartProduct->booking_data,
             ]);
 
