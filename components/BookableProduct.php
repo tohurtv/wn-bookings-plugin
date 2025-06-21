@@ -3,6 +3,9 @@
 use Cms\Classes\ComponentBase;
 use Winter\Storm\Support\Collection;
 use Tohur\Bookings\Models\Settings;
+use Tohur\Bookings\Models\Booking;
+use Carbon\Carbon;
+use Carbon\CarbonInterval;
 use Offline\Mall\Models\Product;
 
 class BookableProduct extends ComponentBase
@@ -58,6 +61,11 @@ protected function prepareAvailableSlots()
     $this->availableDates = []; // e.g. ['monday', 'tuesday', ...]
     $allTimes = [];
 
+    // Get all future bookings
+    $existingBookings = Booking::where('date', '>=', now())->pluck('date')->map(function ($dt) {
+        return Carbon::parse($dt);
+    });
+
     foreach ($schedule as $daySchedule) {
         if (empty($daySchedule['day'])) {
             continue;
@@ -69,13 +77,33 @@ protected function prepareAvailableSlots()
         $timeBlocks = $daySchedule['time_blocks'] ?? [];
 
         foreach ($timeBlocks as $block) {
-            $from = strtotime($block['from']);
-            $to = strtotime($block['to']);
+            $from = Carbon::createFromFormat('H:i', $block['from']);
+            $to = Carbon::createFromFormat('H:i', $block['to']);
 
-            for ($time = $from; $time + $interval * 60 <= $to; $time += $interval * 60) {
-                $formatted = date('g:i A', $time); // 12-hour format with am/pm
-                if (!in_array($formatted, $allTimes)) {
-                    $allTimes[] = $formatted;
+            for ($time = $from->copy(); $time->lte($to->copy()->subMinutes($interval)); $time->addMinutes($interval)) {
+
+                // Loop next 30 days to collect available slots by date + time
+                for ($i = 0; $i < 30; $i++) {
+                    $dayDate = Carbon::now()->addDays($i);
+
+                    if (strtolower($dayDate->format('l')) !== $day) {
+                        continue;
+                    }
+
+                    $slotDateTime = $dayDate->copy()->setTimeFrom($time);
+
+                    // Check if slot is taken
+                    if ($existingBookings->contains(function ($booking) use ($slotDateTime, $interval) {
+                        return $booking->format('Y-m-d H:i') === $slotDateTime->format('Y-m-d H:i');
+                    })) {
+                        continue;
+                    }
+
+                    // Format for frontend (optional: use 12-hour time only)
+                    $formatted = $slotDateTime->format('Y-m-d g:i A');
+                    if (!in_array($formatted, $allTimes)) {
+                        $allTimes[] = $formatted;
+                    }
                 }
             }
         }
@@ -83,6 +111,7 @@ protected function prepareAvailableSlots()
 
     $this->availableTimes = $allTimes;
 }
+
 public function onBookProduct()
 {
     $day = post('booking_date');
