@@ -1,9 +1,9 @@
 {% put styles %}
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6.9.4/dist/css/tempus-dominus.min.css" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-datepicker@1.10.0/dist/css/bootstrap-datepicker.min.css" crossorigin="anonymous">
 {% endput %}
 
 {% put scripts %}
-<script src="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6.9.4/dist/js/tempus-dominus.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap-datepicker@1.10.0/dist/js/bootstrap-datepicker.min.js" crossorigin="anonymous"></script>
 
 <script>
     const workingSchedule = {{ settings.working_schedule|json_encode|raw }};
@@ -44,57 +44,57 @@
         return date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
     }
 
-    // Init date picker
-    new tempusDominus.TempusDominus(document.getElementById('booking-date-picker'), {
-        display: {
-            components: {
-                calendar: true,
-                date: true,
-                clock: false
-            }
-        },
-        useCurrent: false,
-        restrictions: {
-            daysOfWeekDisabled: [0, 1, 2, 3, 4, 5, 6].filter(d => {
-                // disable all days NOT in workingSchedule
-                const dayNames = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
-                return !workingSchedule.some(s => s.day.toLowerCase() === dayNames[d]);
-            })
-        }
-    });
+    $(function() {
+        // Determine which days to disable based on workingSchedule
+        const dayNames = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
+        const enabledDays = workingSchedule.map(day => dayNames.indexOf(day.day.toLowerCase()));
 
-    // On date selected
-    document.getElementById('booking-date').addEventListener('change', function () {
-        const selectedDate = new Date(this.value);
-        const dayName = getDayName(selectedDate);
-        const times = getTimesForDay(dayName);
-
-        const wrapper = document.getElementById('time-slot-wrapper');
-        const list = document.getElementById('available-times');
-        const bookBtn = document.getElementById('book-now');
-
-        list.innerHTML = '';
-
-        if (times.length === 0) {
-            wrapper.classList.add('d-none');
-            return;
-        }
-
-        wrapper.classList.remove('d-none');
-
-        times.forEach(time => {
-            const btn = document.createElement('button');
-            btn.type = 'button';
-            btn.className = 'btn btn-outline-primary';
-            btn.innerText = time;
-            btn.onclick = () => {
-                document.getElementById('booking_time').value = time;
-                Array.from(list.children).forEach(c => c.classList.remove('active'));
-                btn.classList.add('active');
-                bookBtn.style.display = 'inline-block';
-            };
-            list.appendChild(btn);
+        $('#booking-date-picker').datepicker({
+            format: 'yyyy-mm-dd',
+            startDate: new Date(),
+            daysOfWeekDisabled: [0,1,2,3,4,5,6].filter(d => !enabledDays.includes(d)),
+            autoclose: true,
+            todayHighlight: true
         });
+
+        // When a date is selected
+        $('#booking-date-picker').on('changeDate', function(e) {
+            const selectedDate = e.date;
+            const dayName = getDayName(selectedDate);
+            updateTimeSlots(dayName);
+        });
+
+        function updateTimeSlots(dayName) {
+            const times = getTimesForDay(dayName);
+
+            const wrapper = document.getElementById('time-slot-wrapper');
+            const list = document.getElementById('available-times');
+            const bookBtn = document.getElementById('book-now');
+
+            list.innerHTML = '';
+
+            if (times.length === 0) {
+                wrapper.classList.add('d-none');
+                bookBtn.style.display = 'none';
+                return;
+            }
+
+            wrapper.classList.remove('d-none');
+
+            times.forEach(time => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'btn btn-outline-primary';
+                btn.innerText = time;
+                btn.onclick = () => {
+                    document.getElementById('booking_time').value = time;
+                    Array.from(list.children).forEach(c => c.classList.remove('active'));
+                    btn.classList.add('active');
+                    bookBtn.style.display = 'inline-block';
+                };
+                list.appendChild(btn);
+            });
+        }
     });
 </script>
 {% endput %}
