@@ -41,8 +41,6 @@ tabs:
             label: tohur.bookings::lang.settings.working_schedule.label
             type: repeater
             prompt: Add Working Day
-            type: repeater
-            prompt: Add Day
             form:
                 fields:
                     day:
@@ -56,6 +54,7 @@ tabs:
                             thursday: Thursday
                             friday: Friday
                             saturday: Saturday
+                        span: left
                     time_blocks:
                         label: Time Blocks
                         type: repeater
