@@ -44,9 +44,19 @@ public static function getWorkingHoursByDay(string $day): array
 
     return $hours;
 }
-public function getSaveValue($value)
+public function beforeSave()
 {
-    // Return the raw value directly, nothing fancy
-    return $value;
+    foreach ($this->working_schedule as &$day) {
+        foreach ($day['time_blocks'] as &$block) {
+            if (isset($block['from_raw'])) {
+                $block['from'] = $block['from_raw'];
+                unset($block['from_raw']);
+            }
+            if (isset($block['to_raw'])) {
+                $block['to'] = $block['to_raw'];
+                unset($block['to_raw']);
+            }
+        }
+    }
 }
 }
