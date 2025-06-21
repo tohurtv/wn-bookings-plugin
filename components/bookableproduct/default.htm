@@ -1,14 +1,22 @@
 <div class="mb-4">
     <label for="booking-date">Select a Date</label>
-    <div class="input-group date" id="booking-date-picker">
-        <input type="text" class="form-control" id="booking-date" name="booking_date" autocomplete="off" />
-        <span class="input-group-text">
+    <div class="input-group input-group-sm w-auto" id="booking-date-picker" data-td-target-input="nearest" data-td-target-toggle="nearest" style="max-width: 250px;">
+        <input 
+            id="booking-date" 
+            name="booking_date" 
+            type="text" 
+            class="form-control" 
+            data-td-target="#booking-date-picker" 
+            autocomplete="off"
+            placeholder="Choose date"
+        />
+        <span class="input-group-text" data-td-target="#booking-date-picker" data-td-toggle="datetimepicker">
             <i class="fa fa-calendar"></i>
         </span>
     </div>
 </div>
 
-<div id="time-slot-wrapper" class="d-none">
+<div id="time-slot-wrapper" class="d-none mt-3">
     <label>Select a Time Slot</label>
     <div id="available-times" class="d-flex flex-wrap gap-2 mt-2">
         <!-- time buttons will appear here -->
@@ -20,4 +28,5 @@
 <div class="mt-4">
     <button class="btn btn-primary" id="book-now" style="display: none;">Book Now</button>
 </div>
+
 {% partial __SELF__ ~ '::scriptsandstyles' %}
