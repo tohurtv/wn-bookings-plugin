@@ -84,6 +84,12 @@ class Plugin extends PluginBase
     }
 });
 
+    CartProduct::extend(function ($model) {
+        // Ensure the property exists and is an array before modifying
+        $model->addFillable('booking_data');
+        $model->addJsonable('booking_data');
+    });
+    
 Event::listen('mall.cart.product.added', function (CartProduct $cartItem) {
     $bookingTime = post('booking_time');
 
@@ -139,6 +145,7 @@ Event::listen('mall.order.afterCreate', function (Order $order, Cart $cart) {
         }
     }
 });
+
     }
 
     public function registerNavigation()
