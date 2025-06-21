@@ -135,7 +135,7 @@ Event::listen('mall.order.afterCreate', function (Order $order, $cart) {
             }
 
             $booking = new \Tohur\Bookings\Models\Booking();
-            $booking->product_id = $product->id;
+            #$booking->product_id = $product->id;
             $booking->date = $bookingData['booking_time'];
             $booking->session_length = $product->session_length ?? 30;
             $booking->status_id = 1;
