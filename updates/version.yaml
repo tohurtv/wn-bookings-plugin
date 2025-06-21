@@ -37,3 +37,6 @@
 1.1.13:
     - Add session_length column to mall_products
     - add_booking_session_length_to_mall_products.php
+1.1.14:
+    - Add order_number column to tohur_bookings_bookings
+    - add_order_number_to_bookings.php
