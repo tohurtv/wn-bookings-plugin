@@ -10,7 +10,7 @@ class AddBookingDataToMallCartProducts extends Migration
     {
         if (Schema::hasTable('offline_mall_cart_products')) {
             Schema::table('offline_mall_cart_products', function (Blueprint $table) {
-                $table->integer('booking_data')->nullable()->after('isbookable');
+                $table->json('booking_data')->nullable();
             });
         }
     }
