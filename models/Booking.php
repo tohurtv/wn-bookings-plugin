@@ -33,8 +33,8 @@ class Booking extends Model
         'street' => 'max:300',
         'town' => 'max:300',
         'zip' => 'numeric|nullable',
-        'phone' => 'required|max:300',
-        'message' => 'required|max:3000',
+        'phone' => 'max:300',
+        'message' => 'max:3000',
     ];
 
     public $customMessages = [
@@ -44,7 +44,7 @@ class Booking extends Model
     public $fillable = [
         'status', 'date', 'locale', 'email', 'name', 'lastname',
         'street', 'town', 'zip', 'phone', 'message', 'session_length',
-        'order_id', 'product_id',
+        'order_id',
     ];
 
     public $dates = ['date', 'created_at', 'updated_at', 'deleted_at'];
