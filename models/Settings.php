@@ -44,4 +44,9 @@ public static function getWorkingHoursByDay(string $day): array
 
     return $hours;
 }
+public function getSaveValue($value)
+{
+    // Return the raw value directly, nothing fancy
+    return $value;
+}
 }
