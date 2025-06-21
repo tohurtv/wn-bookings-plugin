@@ -86,6 +86,7 @@ class Plugin extends PluginBase
     {
         return [
             'Tohur\Bookings\Components\BookingForm' => 'bookingForm',
+            'Tohur\Bookings\Components\BookingAvailability' => 'bookingAvailability',
         ];
     }
 
