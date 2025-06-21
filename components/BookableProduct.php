@@ -50,37 +50,39 @@ public function defineProperties()
     $this->page['settings'] = $this->settings;
 }
 
-    protected function prepareAvailableSlots()
-    {
-        // Example: Build a simple list of available days from working_schedule
-        $schedule = $this->settings->working_schedule ?: [];
-        $interval = (int)$this->settings->booking_interval ?: 15;
+protected function prepareAvailableSlots()
+{
+    $schedule = $this->settings->working_schedule ?: [];
+    $interval = (int) $this->settings->booking_interval ?: 15;
 
-        $this->availableDates = []; // e.g. ['monday', 'tuesday', ...]
+    $this->availableDates = []; // e.g. ['monday', 'tuesday', ...]
+    $allTimes = [];
 
-        foreach ($schedule as $daySchedule) {
-            if (!empty($daySchedule['day'])) {
-                $this->availableDates[] = strtolower($daySchedule['day']);
-            }
+    foreach ($schedule as $daySchedule) {
+        if (empty($daySchedule['day'])) {
+            continue;
         }
 
-        // For demo: just grab first day's time blocks, build time slots based on interval
-        if (!empty($schedule)) {
-            $timeBlocks = $schedule[0]['time_blocks'] ?? [];
+        $day = strtolower($daySchedule['day']);
+        $this->availableDates[] = $day;
 
-            $times = [];
-            foreach ($timeBlocks as $block) {
-                $from = strtotime($block['from']);
-                $to = strtotime($block['to']);
+        $timeBlocks = $daySchedule['time_blocks'] ?? [];
 
-                for ($time = $from; $time + $interval*60 <= $to; $time += $interval*60) {
-                    $times[] = date('g:i A', $time);
+        foreach ($timeBlocks as $block) {
+            $from = strtotime($block['from']);
+            $to = strtotime($block['to']);
+
+            for ($time = $from; $time + $interval * 60 <= $to; $time += $interval * 60) {
+                $formatted = date('g:i A', $time); // 12-hour format with am/pm
+                if (!in_array($formatted, $allTimes)) {
+                    $allTimes[] = $formatted;
                 }
             }
-
-            $this->availableTimes = $times;
         }
     }
+
+    $this->availableTimes = $allTimes;
+}
 public function onBookProduct()
 {
     $day = post('booking_date');
