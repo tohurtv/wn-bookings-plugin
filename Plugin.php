@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Validator;
 use System\Classes\PluginBase;
 use Tohur\Bookings\Facades\BookingsFacade;
 use Tohur\Bookings\Validators\BookingsValidators;
+use Event;
 
 class Plugin extends PluginBase
 {
