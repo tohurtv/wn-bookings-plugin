@@ -74,7 +74,7 @@ public function defineProperties()
                 $to = strtotime($block['to']);
 
                 for ($time = $from; $time + $interval*60 <= $to; $time += $interval*60) {
-                    $times[] = date('H:i', $time);
+                    $times[] = date('g:i A', $time);
                 }
             }
 
