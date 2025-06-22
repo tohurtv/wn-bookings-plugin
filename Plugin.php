@@ -9,6 +9,7 @@ use OFFLINE\Mall\Models\Product;
 use OFFLINE\Mall\Models\CartProduct;
 use OFFLINE\Mall\Models\Cart;
 use OFFLINE\Mall\Models\Order;
+use OFFLINE\Mall\Models\OrderProduct;
 use Tohur\Bookings\Models\Booking;
 use Schema;
 use Event;
@@ -90,6 +91,13 @@ class Plugin extends PluginBase
         $model->addJsonable('booking_data');
     });
 
+    OrderProduct::extend(function ($model) {
+    $model->belongsTo['cart_product'] = [
+        CartProduct::class,
+        'key' => 'cart_product_id', // this must match the column in `order_products` table
+    ];
+});
+
 Event::listen('mall.cart.product.added', function (CartProduct $cartItem) {
     $bookingTime = post('booking_time');
 
@@ -116,6 +124,10 @@ Event::listen('mall.cart.product.added', function (CartProduct $cartItem) {
         }
     }
 }); */
+
+Event::listen('mall.orderProduct.beforeCreate', function ($orderProduct, $cartProduct) {
+    $orderProduct->cart_product_id = $cartProduct->id;
+});
 
 Event::listen('mall.order.afterCreate', function (Order $order, $cart) {
     $order->load('products.product', 'products.cart_product', 'customer.user', 'billing_address');
