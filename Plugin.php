@@ -193,7 +193,33 @@ Event::listen('mall.order.afterCreate', function (Order $order, $cart) {
     }
 });
 
+Event::listen('mall.order.state.changed', function (Order $order, string $newState) {
+    // Map Mall order states to your booking status IDs
+    $statusMap = [
+        'received'  => 1, // Booking status: Received
+        'approved'  => 2, // Booking status: Approved / Confirmed
+        'canceled'  => 3, // Booking status: Canceled
+        'closed'    => 4, // Booking status: Closed / Completed
+    ];
 
+    // Normalize state string to lowercase to avoid case issues
+    $state = strtolower($newState);
+
+    if (!isset($statusMap[$state])) {
+        // Unknown or unsupported state, skip syncing
+        return;
+    }
+
+    $bookingStatusId = $statusMap[$state];
+
+    // Find all bookings for this order number
+    $bookings = Booking::where('order_number', $order->order_number)->get();
+
+    foreach ($bookings as $booking) {
+        $booking->status_id = $bookingStatusId;
+        $booking->save();
+    }
+});
 
     }
 
