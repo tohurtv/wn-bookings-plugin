@@ -197,10 +197,10 @@ Event::listen('mall.order.state.changed', function (\OFFLINE\Mall\Models\Order $
     // Map order_state_id directly to booking status_id
     $map = [
         1 => 1, // New        → Received
-        2 => 2, // In Progress → Approved
+        2 => 1, // In Progress → Approved
         3 => 3, // Disputed    → Canceled (or custom?)
         4 => 3, // Cancelled   → Canceled
-        5 => 4, // Complete    → Closed
+        5 => 2, // Complete    → Closed
     ];
 
     $stateId = $order->order_state_id;
