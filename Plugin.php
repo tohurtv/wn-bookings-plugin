@@ -84,6 +84,19 @@ class Plugin extends PluginBase
             ],
         ]);
     }
+        $widget->model->shipping_required = false;
+        $widget->model->allow_out_of_stock_purchases = true;
+});
+
+Event::listen('backend.form.beforeSave', function ($controller, $model) {
+    if (!$model instanceof OFFLINE\Mall\Models\Product) {
+        return;
+    }
+
+    if ($model->isbookable) {
+        $model->shipping_required = false;
+        $model->allow_out_of_stock_purchases = true;
+    }
 });
 
     CartProduct::extend(function ($model) {
@@ -111,20 +124,6 @@ Event::listen('mall.cart.product.added', function (CartProduct $cartItem) {
         $cartItem->save();
     }
 });
-
-/* Event::listen('mall.order.beforeCreate', function (Cart $cart) {
-    foreach ($cart->products as $cartProduct) {
-        if (!empty($cartProduct->booking_data['booking_time'])) {
-            $data = is_array($cartProduct->data) ? $cartProduct->data : [];
-
-            $cartProduct->data = array_merge($data, [
-                'booking_data' => $cartProduct->booking_data,
-            ]);
-
-            $cartProduct->save();
-        }
-    }
-}); */
 
 Event::listen('mall.orderProduct.beforeCreate', function ($orderProduct, $cartProduct) {
     $orderProduct->cart_product_id = $cartProduct->id;
