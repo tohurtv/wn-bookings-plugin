@@ -130,19 +130,31 @@ Event::listen('mall.orderProduct.beforeCreate', function ($orderProduct, $cartPr
 });
 
 Event::listen('mall.order.afterCreate', function (Order $order, $cart) {
-    $order->load('products.product', 'products.cart_product', 'customer.user', 'billing_address');
+    $order->load('products.product', 'customer.user', 'billing_address');
 
+    // Map CartProduct by some unique ID (e.g., variant_id or line hash if needed)
     foreach ($order->products as $orderProduct) {
-        $cartProduct = $orderProduct->cart_product;
+        // Match cart product by variant_id or product_id
+        $matchedCartProduct = $cart->products->first(function ($cartProduct) use ($orderProduct) {
+            return $cartProduct->product_id === $orderProduct->product_id &&
+                   $cartProduct->variant_id === $orderProduct->variant_id;
+        });
 
-        if (!$cartProduct) {
-            logger()->warning('Missing cart product for order product', [
+        if (!$matchedCartProduct) {
+            logger()->warning('No matching CartProduct found for OrderProduct', [
                 'order_product_id' => $orderProduct->id,
+                'product_id' => $orderProduct->product_id,
+                'variant_id' => $orderProduct->variant_id,
             ]);
             continue;
         }
 
-        $bookingData = $cartProduct->booking_data ?? [];
+        // Save the relationship
+        $orderProduct->cart_product_id = $matchedCartProduct->id;
+        $orderProduct->save();
+
+        // Read booking data from matched CartProduct
+        $bookingData = $matchedCartProduct->booking_data ?? [];
 
         if (!empty($bookingData['booking_time'])) {
             $product = $orderProduct->product;
