@@ -103,7 +103,7 @@ Event::listen('mall.cart.product.added', function (CartProduct $cartItem) {
     }
 });
 
-Event::listen('mall.order.beforeCreate', function (Cart $cart) {
+/* Event::listen('mall.order.beforeCreate', function (Cart $cart) {
     foreach ($cart->products as $cartProduct) {
         if (!empty($cartProduct->booking_data['booking_time'])) {
             $data = is_array($cartProduct->data) ? $cartProduct->data : [];
@@ -115,15 +115,24 @@ Event::listen('mall.order.beforeCreate', function (Cart $cart) {
             $cartProduct->save();
         }
     }
-});
+}); */
 
 Event::listen('mall.order.afterCreate', function (Order $order, $cart) {
-    $order->load('products.product', 'customer.user', 'billing_address');
+    $order->load('products.product', 'products.cart_product', 'customer.user', 'billing_address');
 
     foreach ($order->products as $orderProduct) {
-        $bookingData = $orderProduct->cart_product->booking_data ?? null;
+        $cartProduct = $orderProduct->cart_product;
 
-        if ($bookingData && isset($bookingData['booking_time'])) {
+        if (!$cartProduct) {
+            logger()->warning('Missing cart product for order product', [
+                'order_product_id' => $orderProduct->id,
+            ]);
+            continue;
+        }
+
+        $bookingData = $cartProduct->booking_data ?? [];
+
+        if (!empty($bookingData['booking_time'])) {
             $product = $orderProduct->product;
 
             if (!$product || !is_scalar($product->id)) {
