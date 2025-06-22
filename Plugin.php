@@ -193,11 +193,9 @@ Event::listen('mall.order.afterCreate', function (Order $order, $cart) {
     }
 });
 
-Event::listen('mall.order.state.changed', function (Order $order) {
-    // The current state is available as $order->status->slug
-    $state = strtolower(optional($order->status)->slug);
+Event::listen('mall.order.state.changed', function (\OFFLINE\Mall\Models\Order $order) {
+    $state = strtolower(optional($order->state)->slug); // Use 'state' relationship
 
-    // Map to Booking status_id
     $statusMap = [
         'received' => 1,
         'approved' => 2,
@@ -208,15 +206,15 @@ Event::listen('mall.order.state.changed', function (Order $order) {
     if (!isset($statusMap[$state])) {
         logger()->warning('Unhandled order state during booking sync', [
             'order_number' => $order->order_number,
-            'state' => $state,
+            'raw_state_id' => $order->order_state_id,
+            'resolved_state' => $state,
         ]);
         return;
     }
 
     $bookingStatusId = $statusMap[$state];
 
-    // Find and update bookings tied to this order
-    Booking::where('order_number', $order->order_number)->update([
+    \Tohur\Bookings\Models\Booking::where('order_number', $order->order_number)->update([
         'status_id' => $bookingStatusId,
     ]);
 });
