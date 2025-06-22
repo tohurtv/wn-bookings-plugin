@@ -193,32 +193,32 @@ Event::listen('mall.order.afterCreate', function (Order $order, $cart) {
     }
 });
 
-Event::listen('mall.order.state.changed', function (Order $order, string $newState) {
-    // Map Mall order states to your booking status IDs
+Event::listen('mall.order.state.changed', function (Order $order) {
+    // The current state is available as $order->status->slug
+    $state = strtolower(optional($order->status)->slug);
+
+    // Map to Booking status_id
     $statusMap = [
-        'received'  => 1, // Booking status: Received
-        'approved'  => 2, // Booking status: Approved / Confirmed
-        'canceled'  => 3, // Booking status: Canceled
-        'closed'    => 4, // Booking status: Closed / Completed
+        'received' => 1,
+        'approved' => 2,
+        'canceled' => 3,
+        'closed' => 4,
     ];
 
-    // Normalize state string to lowercase to avoid case issues
-    $state = strtolower($newState);
-
     if (!isset($statusMap[$state])) {
-        // Unknown or unsupported state, skip syncing
+        logger()->warning('Unhandled order state during booking sync', [
+            'order_number' => $order->order_number,
+            'state' => $state,
+        ]);
         return;
     }
 
     $bookingStatusId = $statusMap[$state];
 
-    // Find all bookings for this order number
-    $bookings = Booking::where('order_number', $order->order_number)->get();
-
-    foreach ($bookings as $booking) {
-        $booking->status_id = $bookingStatusId;
-        $booking->save();
-    }
+    // Find and update bookings tied to this order
+    Booking::where('order_number', $order->order_number)->update([
+        'status_id' => $bookingStatusId,
+    ]);
 });
 
     }
