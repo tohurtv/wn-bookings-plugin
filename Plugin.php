@@ -223,6 +223,13 @@ Event::listen('mall.order.state.changed', function (\OFFLINE\Mall\Models\Order $
                         'permissions' => ['tohur.bookings.bookings'],
                         'order'       => 100,
                     ],
+                    'calendar' => [
+                        'label'       => 'Calendar',
+                        'url'         => Backend::url('tohur/bookings/bookingcalendar'),
+                        'icon'        => 'icon-calendar-o',
+                        'permissions' => ['tohur.bookings.access_bookings'],
+                        'order'       => 100,
+                    ],
                     'statuses' => [
                         'label'       => 'tohur.bookings::lang.statuses.menu_label',
                         'icon'        => 'icon-star',

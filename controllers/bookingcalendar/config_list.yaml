@@ -1,0 +1,3 @@
+list: $/tohur/bookings/models/booking/columns.yaml
+modelClass: Tohur\Bookings\Models\Booking
+recordUrl: tohur/bookings/bookings/update/:id
