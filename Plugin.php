@@ -10,6 +10,7 @@ use OFFLINE\Mall\Models\CartProduct;
 use OFFLINE\Mall\Models\Cart;
 use OFFLINE\Mall\Models\Order;
 use OFFLINE\Mall\Models\OrderProduct;
+use OFFLINE\Mall\Models\Address;
 use Tohur\Bookings\Models\Booking;
 use Schema;
 use Event;
@@ -89,6 +90,11 @@ class Plugin extends PluginBase
         // Ensure the property exists and is an array before modifying
         $model->addFillable('booking_data');
         $model->addJsonable('booking_data');
+    });
+
+        Order::extend(function ($model) {
+        $model->belongsTo['billing_address'] = [Address::class, 'key' => 'billing_address_id'];
+        $model->belongsTo['shipping_address'] = [Address::class, 'key' => 'shipping_address_id'];
     });
 
     OrderProduct::extend(function ($model) {
