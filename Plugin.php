@@ -92,11 +92,6 @@ class Plugin extends PluginBase
         $model->addJsonable('booking_data');
     });
 
-        Order::extend(function ($model) {
-        $model->belongsTo['billing_address'] = [Address::class, 'key' => 'billing_address_id'];
-        $model->belongsTo['shipping_address'] = [Address::class, 'key' => 'shipping_address_id'];
-    });
-
     OrderProduct::extend(function ($model) {
     $model->belongsTo['cart_product'] = [
         CartProduct::class,
@@ -136,11 +131,11 @@ Event::listen('mall.orderProduct.beforeCreate', function ($orderProduct, $cartPr
 });
 
 Event::listen('mall.order.afterCreate', function (Order $order, $cart) {
-    $order->load('products.product', 'customer.user', 'billing_address');
+    // No 'billing_address' relation, so don't load it here
+    $order->load('products.product', 'customer.user');
 
-    // Map CartProduct by some unique ID (e.g., variant_id or line hash if needed)
     foreach ($order->products as $orderProduct) {
-        // Match cart product by variant_id or product_id
+        // Find matching CartProduct by product_id and variant_id
         $matchedCartProduct = $cart->products->first(function ($cartProduct) use ($orderProduct) {
             return $cartProduct->product_id === $orderProduct->product_id &&
                    $cartProduct->variant_id === $orderProduct->variant_id;
@@ -155,11 +150,10 @@ Event::listen('mall.order.afterCreate', function (Order $order, $cart) {
             continue;
         }
 
-        // Save the relationship
+        // Save cart_product_id on orderProduct if needed
         $orderProduct->cart_product_id = $matchedCartProduct->id;
         $orderProduct->save();
 
-        // Read booking data from matched CartProduct
         $bookingData = $matchedCartProduct->booking_data ?? [];
 
         if (!empty($bookingData['booking_time'])) {
@@ -184,15 +178,21 @@ Event::listen('mall.order.afterCreate', function (Order $order, $cart) {
             $booking->name = $order->customer->firstname ?? null;
             $booking->lastname = $order->customer->lastname ?? null;
 
+            // Parse billing_address which is JSON string or array
             $address = $order->billing_address;
-            $booking->street = $address->lines ?? null;
-            $booking->town = $address->city ?? null;
-            $booking->zip = $address->zip ?? null;
+            if (is_string($address)) {
+                $address = json_decode($address, true) ?: [];
+            }
+
+            $booking->street = $address['lines'] ?? null;
+            $booking->town = $address['city'] ?? null;
+            $booking->zip = $address['zip'] ?? null;
 
             $booking->save();
         }
     }
 });
+
 
 
     }
