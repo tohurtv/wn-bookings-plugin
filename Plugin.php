@@ -84,19 +84,6 @@ class Plugin extends PluginBase
             ],
         ]);
     }
-        $widget->model->shippable = false;
-        $widget->model->allow_out_of_stock_purchases = true;
-});
-
-Event::listen('backend.form.beforeSave', function ($controller, $model) {
-    if (!$model instanceof OFFLINE\Mall\Models\Product) {
-        return;
-    }
-
-    if ($model->isbookable) {
-        $model->shippable = false;
-        $model->allow_out_of_stock_purchases = true;
-    }
 });
 
     CartProduct::extend(function ($model) {
