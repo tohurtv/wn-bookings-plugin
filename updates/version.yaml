@@ -47,5 +47,5 @@
     - Add product_id column to tohur_bookings_bookings
     - add_product_id_to_bookings.php
 1.1.17:
-    - Add cart_product_id column to mall_cart_products and hook into the order process
-    - add_cart_product_id_to_mall_cart_products.php
+    - Add cart_product_id column to mall_order_products and hook into the order process
+    - add_cart_product_id_to_mall_order_products.php
