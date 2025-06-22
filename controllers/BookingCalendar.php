@@ -6,6 +6,12 @@ use Tohur\Bookings\Models\Booking;
 
 class BookingCalendar extends Controller
 {
+        public $implement = [
+        'Backend\Behaviors\ListController',
+        'Backend\Behaviors\FormController',
+    ];
+    public $listConfig = 'config_list.yaml';
+    public $formConfig = 'config_form.yaml';
     public $requiredPermissions = ['tohur.bookings.access_bookings'];
 
     public function __construct()
@@ -17,8 +23,8 @@ class BookingCalendar extends Controller
 
     public function index()
     {
-        $this->addCss('/plugins/tohur/bookings/assets/calendar.css');
-        $this->addJs('/plugins/tohur/bookings/assets/calendar.js');
+/*         $this->addCss('/plugins/tohur/bookings/assets/calendar.css');
+        $this->addJs('/plugins/tohur/bookings/assets/calendar.js'); */
 
         $this->pageTitle = 'Booking Calendar';
     }
