@@ -58,17 +58,14 @@ public function defineProperties()
     $this->page['workingSchedule'] = $this->settings->working_schedule;
     $this->page['interval'] = $sessionLength + $buffer;
 
-    $this->page['existingBookings'] = Booking::where('status_id', 2)
-        ->where('date', '>=', now()) // This is fine to keep for performance
+    $this->page['existingBookings'] = Booking::where('product_id', $product->id)
+        ->where('status_id', 2)
+        ->where('date', '>=', now())
         ->get()
         ->map(function ($booking) use ($buffer) {
-            $start = Carbon::parse($booking->date);
-            $length = $booking->session_length ?? 30;
-            $end = $start->copy()->addMinutes($length + $buffer);
-
             return [
-                'start' => $start->format('Y-m-d H:i:s'),
-                'end'   => $end->format('Y-m-d H:i:s'),
+                'start' => Carbon::parse($booking->date)->format('Y-m-d H:i:s'),
+                'length' => ($booking->session_length ?? 30) + $buffer,
             ];
         });
 }
@@ -78,57 +75,62 @@ protected function prepareAvailableSlots(Product $product)
     $schedule = $this->settings->working_schedule ?: [];
     $sessionLength = (int) $product->booking_session_length ?: 30;
     $bookingInterval = (int) $this->settings->booking_interval ?: 15;
+
     $slotSpacing = $sessionLength + $bookingInterval;
 
     $this->availableDates = [];
     $allTimes = [];
 
-    // Pull *all* approved future bookings
-    $existingBookings = Booking::where('status_id', 2)->get()->map(function ($booking) use ($bookingInterval) {
+$existingBookings = Booking::where('status_id', 2)
+    ->get()
+    ->map(function ($booking) {
         $start = Carbon::parse($booking->date);
-        $end = $start->copy()->addMinutes(($booking->session_length ?? 30) + $bookingInterval);
+        $length = $booking->session_length ?? 30;
+        $buffer = Settings::get('booking_interval', 15); // or $this->settings->booking_interval
+        $end = $start->copy()->addMinutes($length + $buffer);
         return [
             'start' => $start,
             'end'   => $end,
         ];
     });
 
-    // Check next 30 days
-    for ($i = 0; $i < 30; $i++) {
-        $dayDate = Carbon::now()->addDays($i);
-        $dayName = strtolower($dayDate->format('l'));
-
-        $daySchedule = collect($schedule)->firstWhere('day', ucfirst($dayName));
-        if (!$daySchedule) {
+    foreach ($schedule as $daySchedule) {
+        if (empty($daySchedule['day'])) {
             continue;
         }
 
-        $this->availableDates[] = $dayName;
+        $day = strtolower($daySchedule['day']);
+        $this->availableDates[] = $day;
 
-        foreach ($daySchedule['time_blocks'] ?? [] as $block) {
+        $timeBlocks = $daySchedule['time_blocks'] ?? [];
+
+        foreach ($timeBlocks as $block) {
             $from = Carbon::createFromFormat('H:i', $block['from']);
             $to = Carbon::createFromFormat('H:i', $block['to']);
 
-            // Build slots across the block using spacing logic
-            for (
-                $time = $from->copy();
-                $time->lte($to->copy()->subMinutes($sessionLength));
-                $time->addMinutes($slotSpacing)
-            ) {
-                $slotStart = $dayDate->copy()->setTimeFrom($time);
-                $slotEnd = $slotStart->copy()->addMinutes($sessionLength);
+            for ($time = $from->copy(); $time->lte($to->copy()->subMinutes($sessionLength)); $time->addMinutes($slotSpacing)) {
+                for ($i = 0; $i < 30; $i++) {
+                    $dayDate = Carbon::now()->addDays($i);
 
-                $overlaps = $existingBookings->contains(function ($booking) use ($slotStart, $slotEnd) {
-                    return $slotStart->lt($booking['end']) && $slotEnd->gt($booking['start']);
-                });
+                    if (strtolower($dayDate->format('l')) !== $day) {
+                        continue;
+                    }
 
-                if ($overlaps) {
-                    continue;
-                }
+                    $slotStart = $dayDate->copy()->setTimeFrom($time);
+                    $slotEnd = $slotStart->copy()->addMinutes($sessionLength);
 
-                $formatted = $slotStart->format('Y-m-d g:i A');
-                if (!in_array($formatted, $allTimes)) {
-                    $allTimes[] = $formatted;
+                    $overlaps = $existingBookings->contains(function ($booking) use ($slotStart, $slotEnd) {
+                        return $slotStart->lt($booking['end']) && $slotEnd->gt($booking['start']);
+                    });
+
+                    if ($overlaps) {
+                        continue;
+                    }
+
+                    $formatted = $slotStart->format('Y-m-d g:i A');
+                    if (!in_array($formatted, $allTimes)) {
+                        $allTimes[] = $formatted;
+                    }
                 }
             }
         }
@@ -136,6 +138,7 @@ protected function prepareAvailableSlots(Product $product)
 
     $this->availableTimes = $allTimes;
 }
+
 public function onBookProduct()
 {
     $day = post('booking_date');
