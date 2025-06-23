@@ -57,61 +57,58 @@ protected function prepareAvailableSlots(Product $product)
 {
     $schedule = $this->settings->working_schedule ?: [];
     $sessionLength = (int) $product->booking_session_length ?: 30;
+    $bookingInterval = (int) $this->settings->booking_interval ?: 15;
+    $slotSpacing = $sessionLength + $bookingInterval;
 
     $this->availableDates = [];
     $allTimes = [];
 
-    // Get confirmed future bookings with session length
-    $existingBookings = Booking::where('date', '>=', now())
-        ->where('status_id', 2)
-        ->get()
-        ->map(function ($booking) {
-            $start = Carbon::parse($booking->date);
-            $end = $start->copy()->addMinutes($booking->session_length ?? 30);
-            return [
-                'start' => $start,
-                'end'   => $end
-            ];
-        });
+    // Pull *all* approved future bookings
+    $existingBookings = Booking::where('status_id', 2)->get()->map(function ($booking) use ($bookingInterval) {
+        $start = Carbon::parse($booking->date);
+        $end = $start->copy()->addMinutes(($booking->session_length ?? 30) + $bookingInterval);
+        return [
+            'start' => $start,
+            'end'   => $end,
+        ];
+    });
 
-    foreach ($schedule as $daySchedule) {
-        if (empty($daySchedule['day'])) {
+    // Check next 30 days
+    for ($i = 0; $i < 30; $i++) {
+        $dayDate = Carbon::now()->addDays($i);
+        $dayName = strtolower($dayDate->format('l'));
+
+        $daySchedule = collect($schedule)->firstWhere('day', ucfirst($dayName));
+        if (!$daySchedule) {
             continue;
         }
 
-        $day = strtolower($daySchedule['day']);
-        $this->availableDates[] = $day;
+        $this->availableDates[] = $dayName;
 
-        $timeBlocks = $daySchedule['time_blocks'] ?? [];
-
-        foreach ($timeBlocks as $block) {
+        foreach ($daySchedule['time_blocks'] ?? [] as $block) {
             $from = Carbon::createFromFormat('H:i', $block['from']);
             $to = Carbon::createFromFormat('H:i', $block['to']);
 
-            for ($time = $from->copy(); $time->lte($to->copy()->subMinutes($sessionLength)); $time->addMinutes($sessionLength)) {
-                for ($i = 0; $i < 30; $i++) {
-                    $dayDate = Carbon::now()->addDays($i);
+            // Build slots across the block using spacing logic
+            for (
+                $time = $from->copy();
+                $time->lte($to->copy()->subMinutes($sessionLength));
+                $time->addMinutes($slotSpacing)
+            ) {
+                $slotStart = $dayDate->copy()->setTimeFrom($time);
+                $slotEnd = $slotStart->copy()->addMinutes($sessionLength);
 
-                    if (strtolower($dayDate->format('l')) !== $day) {
-                        continue;
-                    }
+                $overlaps = $existingBookings->contains(function ($booking) use ($slotStart, $slotEnd) {
+                    return $slotStart->lt($booking['end']) && $slotEnd->gt($booking['start']);
+                });
 
-                    $slotStart = $dayDate->copy()->setTimeFrom($time);
-                    $slotEnd = $slotStart->copy()->addMinutes($sessionLength);
+                if ($overlaps) {
+                    continue;
+                }
 
-                    // Check for overlap with any existing approved booking
-                    $overlaps = $existingBookings->contains(function ($booking) use ($slotStart, $slotEnd) {
-                        return $slotStart->lt($booking['end']) && $slotEnd->gt($booking['start']);
-                    });
-
-                    if ($overlaps) {
-                        continue;
-                    }
-
-                    $formatted = $slotStart->format('Y-m-d g:i A');
-                    if (!in_array($formatted, $allTimes)) {
-                        $allTimes[] = $formatted;
-                    }
+                $formatted = $slotStart->format('Y-m-d g:i A');
+                if (!in_array($formatted, $allTimes)) {
+                    $allTimes[] = $formatted;
                 }
             }
         }
