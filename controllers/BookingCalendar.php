@@ -18,6 +18,7 @@ class BookingCalendar extends Controller
 
 public function index()
 {
+    $this->pageTitle = 'Booking Calendar';
     $bookings = \Tohur\Bookings\Models\Booking::where('status_id', 2)->get();
 
     $events = [];
