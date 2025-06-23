@@ -64,17 +64,18 @@ protected function prepareAvailableSlots(Product $product)
     $this->availableDates = [];
     $allTimes = [];
 
-    $existingBookings = Booking::where('date', '>=', now())
-        ->where('status_id', 2)
-        ->get()
-        ->map(function ($booking) {
-            $start = Carbon::parse($booking->date);
-            $end = $start->copy()->addMinutes($booking->session_length ?? 30);
-            return [
-                'start' => $start,
-                'end'   => $end
-            ];
-        });
+$existingBookings = Booking::where('product_id', $product->id)
+    ->where('date', '>=', now())
+    ->where('status_id', 2)
+    ->get()
+    ->map(function ($booking) {
+        $start = Carbon::parse($booking->date);
+        $end = $start->copy()->addMinutes($booking->session_length ?? 30);
+        return [
+            'start' => $start,
+            'end'   => $end
+        ];
+    });
 
     foreach ($schedule as $daySchedule) {
         if (empty($daySchedule['day'])) {
