@@ -1,20 +1,28 @@
-<div class="p-3">
-    <h3>Booking Calendar</h3>
-    <div id="booking-calendar"></div>
-</div>
+<style>
+  html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden; /* prevent page scroll */
+  }
 
-{% put scripts %}
+  #booking-calendar {
+    height: 100vh; /* or 100% if nested inside a container that has height: 100% */
+  }
+</style>
+
+<div id="booking-calendar"></div>
+
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const calendarEl = document.getElementById('booking-calendar');
-        const calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: 'dayGridMonth',
-            events: {{ events|json_encode|raw }}
-        });
-        calendar.render();
+document.addEventListener('DOMContentLoaded', function() {
+    const calendarEl = document.getElementById('booking-calendar');
+    const calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        height: '100%',
+        events: <?= $events ?>
     });
+    calendar.render();
+});
 </script>
-{% endput %}
-
 
