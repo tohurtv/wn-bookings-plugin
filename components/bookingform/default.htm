@@ -1,65 +1,71 @@
-<form data-request="{{ __SELF__ }}::onBookRequest" data-request-success="this.reset(); $('#available-times').empty(); $('#time-slot-wrapper').addClass('d-none');">
-    <div class="mb-3">
-    <label for="name" class="form-label">Full Name</label>
-    <input type="text" class="form-control" name="name" id="name" required maxlength="300">
-</div>
+<form data-request="{{ __SELF__ }}::onBookRequest"
+      data-request-success="this.reset(); $('#available-times').empty(); $('#time-slot-wrapper').addClass('d-none');">
 
-<div class="mb-3">
-    <label for="email" class="form-label">Email Address</label>
-    <input type="email" class="form-control" name="email" id="email" required>
-</div>
+    <div class="row g-3">
+        <div class="col-md-6">
+            <label for="name" class="form-label">Full Name *</label>
+            <input type="text" class="form-control" name="name" id="name" required maxlength="300">
+        </div>
 
-<div class="mb-3">
-    <label for="phone" class="form-label">Phone</label>
-    <input type="text" class="form-control" name="phone" id="phone" maxlength="300">
-</div>
+        <div class="col-md-6">
+            <label for="email" class="form-label">Email Address *</label>
+            <input type="email" class="form-control" name="email" id="email" required>
+        </div>
 
-<div class="mb-3">
-    <label for="street" class="form-label">Street</label>
-    <input type="text" class="form-control" name="street" id="street" maxlength="300">
-</div>
+        <div class="col-md-6">
+            <label for="phone" class="form-label">Phone</label>
+            <input type="text" class="form-control" name="phone" id="phone" maxlength="300">
+        </div>
 
-<div class="mb-3">
-    <label for="town" class="form-label">Town</label>
-    <input type="text" class="form-control" name="town" id="town" maxlength="300">
-</div>
+        <div class="col-md-6">
+            <label for="zip" class="form-label">ZIP</label>
+            <input type="number" class="form-control" name="zip" id="zip">
+        </div>
 
-<div class="mb-3">
-    <label for="zip" class="form-label">ZIP</label>
-    <input type="number" class="form-control" name="zip" id="zip">
-</div>
+        <div class="col-md-6">
+            <label for="street" class="form-label">Street</label>
+            <input type="text" class="form-control" name="street" id="street" maxlength="300">
+        </div>
 
-<div class="mb-3">
-    <label for="message" class="form-label">Additional Notes</label>
-    <textarea class="form-control" name="message" id="message" rows="4" maxlength="3000"></textarea>
-</div>
-    <div class="mb-4">
-        <label for="booking-date">Select a Date</label>
-        <div class="input-group input-group-sm w-auto" id="booking-date-picker" style="max-width: 250px;">
-            <input 
-                id="booking-date" 
-                name="booking_date" 
-                type="text" 
-                class="form-control" 
-                autocomplete="off"
-                placeholder="Choose date"
-            />
-            <span class="input-group-text">
-                <i class="bi bi-calendar3"></i>
-            </span>
+        <div class="col-md-6">
+            <label for="town" class="form-label">Town</label>
+            <input type="text" class="form-control" name="town" id="town" maxlength="300">
+        </div>
+
+        <div class="col-12">
+            <label for="message" class="form-label">Additional Notes</label>
+            <textarea class="form-control" name="message" id="message" rows="4" maxlength="3000"></textarea>
+        </div>
+
+        <div class="col-md-6">
+            <label for="booking-date">Select a Date *</label>
+            <div class="input-group input-group-sm" id="booking-date-picker">
+                <input 
+                    id="booking-date" 
+                    name="booking_date" 
+                    type="text" 
+                    class="form-control" 
+                    autocomplete="off"
+                    placeholder="Choose date"
+                    required
+                />
+                <span class="input-group-text">
+                    <i class="bi bi-calendar3"></i>
+                </span>
+            </div>
+        </div>
+
+        <div class="col-12 d-none mt-3" id="time-slot-wrapper">
+            <label class="form-label">Select a Time Slot *</label>
+            <div id="available-times" class="d-flex flex-wrap gap-2 mt-2">
+                <!-- time buttons will appear here -->
+            </div>
+            <input type="hidden" name="booking_time" id="booking_time" required />
+            <small id="selected-time-label" class="text-muted d-block mt-2"></small>
         </div>
     </div>
 
-    <div id="time-slot-wrapper" class="d-none mt-3">
-        <label>Select a Time Slot</label>
-        <div id="available-times" class="d-flex flex-wrap gap-2 mt-2">
-            <!-- time buttons will appear here -->
-        </div>
-    </div>
-
-    <input type="hidden" name="booking_time" id="booking_time" value="" />
-
-    <button type="submit" class="btn btn-primary mt-3">
+    <button type="submit" class="btn btn-primary mt-4">
         Request Booking
     </button>
 </form>
