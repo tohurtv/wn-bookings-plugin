@@ -1,16 +1,19 @@
-<div id="calendar"></div>
+<div class="p-3">
+    <h3>Booking Calendar</h3>
+    <div id="booking-calendar"></div>
+</div>
 
-<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+{% put scripts %}
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const calendarEl = document.getElementById('calendar');
-
+    document.addEventListener('DOMContentLoaded', function() {
+        const calendarEl = document.getElementById('booking-calendar');
         const calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
-            events: {{ __SELF__.getApprovedBookings()|json_encode|raw }}
+            events: '{{ "onLoadEvents" | ajax }}'
         });
-
         calendar.render();
     });
 </script>
+{% endput %}
+
