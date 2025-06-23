@@ -51,6 +51,22 @@ public function defineProperties()
     $this->page['availableDates'] = $this->availableDates;
     $this->page['availableTimes'] = $this->availableTimes;
     $this->page['settings'] = $this->settings;
+
+        $buffer = $this->settings->booking_interval ?? 15;
+
+    $this->page['existingBookings'] = Booking::where('status_id', 2)
+        ->where('date', '>=', now()) // This is fine to keep for performance
+        ->get()
+        ->map(function ($booking) use ($buffer) {
+            $start = Carbon::parse($booking->date);
+            $length = $booking->session_length ?? 30;
+            $end = $start->copy()->addMinutes($length + $buffer);
+
+            return [
+                'start' => $start->format('Y-m-d H:i:s'),
+                'end'   => $end->format('Y-m-d H:i:s'),
+            ];
+        });
 }
 
 protected function prepareAvailableSlots(Product $product)
