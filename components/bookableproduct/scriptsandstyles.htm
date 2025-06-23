@@ -14,8 +14,12 @@
 <script src="/plugins/tohur/bookings/assets/js/bootstrap-datepicker.min.js" crossorigin="anonymous"></script>
 
 <script>
+    // Twig-passed backend variables
     const workingSchedule = {{ settings.working_schedule|json_encode|raw }};
     const interval = {{ settings.booking_interval|default(15) }};
+    const sessionLength = {{ product.booking_session_length|default(30) }};
+    const spacing = sessionLength + interval;
+
     const dayNames = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
     const enabledDays = workingSchedule.map(day => dayNames.indexOf(day.day.toLowerCase()));
 
@@ -36,9 +40,9 @@
             let from = parseTime(block.from);
             let to = parseTime(block.to);
 
-            while (from < to) {
-                times.push(new Date(from)); // Clone time block
-                from.setMinutes(from.getMinutes() + interval);
+            while (from.getTime() + sessionLength * 60000 <= to.getTime()) {
+                times.push(new Date(from)); // clone
+                from.setMinutes(from.getMinutes() + spacing); // add buffer spacing
             }
         }
 
@@ -95,7 +99,7 @@
             times.forEach(time => {
                 const btn = document.createElement('button');
                 btn.type = 'button';
-                btn.className = 'btn btn-outline-primary';
+                btn.className = 'btn btn-outline-primary m-1';
                 btn.innerText = formatTime(time);
 
                 btn.onclick = () => {
@@ -121,7 +125,6 @@
         }
     });
 </script>
-
 {% endput %}
 
 
