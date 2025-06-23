@@ -1,62 +1,67 @@
-<div id="result">
-    {% flash %}
-    <p class="alert alert-success">{{ message }}</p>
-    {% endflash %}
-
-    {% if error %}
-    <p class="alert alert-danger">{{ error }}</p>
-    {% endif %}
+<form data-request="{{ __SELF__ }}::onBookRequest" data-request-success="this.reset(); $('#available-times').empty(); $('#time-slot-wrapper').addClass('d-none');">
+    <div class="mb-3">
+    <label for="name" class="form-label">Full Name</label>
+    <input type="text" class="form-control" name="name" id="name" required maxlength="300">
 </div>
 
-<script type="text/javascript">
-    var booked = JSON.parse('{{ dates | raw }}');
-    var dateFormat = '{{ settings.formats_date }}';
-    var timeFormat = '{{ settings.formats_time }}';
-    var timeInterval = {{ settings.booking_interval }};
-    var firstDay = {{ settings.first_weekday }};
-    var disableDays = "{{ settings.work_days|join(',') }}";
-    var startWork = '{{ settings.work_time_from }}';
-    var finishWork = '{{ settings.work_time_to }}';
-</script>
+<div class="mb-3">
+    <label for="email" class="form-label">Email Address</label>
+    <input type="email" class="form-control" name="email" id="email" required>
+</div>
 
-<form
-    class="bookingform form"
-    method="post"
-    data-request="{{ __SELF__ }}::onSubmit"
-    data-request-update="'{{ __SELF__ }}::success': '#result'"
-    data-request-success="$('#{{ __SELF__ }} input[type=text], #{{ __SELF__ }} textarea').val('');"
-    id="{{__SELF__}}"{% if sent %} class="sent"{% endif %}>
+<div class="mb-3">
+    <label for="phone" class="form-label">Phone</label>
+    <input type="text" class="form-control" name="phone" id="phone" maxlength="300">
+</div>
 
-    <div class="form-group">
-        <label for="date">{{ 'tohur.bookings::lang.booking.date'|trans }}</label>
-        <input id="date" name="date" class="form-control datepicker" type="text" value="{{ post.date }}" />
-    </div>
-    <div class="form-group">
-        <label for="time">{{ 'tohur.bookings::lang.booking.time'|trans }}</label>
-        <input id="time" name="time" class="form-control" type="text" value="{{ post.time }}" />
-    </div>
-    <div class="form-group">
-        <label for="email">{{ 'tohur.bookings::lang.booking.email'|trans }}</label>
-        <input id="email" name="email" class="form-control" type="text" placeholder="{{ 'tohur.bookings::lang.booking.email'|trans }}" value="{{ post.email }}" />
-    </div>
-    <div class="form-group">
-        <label for="name">{{ 'tohur.bookings::lang.booking.name'|trans }}</label>
-        <input id="name" name="name" class="form-control" type="text" placeholder="{{ 'tohur.bookings::lang.booking.name'|trans }}" value="{{ post.name }}" />
-    </div>
-    <div class="form-group">
-        <label for="street">{{ 'tohur.bookings::lang.booking.street'|trans }}</label>
-        <input id="street" name="street" class="form-control" type="text" placeholder="{{ 'tohur.bookings::lang.booking.street'|trans }}" value="{{ post.street }}" />
-    </div>
-    <div class="form-group">
-        <label for="phone">{{ 'tohur.bookings::lang.booking.phone'|trans }}</label>
-        <input id="phone" name="phone" class="form-control" type="text" placeholder="{{ 'tohur.bookings::lang.booking.phone'|trans }}" value="{{ post.phone }}" />
-    </div>
-    <div class="form-group">
-        <label for="message">{{ 'tohur.bookings::lang.booking.message'|trans }}</label>
-        <textarea id="message" name="message" class="form-control" placeholder="{{ 'tohur.bookings::lang.booking.message'|trans }}">{{ post.message }}</textarea>
+<div class="mb-3">
+    <label for="street" class="form-label">Street</label>
+    <input type="text" class="form-control" name="street" id="street" maxlength="300">
+</div>
+
+<div class="mb-3">
+    <label for="town" class="form-label">Town</label>
+    <input type="text" class="form-control" name="town" id="town" maxlength="300">
+</div>
+
+<div class="mb-3">
+    <label for="zip" class="form-label">ZIP</label>
+    <input type="number" class="form-control" name="zip" id="zip">
+</div>
+
+<div class="mb-3">
+    <label for="message" class="form-label">Additional Notes</label>
+    <textarea class="form-control" name="message" id="message" rows="4" maxlength="3000"></textarea>
+</div>
+    <div class="mb-4">
+        <label for="booking-date">Select a Date</label>
+        <div class="input-group input-group-sm w-auto" id="booking-date-picker" style="max-width: 250px;">
+            <input 
+                id="booking-date" 
+                name="booking_date" 
+                type="text" 
+                class="form-control" 
+                autocomplete="off"
+                placeholder="Choose date"
+            />
+            <span class="input-group-text">
+                <i class="bi bi-calendar3"></i>
+            </span>
+        </div>
     </div>
 
-    {{ form_token() }}
-    <button type="submit" name="{{ __SELF__ }}-submit" class="btn btn-success" value="1" id="submit">{{ 'tohur.bookings::lang.booking.submit'|trans }}</button>
+    <div id="time-slot-wrapper" class="d-none mt-3">
+        <label>Select a Time Slot</label>
+        <div id="available-times" class="d-flex flex-wrap gap-2 mt-2">
+            <!-- time buttons will appear here -->
+        </div>
+    </div>
 
+    <input type="hidden" name="booking_time" id="booking_time" value="" />
+
+    <button type="submit" class="btn btn-primary mt-3">
+        Request Booking
+    </button>
 </form>
+
+{% partial __SELF__ ~ '::scriptsandstyles' %}

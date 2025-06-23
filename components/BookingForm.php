@@ -1,160 +1,149 @@
 <?php namespace Tohur\Bookings\Components;
 
-use App;
 use Cms\Classes\ComponentBase;
-use Exception;
-use Flash;
-use Illuminate\Support\Facades\Log;
-use Input;
-use Lang;
-use Winter\Storm\Exception\ApplicationException;
-use Winter\Storm\Exception\ValidationException;
-use Redirect;
-use Session;
-use Tohur\Bookings\Classes\Variables;
-use Tohur\Bookings\Facades\BookingsFacade;
+use Tohur\Bookings\Models\Settings;
+use Tohur\Bookings\Models\Booking;
+use Carbon\Carbon;
 
-/**
- * Booking Form component.
- *
- * @package Tohur\Bookings\Components
- */
 class BookingForm extends ComponentBase
 {
-    const PATH_PICKADATE_COMPRESSED = '/plugins/tohur/bookings/assets/vendor/pickadate/lib/compressed/';
-
-    protected $pickerLang = [
-        'cs' => 'cs_CZ',
-        'es' => 'es_ES',
-        'ru' => 'ru_RU',
-        'fr' => 'fr_FR',
-    ];
+    public $settings;
+    public $availableDates = [];
+    public $availableTimes = [];
 
     public function componentDetails()
-	{
-		return [
-			'name' => 'tohur.bookings::lang.bookingform.name',
-			'description' => 'tohur.bookings::lang.bookingform.description',
-		];
-	}
-
-    /**
-     * AJAX form submit handler.
-     */
-    public function onSubmit()
-    {
-        // check CSRF token
-        if (Session::token() !== Input::get('_token')) {
-            throw new ApplicationException(Lang::get('tohur.bookings::lang.errors.session_expired'));
-        }
-
-        $data = Input::all();
-        $this->getFacade()->storeBooking($data);
-    }
-
-    /**
-     * Fallback for non-ajax POST request.
-     */
-	public function onRun()
-	{
-        $facade = $this->getFacade();
-
-		$error = false;
-		if (Input::get($this->alias . '-submit')) {
-
-            // check CSRF token
-            if (Session::token() !== Input::get('_token')) {
-                $error = Lang::get('tohur.bookings::lang.errors.session_expired');
-
-            } else {
-                try {
-                    $data = Input::all();
-                    $facade->storeBooking($data);
-                    $msg = Lang::get('tohur.bookings::lang.bookingform.success');
-                    Flash::success($msg);
-
-                    return Redirect::to($this->page->url . '#' . $this->alias, 303);
-
-                } catch(ValidationException $e) {
-                    $error = $e->getMessage();
-
-                } catch(ApplicationException $e) {
-                    $error = $e->getMessage();
-
-                } catch(Exception $e) {
-                    Log::error($e->getMessage());
-                    $error = Lang::get('tohur.bookings::lang.errors.exception');
-                }
-            }
-		}
-
-		// inject assets
-        $this->injectAssets();
-
-		// load booked dates and their time slots
-        $dates = $this->getReservedDates();
-
-        // template data
-		$this->page['sent'] = Flash::check();
-		$this->page['post'] = post();
-		$this->page['error'] = $error;
-        $this->page['dates'] = json_encode($dates);
-        $this->page['settings'] = $this->getCalendarSetting();
-	}
-
-    /**
-     * Get reserved dates.
-     *
-     * @return array
-     */
-    protected function getReservedDates()
-    {
-        return $this->getFacade()->getReservedDates();
-    }
-
-    /**
-     * @return array
-     */
-    protected function getCalendarSetting()
     {
         return [
-            'formats_date' => Variables::getDateFormat(),
-            'formats_time' => Variables::getTimeFormat(),
-            'booking_interval' => Variables::getBookingInterval(),
-            'first_weekday' => Variables::getFirstWeekday(),
-            'work_time_from' => Variables::getWorkTimeFrom(),
-            'work_time_to' => Variables::getWorkTimeTo(),
-            'work_days' => Variables::getWorkingDays(),
+            'name'        => 'Booking Form',
+            'description' => 'Standalone booking request form without requiring a product.'
         ];
     }
 
-    /**
-     * Inject components assets.
-     */
-    protected function injectAssets()
+    public function onRun()
     {
-        $this->addCss(self::PATH_PICKADATE_COMPRESSED.'themes/classic.css');
-        $this->addCss(self::PATH_PICKADATE_COMPRESSED.'themes/classic.date.css');
-        $this->addCss(self::PATH_PICKADATE_COMPRESSED.'themes/classic.time.css');
-        $this->addJs(self::PATH_PICKADATE_COMPRESSED.'picker.js');
-        $this->addJs(self::PATH_PICKADATE_COMPRESSED.'picker.date.js');
-        $this->addJs(self::PATH_PICKADATE_COMPRESSED.'picker.time.js');
+        $this->settings = Settings::instance();
 
-        $locale = Lang::getLocale();
-        $translation = isset($this->pickerLang[$locale]) ? $this->pickerLang[$locale] : null;
-        if ($translation !== null) {
-            $this->addJs(self::PATH_PICKADATE_COMPRESSED.'translations/'.$translation.'.js');
+        $sessionLength = (int) ($this->settings->default_session_length ?? 30);
+        $buffer = (int) ($this->settings->booking_interval ?? 15);
+        $slotSpacing = $sessionLength + $buffer;
+
+        $this->prepareAvailableSlots($sessionLength, $slotSpacing);
+
+        $this->page['availableDates'] = $this->availableDates;
+        $this->page['availableTimes'] = $this->availableTimes;
+        $this->page['settings'] = $this->settings;
+        $this->page['workingSchedule'] = $this->settings->working_schedule;
+        $this->page['interval'] = $slotSpacing;
+
+        $this->page['existingBookings'] = Booking::where('status_id', 2)
+            ->where('date', '>=', now())
+            ->get()
+            ->map(function ($booking) use ($buffer) {
+                $start = Carbon::parse($booking->date);
+                $length = $booking->session_length ?? 30;
+                $end = $start->copy()->addMinutes($length + $buffer);
+
+                return [
+                    'start'  => $start->format('Y-m-d H:i:s'),
+                    'end'    => $end->format('Y-m-d H:i:s'),
+                    'length' => $length + $buffer,
+                ];
+            });
+    }
+
+    protected function prepareAvailableSlots(int $sessionLength, int $slotSpacing)
+    {
+        $schedule = $this->settings->working_schedule ?: [];
+
+        $this->availableDates = [];
+        $allTimes = [];
+
+        $existingBookings = Booking::where('status_id', 2)->get()->map(function ($booking) use ($slotSpacing) {
+            $start = Carbon::parse($booking->date);
+            $end = $start->copy()->addMinutes(($booking->session_length ?? 30) + $slotSpacing);
+            return [
+                'start' => $start,
+                'end'   => $end,
+            ];
+        });
+
+        for ($i = 0; $i < 30; $i++) {
+            $dayDate = Carbon::now()->addDays($i);
+            $dayName = strtolower($dayDate->format('l'));
+
+            $daySchedule = collect($schedule)->firstWhere('day', ucfirst($dayName));
+            if (!$daySchedule) continue;
+
+            $this->availableDates[] = $dayName;
+
+            foreach ($daySchedule['time_blocks'] ?? [] as $block) {
+                $from = Carbon::createFromFormat('H:i', $block['from']);
+                $to = Carbon::createFromFormat('H:i', $block['to']);
+
+                for (
+                    $time = $from->copy();
+                    $time->lte($to->copy()->subMinutes($sessionLength));
+                    $time->addMinutes($slotSpacing)
+                ) {
+                    $slotStart = $dayDate->copy()->setTimeFrom($time);
+                    $slotEnd = $slotStart->copy()->addMinutes($sessionLength);
+
+                    $overlaps = $existingBookings->contains(function ($booking) use ($slotStart, $slotEnd) {
+                        return $slotStart->lt($booking['end']) && $slotEnd->gt($booking['start']);
+                    });
+
+                    if (!$overlaps) {
+                        $formatted = $slotStart->format('Y-m-d g:i A');
+                        if (!in_array($formatted, $allTimes)) {
+                            $allTimes[] = $formatted;
+                        }
+                    }
+                }
+            }
         }
 
-        $this->addJs('/plugins/tohur/bookings/assets/js/convert.js');
-        $this->addJs('/plugins/tohur/bookings/assets/js/bookingform.js');
+        $this->availableTimes = $allTimes;
     }
 
-    /**
-     * @return BookingsFacade
-     */
-    protected function getFacade()
-    {
-        return App::make(BookingsFacade::class);
+   public function onBookRequest()
+{
+    $data = post();
+
+    $rules = [
+        'email' => 'required|email',
+        'name' => 'required|max:300',
+        'street' => 'max:300',
+        'town' => 'max:300',
+        'zip' => 'nullable|numeric',
+        'phone' => 'max:300',
+        'message' => 'max:3000',
+        'booking_date' => 'required|date',
+        'booking_time' => 'required|date_format:Y-m-d H:i:s',
+    ];
+
+    $validator = Validator::make($data, $rules);
+
+    if ($validator->fails()) {
+        throw new \ValidationException($validator);
     }
+
+    $booking = new Booking();
+    $booking->email = $data['email'];
+    $booking->name = $data['name'];
+    $booking->street = $data['street'] ?? null;
+    $booking->town = $data['town'] ?? null;
+    $booking->zip = $data['zip'] ?? null;
+    $booking->phone = $data['phone'] ?? null;
+    $booking->message = $data['message'] ?? null;
+    $booking->date = $data['booking_date'];
+    $booking->start = $data['booking_time'];
+    $booking->length = $this->settings->booking_interval;
+    $booking->status_id = 1; // Received
+    $booking->user_id = Auth::getUser()?->id;
+
+    $booking->save();
+
+    Flash::success('Your booking has been received. We will contact you shortly.');
+}
+
 }
