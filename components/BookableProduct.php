@@ -57,11 +57,13 @@ protected function prepareAvailableSlots(Product $product)
 {
     $schedule = $this->settings->working_schedule ?: [];
     $sessionLength = (int) $product->booking_session_length ?: 30;
+    $bookingInterval = (int) $this->settings->booking_interval ?: 15;
+
+    $slotSpacing = $sessionLength + $bookingInterval;
 
     $this->availableDates = [];
     $allTimes = [];
 
-    // Get confirmed future bookings with session length
     $existingBookings = Booking::where('date', '>=', now())
         ->where('status_id', 2)
         ->get()
@@ -88,7 +90,7 @@ protected function prepareAvailableSlots(Product $product)
             $from = Carbon::createFromFormat('H:i', $block['from']);
             $to = Carbon::createFromFormat('H:i', $block['to']);
 
-            for ($time = $from->copy(); $time->lte($to->copy()->subMinutes($sessionLength)); $time->addMinutes($sessionLength)) {
+            for ($time = $from->copy(); $time->lte($to->copy()->subMinutes($sessionLength)); $time->addMinutes($slotSpacing)) {
                 for ($i = 0; $i < 30; $i++) {
                     $dayDate = Carbon::now()->addDays($i);
 
@@ -99,7 +101,6 @@ protected function prepareAvailableSlots(Product $product)
                     $slotStart = $dayDate->copy()->setTimeFrom($time);
                     $slotEnd = $slotStart->copy()->addMinutes($sessionLength);
 
-                    // Check for overlap with any existing approved booking
                     $overlaps = $existingBookings->contains(function ($booking) use ($slotStart, $slotEnd) {
                         return $slotStart->lt($booking['end']) && $slotEnd->gt($booking['start']);
                     });
@@ -119,7 +120,6 @@ protected function prepareAvailableSlots(Product $product)
 
     $this->availableTimes = $allTimes;
 }
-
 
 public function onBookProduct()
 {
