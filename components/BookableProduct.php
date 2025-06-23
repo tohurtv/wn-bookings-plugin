@@ -34,7 +34,7 @@ public function defineProperties()
     ];
 }
 
-    public function onRun()
+public function onRun()
 {
     $slug = $this->property('slug');
     $this->product = Product::where('slug', $slug)->first();
@@ -44,6 +44,10 @@ public function defineProperties()
     }
 
     $this->settings = Settings::instance();
+
+    $sessionLength = (int) ($this->product->booking_session_length ?? 30);
+    $buffer = (int) ($this->settings->booking_interval ?? 15);
+
     $this->prepareAvailableSlots($this->product);
 
     // Pass data to page
@@ -51,11 +55,11 @@ public function defineProperties()
     $this->page['availableDates'] = $this->availableDates;
     $this->page['availableTimes'] = $this->availableTimes;
     $this->page['settings'] = $this->settings;
-
-        $buffer = $this->settings->booking_interval ?? 15;
+    $this->page['workingSchedule'] = $this->settings->working_schedule;
+    $this->page['interval'] = $sessionLength + $buffer;
 
     $this->page['existingBookings'] = Booking::where('status_id', 2)
-        ->where('date', '>=', now()) // This is fine to keep for performance
+        ->where('date', '>=', now())
         ->get()
         ->map(function ($booking) use ($buffer) {
             $start = Carbon::parse($booking->date);
@@ -65,9 +69,11 @@ public function defineProperties()
             return [
                 'start' => $start->format('Y-m-d H:i:s'),
                 'end'   => $end->format('Y-m-d H:i:s'),
+                'length' => $length + $buffer,
             ];
         });
 }
+
 
 protected function prepareAvailableSlots(Product $product)
 {
