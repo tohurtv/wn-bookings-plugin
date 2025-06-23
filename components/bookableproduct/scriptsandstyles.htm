@@ -14,144 +14,133 @@
 <script src="/plugins/tohur/bookings/assets/js/bootstrap-datepicker.min.js" crossorigin="anonymous"></script>
 
 <script>
-const workingSchedule = {{ workingSchedule|json_encode|raw }};
-const interval = {{ interval }}; // session + buffer
-const existingBookings = {{ existingBookings|json_encode|raw }};
-const dayNames = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
-const enabledDays = workingSchedule.map(day => dayNames.indexOf(day.day.toLowerCase()));
+    const workingSchedule = {{ workingSchedule|json_encode|raw }};
+    const interval = {{ interval }}; // session + buffer
+    const existingBookings = {{ existingBookings|json_encode|raw }};
+    const dayNames = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
+    const enabledDays = workingSchedule.map(day => dayNames.indexOf(day.day.toLowerCase()));
 
-let selectedDate = null;
+    let selectedDate = null;
 
-function getDayName(date) {
-    return date.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
-}
-
-function parseTime(timeStr) {
-    const [h, m] = timeStr.split(':');
-    const date = new Date();
-    date.setHours(+h, +m, 0, 0);
-    return date;
-}
-
-function formatTime(date) {
-    return date.toLocaleTimeString(undefined, {
-        hour: '2-digit',
-        minute: '2-digit'
-    });
-}
-
-function getTimesForDay(dayName) {
-    const day = workingSchedule.find(s => s.day.toLowerCase() === dayName);
-    if (!day) return [];
-
-    const times = [];
-    const blocks = day.time_blocks || [];
-
-    for (let block of blocks) {
-        let from = parseTime(block.from);
-        let to = parseTime(block.to);
-
-        while (from < to) {
-            const proposedStart = new Date(from);
-            const proposedEnd = new Date(proposedStart);
-            proposedEnd.setMinutes(proposedEnd.getMinutes() + interval);
-
-            const fullDate = selectedDate.toISOString().split('T')[0];
-            const slotStart = new Date(`${fullDate}T${proposedStart.toTimeString().slice(0,5)}`);
-            const slotEnd = new Date(slotStart);
-            slotEnd.setMinutes(slotEnd.getMinutes() + interval);
-
-            const overlaps = existingBookings.some(booking => {
-                const bookingStart = new Date(booking.start);
-                const bookingEnd = new Date(bookingStart);
-                bookingEnd.setMinutes(bookingEnd.getMinutes() + booking.length);
-
-                return slotStart < bookingEnd && slotEnd > bookingStart;
-            });
-
-            if (!overlaps) {
-                times.push(new Date(from));
-            }
-
-            from.setMinutes(from.getMinutes() + interval);
-        }
+    function getDayName(date) {
+        return date.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
     }
 
-    return times;
-}
-
-$(function() {
-    if (!enabledDays.length) {
-        console.warn('No working schedule set. Datepicker will disable all days.');
+    function parseTime(timeStr) {
+        const [h, m] = timeStr.split(':');
+        const date = new Date();
+        date.setHours(+h, +m, 0, 0);
+        return date;
     }
 
-    $('#booking-date-picker').datepicker({
-        format: 'yyyy-mm-dd',
-        startDate: new Date(),
-        daysOfWeekDisabled: [0,1,2,3,4,5,6].filter(d => !enabledDays.includes(d)),
-        autoclose: true,
-        todayHighlight: true
-    });
-
-    $('#booking-date-picker').on('changeDate', function(e) {
-        selectedDate = e.date;
-        const dayName = getDayName(selectedDate);
-        updateTimeSlots(dayName);
-    });
-
-    function updateTimeSlots(dayName) {
-        const times = getTimesForDay(dayName);
-
-        const wrapper = document.getElementById('time-slot-wrapper');
-        const list = document.getElementById('available-times');
-        const hiddenInput = document.getElementById('booking_time');
-        const feedbackLabel = document.getElementById('selected-time-label');
-
-        list.innerHTML = '';
-        hiddenInput.value = '';
-        feedbackLabel.textContent = '';
-
-        if (times.length === 0) {
-            wrapper.classList.add('d-none');
-            return;
-        }
-
-        wrapper.classList.remove('d-none');
-
-        times.forEach(time => {
-            const btn = document.createElement('button');
-            btn.type = 'button';
-            btn.className = 'btn btn-outline-primary';
-            btn.innerText = formatTime(time);
-            btn.setAttribute('aria-pressed', 'false');
-
-            btn.onclick = () => {
-                if (!selectedDate) return;
-
-                const year = selectedDate.getFullYear();
-                const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
-                const day = String(selectedDate.getDate()).padStart(2, '0');
-
-                const hours = String(time.getHours()).padStart(2, '0');
-                const minutes = String(time.getMinutes()).padStart(2, '0');
-                const fullDateTime = `${year}-${month}-${day} ${hours}:${minutes}:00`;
-
-                hiddenInput.value = fullDateTime;
-
-                Array.from(list.children).forEach(c => {
-                    c.classList.remove('active');
-                    c.setAttribute('aria-pressed', 'false');
-                });
-
-                btn.classList.add('active');
-                btn.setAttribute('aria-pressed', 'true');
-
-                feedbackLabel.textContent = `Selected: ${formatTime(time)} on ${selectedDate.toLocaleDateString()}`;
-            };
-
-            list.appendChild(btn);
+    function formatTime(date) {
+        return date.toLocaleTimeString('en-US', {
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true
         });
     }
-});
+
+    function getTimesForDay(dayName) {
+        const day = workingSchedule.find(s => s.day.toLowerCase() === dayName);
+        if (!day) return [];
+
+        const times = [];
+        const blocks = day.time_blocks || [];
+
+        for (let block of blocks) {
+            let from = parseTime(block.from);
+            let to = parseTime(block.to);
+
+            while (from < to) {
+                const proposedStart = new Date(from);
+                const proposedEnd = new Date(proposedStart);
+                proposedEnd.setMinutes(proposedEnd.getMinutes() + interval);
+
+                const fullDate = selectedDate.toISOString().split('T')[0]; // "YYYY-MM-DD"
+                const slotStart = new Date(`${fullDate}T${proposedStart.toTimeString().slice(0,5)}`);
+                const slotEnd = new Date(slotStart);
+                slotEnd.setMinutes(slotEnd.getMinutes() + interval);
+
+                const overlaps = existingBookings.some(booking => {
+                    const bookingStart = new Date(booking.start);
+                    const bookingEnd = new Date(bookingStart);
+                    bookingEnd.setMinutes(bookingEnd.getMinutes() + booking.length);
+
+                    return slotStart < bookingEnd && slotEnd > bookingStart;
+                });
+
+                if (!overlaps) {
+                    times.push(new Date(from));
+                }
+
+                from.setMinutes(from.getMinutes() + interval);
+            }
+        }
+
+        return times;
+    }
+
+    $(function() {
+        $('#booking-date-picker').datepicker({
+            format: 'yyyy-mm-dd',
+            startDate: new Date(),
+            daysOfWeekDisabled: [0,1,2,3,4,5,6].filter(d => !enabledDays.includes(d)),
+            autoclose: true,
+            todayHighlight: true
+        });
+
+        $('#booking-date-picker').on('changeDate', function(e) {
+            selectedDate = e.date;
+            const dayName = getDayName(selectedDate);
+            updateTimeSlots(dayName);
+        });
+
+        function updateTimeSlots(dayName) {
+            const times = getTimesForDay(dayName);
+
+            const wrapper = document.getElementById('time-slot-wrapper');
+            const list = document.getElementById('available-times');
+            const hiddenInput = document.getElementById('booking_time');
+
+            list.innerHTML = '';
+            hiddenInput.value = '';
+
+            if (times.length === 0) {
+                wrapper.classList.add('d-none');
+                return;
+            }
+
+            wrapper.classList.remove('d-none');
+
+            times.forEach(time => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'btn btn-outline-primary';
+                btn.innerText = formatTime(time);
+
+                btn.onclick = () => {
+                    if (!selectedDate) return;
+
+                    const year = selectedDate.getFullYear();
+                    const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
+                    const day = String(selectedDate.getDate()).padStart(2, '0');
+
+                    const hours = String(time.getHours()).padStart(2, '0');
+                    const minutes = String(time.getMinutes()).padStart(2, '0');
+                    const fullDateTime = `${year}-${month}-${day} ${hours}:${minutes}:00`;
+
+                    hiddenInput.value = fullDateTime;
+
+                    // Highlight selected button
+                    Array.from(list.children).forEach(c => c.classList.remove('active'));
+                    btn.classList.add('active');
+                };
+
+                list.appendChild(btn);
+            });
+        }
+    });
 </script>
+
 {% endput %}
