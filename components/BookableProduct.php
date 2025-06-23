@@ -58,14 +58,17 @@ public function defineProperties()
     $this->page['workingSchedule'] = $this->settings->working_schedule;
     $this->page['interval'] = $sessionLength + $buffer;
 
-    $this->page['existingBookings'] = Booking::where('product_id', $product->id)
-        ->where('status_id', 2)
-        ->where('date', '>=', now())
+    $this->page['existingBookings'] = Booking::where('status_id', 2)
+        ->where('date', '>=', now()) // This is fine to keep for performance
         ->get()
         ->map(function ($booking) use ($buffer) {
+            $start = Carbon::parse($booking->date);
+            $length = $booking->session_length ?? 30;
+            $end = $start->copy()->addMinutes($length + $buffer);
+
             return [
-                'start' => Carbon::parse($booking->date)->format('Y-m-d H:i:s'),
-                'length' => ($booking->session_length ?? 30) + $buffer,
+                'start' => $start->format('Y-m-d H:i:s'),
+                'end'   => $end->format('Y-m-d H:i:s'),
             ];
         });
 }
@@ -81,16 +84,16 @@ protected function prepareAvailableSlots(Product $product)
     $this->availableDates = [];
     $allTimes = [];
 
-$existingBookings = Booking::where('product_id', $product->id)
-    ->where('date', '>=', now())
-    ->where('status_id', 2)
+$existingBookings = Booking::where('status_id', 2)
     ->get()
     ->map(function ($booking) {
         $start = Carbon::parse($booking->date);
-        $end = $start->copy()->addMinutes($booking->session_length ?? 30);
+        $length = $booking->session_length ?? 30;
+        $buffer = Settings::get('booking_interval', 15); // or $this->settings->booking_interval
+        $end = $start->copy()->addMinutes($length + $buffer);
         return [
             'start' => $start,
-            'end'   => $end
+            'end'   => $end,
         ];
     });
 
