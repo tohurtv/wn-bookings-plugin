@@ -23,18 +23,25 @@ class BookingCalendar extends Controller
 
 public function onLoadEvents()
 {
-    $bookings = Booking::where('status', 2)->get();
+    try {
+        Log::info('Loading events...');
 
-    $events = $bookings->map(function ($booking) {
-        return [
-            'title' => $booking->name,
-            'start' => $booking->date->format('Y-m-d'),
-            'allDay' => true,
-        ];
-    });
+        $bookings = \Tohur\Bookings\Models\Booking::where('status', 2)->get();
 
-    return [
-        'result' => $events
-    ];
+        Log::info('Fetched bookings: ' . $bookings->count());
+
+        $events = $bookings->map(function ($booking) {
+            return [
+                'title' => $booking->name ?? 'Booking',
+                'start' => $booking->date ? $booking->date->format('Y-m-d') : null,
+                'allDay' => true,
+            ];
+        });
+
+        return ['result' => $events];
+    } catch (\Throwable $e) {
+        Log::error('Error loading events: ' . $e->getMessage());
+        throw $e;
+    }
 }
 }
