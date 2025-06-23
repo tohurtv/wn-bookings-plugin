@@ -24,7 +24,7 @@ public function index()
     foreach ($bookings as $booking) {
         $events[] = [
             'title' => $booking->name,
-            'start' => $booking->date->format('Y-m-d'),
+            'start' => $booking->date->format('Y-m-d\TH:i:s'),
         ];
     }
 

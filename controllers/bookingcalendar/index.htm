@@ -1,25 +1,89 @@
 <style>
-  html, body {
-    height: 100%;
+html, body {
     margin: 0;
     padding: 0;
-    overflow: hidden; /* prevent page scroll */
-  }
+    height: 100%;
+    overflow: hidden;
+}
 
-  #booking-calendar {
-    height: 100vh; /* or 100% if nested inside a container that has height: 100% */
-  }
+#booking-calendar {
+    height: 100vh;
+    max-height: 100vh;
+    overflow: hidden;
+
+    padding: 1rem;
+    border-radius: 8px;
+    box-sizing: border-box;
+}
+
+/* Light mode */
+#booking-calendar.light-theme {
+    background-color: #ffffff;
+    color: #212529;
+}
+
+/* Dark mode */
+#booking-calendar.dark-theme {
+    background-color: #1e1e2f;
+    color: #f1f1f1;
+}
+
+/* Event styling */
+.fc-daygrid-event {
+    background-color: #0d6efd !important;
+    border: none;
+    color: #ffffff !important;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 1.2rem; /* Make text bigger */
+    font-weight: 500;
+    white-space: normal;
+}
+
+#booking-calendar.dark-theme .fc-daygrid-event {
+    background-color: #3d8bfd !important;
+    color: #ffffff !important;
+}
 </style>
 
-<div id="booking-calendar"></div>
+<div class="card shadow-sm">
+    <div class="card-body rounded" id="booking-calendar"></div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const calendarEl = document.getElementById('booking-calendar');
     const calendar = new FullCalendar.Calendar(calendarEl, {
+    initialView: 'dayGridMonth',
+    events: <?= $events ?>,
+    eventTimeFormat: {
+        hour: 'numeric',
+        minute: '2-digit',
+        meridiem: 'short'
+    }
+});
+    calendar.render();
+});
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const calendarEl = document.getElementById('booking-calendar');
+
+    // Detect dark mode based on body class
+    const isDarkMode = document.body.classList.contains('dark');
+    calendarEl.classList.add(isDarkMode ? 'dark-theme' : 'light-theme');
+
+    // Optional: Live detection if the theme changes without reload
+    const observer = new MutationObserver(() => {
+        calendarEl.classList.toggle('dark-theme', document.body.classList.contains('dark'));
+        calendarEl.classList.toggle('light-theme', !document.body.classList.contains('dark'));
+    });
+    observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+
+    // FullCalendar
+    const calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
-        height: '100%',
         events: <?= $events ?>
     });
     calendar.render();
