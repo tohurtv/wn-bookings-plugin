@@ -21,18 +21,20 @@ class BookingCalendar extends Controller
         $this->pageTitle = 'Booking Calendar';
     }
 
-    public function onLoadEvents()
-    {
-        $bookings = Booking::where('status', 2)->get();
+public function onLoadEvents()
+{
+    $bookings = Booking::where('status', 2)->get();
 
-        $events = $bookings->map(function ($booking) {
-            return [
-                'title' => $booking->name,
-                'start' => $booking->date->format('Y-m-d'),
-                'allDay' => true,
-            ];
-        });
+    $events = $bookings->map(function ($booking) {
+        return [
+            'title' => $booking->name,
+            'start' => $booking->date->format('Y-m-d'),
+            'allDay' => true,
+        ];
+    });
 
-        return response()->json($events);
-    }
+    return [
+        'result' => $events
+    ];
+}
 }

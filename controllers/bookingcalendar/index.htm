@@ -1,6 +1,6 @@
 <div class="p-3">
     <h3>Booking Calendar</h3>
-    <div id="booking-calendar"></div>
+    <div id="booking-calendar" data-control="calendar-wrapper"></div>
 </div>
 
 {% put scripts %}
@@ -10,7 +10,16 @@
         const calendarEl = document.getElementById('booking-calendar');
         const calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
-            events: '{{ "onLoadEvents" | ajax }}'
+            events: function(fetchInfo, successCallback, failureCallback) {
+                $.request('onLoadEvents', {
+                    success: function(data) {
+                        successCallback(data.result);
+                    },
+                    error: function() {
+                        failureCallback();
+                    }
+                });
+            }
         });
         calendar.render();
     });
