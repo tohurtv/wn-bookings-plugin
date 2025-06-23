@@ -10,11 +10,10 @@
         const calendarEl = document.getElementById('booking-calendar');
         const calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
-            events: {{ events|json_encode|raw }}
+            events: '{{ "onLoadEvents" | ajax }}'
         });
         calendar.render();
     });
 </script>
 {% endput %}
-
 

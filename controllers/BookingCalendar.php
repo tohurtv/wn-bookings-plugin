@@ -19,13 +19,22 @@ class BookingCalendar extends Controller
     public function index()
     {
         $this->pageTitle = 'Booking Calendar';
-        $this->vars['events'] = \Tohur\Bookings\Models\Booking::where('status_id', 2)->get()->map(function ($booking) {
+    }
+
+public function onLoadEvents()
+{
+    $bookings = Booking::where('status_id', 2)->get();
+
+    $events = $bookings->map(function ($booking) {
         return [
-            'title' => $booking->name ?? 'Booking',
-            'start' => optional($booking->date)->format('Y-m-d'),
+            'title' => $booking->name,
+            'start' => $booking->date->format('Y-m-d'),
             'allDay' => true,
         ];
     });
-    }
 
+    return [
+        'result' => $events
+    ];
+}
 }
