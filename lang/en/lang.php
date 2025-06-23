@@ -130,8 +130,8 @@ return [
             'comment' => 'Locale of confirmation email.',
         ],
         'booking_interval' => [
-            'label'   => 'Bookings interval slot (minute)',
-            'comment' => 'Used for booking form time picker.',
+            'label'   => 'Booking Interval (minutes)',
+            'comment' => 'Buffer time added between booking slots to prevent overlaps.',
         ],
         'booking_length' => [
             'label'   => 'Length of one booking',
