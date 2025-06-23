@@ -14,12 +14,9 @@
 <script src="/plugins/tohur/bookings/assets/js/bootstrap-datepicker.min.js" crossorigin="anonymous"></script>
 
 <script>
-    // Twig-passed backend variables
-    const workingSchedule = {{ settings.working_schedule|json_encode|raw }};
-    const interval = {{ settings.booking_interval|default(15) }};
-    const sessionLength = {{ product.booking_session_length|default(30) }};
-    const spacing = sessionLength + interval;
-
+    const workingSchedule = {{ workingSchedule|json_encode|raw }};
+    const interval = {{ interval }}; // session + buffer
+    const existingBookings = {{ existingBookings|json_encode|raw }};
     const dayNames = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
     const enabledDays = workingSchedule.map(day => dayNames.indexOf(day.day.toLowerCase()));
 
@@ -27,26 +24,6 @@
 
     function getDayName(date) {
         return date.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
-    }
-
-    function getTimesForDay(dayName) {
-        const day = workingSchedule.find(s => s.day.toLowerCase() === dayName);
-        if (!day) return [];
-
-        const times = [];
-        const blocks = day.time_blocks || [];
-
-        for (let block of blocks) {
-            let from = parseTime(block.from);
-            let to = parseTime(block.to);
-
-            while (from.getTime() + sessionLength * 60000 <= to.getTime()) {
-                times.push(new Date(from)); // clone
-                from.setMinutes(from.getMinutes() + spacing); // add buffer spacing
-            }
-        }
-
-        return times;
     }
 
     function parseTime(timeStr) {
@@ -62,6 +39,46 @@
             minute: '2-digit',
             hour12: true
         });
+    }
+
+    function getTimesForDay(dayName) {
+        const day = workingSchedule.find(s => s.day.toLowerCase() === dayName);
+        if (!day) return [];
+
+        const times = [];
+        const blocks = day.time_blocks || [];
+
+        for (let block of blocks) {
+            let from = parseTime(block.from);
+            let to = parseTime(block.to);
+
+            while (from < to) {
+                const proposedStart = new Date(from);
+                const proposedEnd = new Date(proposedStart);
+                proposedEnd.setMinutes(proposedEnd.getMinutes() + interval);
+
+                const fullDate = selectedDate.toISOString().split('T')[0]; // "YYYY-MM-DD"
+                const slotStart = new Date(`${fullDate}T${proposedStart.toTimeString().slice(0,5)}`);
+                const slotEnd = new Date(slotStart);
+                slotEnd.setMinutes(slotEnd.getMinutes() + interval);
+
+                const overlaps = existingBookings.some(booking => {
+                    const bookingStart = new Date(booking.start);
+                    const bookingEnd = new Date(bookingStart);
+                    bookingEnd.setMinutes(bookingEnd.getMinutes() + booking.length);
+
+                    return slotStart < bookingEnd && slotEnd > bookingStart;
+                });
+
+                if (!overlaps) {
+                    times.push(new Date(from));
+                }
+
+                from.setMinutes(from.getMinutes() + interval);
+            }
+        }
+
+        return times;
     }
 
     $(function() {
@@ -99,7 +116,7 @@
             times.forEach(time => {
                 const btn = document.createElement('button');
                 btn.type = 'button';
-                btn.className = 'btn btn-outline-primary m-1';
+                btn.className = 'btn btn-outline-primary';
                 btn.innerText = formatTime(time);
 
                 btn.onclick = () => {
@@ -125,6 +142,7 @@
         }
     });
 </script>
+
 {% endput %}
 
 
