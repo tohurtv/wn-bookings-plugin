@@ -1,4 +1,6 @@
-<?php namespace Tohur\Bookings;
+<?php
+
+namespace Tohur\Bookings;
 
 use Backend;
 use Illuminate\Support\Facades\Validator;
@@ -22,188 +24,187 @@ class Plugin extends PluginBase
         $this->app->bind('tohur.bookings.facade', BookingsFacade::class);
 
         // registrate bookings validators
-        Validator::resolver(function($translator, $data, $rules, $messages, $customAttributes) {
+        Validator::resolver(function ($translator, $data, $rules, $messages, $customAttributes) {
             return new BookingsValidators($translator, $data, $rules, $messages, $customAttributes);
         });
 
-     if (!\System\Classes\PluginManager::instance()->exists('OFFLINE.Mall')) {
-        return;
-    }
-
-    \OFFLINE\Mall\Models\Product::extend(function ($model) {
-        $model->addFillable(['isbookable']);
-        $model->casts['isbookable'] = 'boolean';
-    });
-
-    Event::listen('backend.form.extendFields', function ($widget) {
-        if (
-            !$widget->getController() instanceof \OFFLINE\Mall\Controllers\Products ||
-            !$widget->model instanceof \OFFLINE\Mall\Models\Product
-        ) {
+        if (!\System\Classes\PluginManager::instance()->exists('OFFLINE.Mall')) {
             return;
         }
 
-        $widget->addTabFields([
-            'isbookable' => [
-                'label'   => 'Is bookable',
-                'comment' => 'Indicates whether this product can be booked.',
-                'type'    => 'switch',
-                'tab'     => 'offline.mall::lang.product.general',
-            ],
-        ]);
-    });
-
-    Event::listen('backend.form.extendFields', function ($widget) {
-    // Only target the correct controller and model
-    if (
-        !$widget->getController() instanceof \OFFLINE\Mall\Controllers\Products ||
-        !$widget->model instanceof Product
-    ) {
-        return;
-    }
-
-    // Check if 'isbookable' column exists
-    if (!Schema::hasColumn('offline_mall_products', 'isbookable')) {
-        return;
-    }
-
-    // Add session length only if the product is bookable
-    if ($widget->model->isbookable) {
-        $widget->addTabFields([
-            'booking_session_length' => [
-                'label'   => 'Booking Session Length',
-                'comment' => 'Duration of each booking slot for this product.',
-                'type'    => 'dropdown',
-                'tab'     => 'offline.mall::lang.product.general',
-                'options' => [
-                    30  => '30 minutes',
-                    60  => '1 hour',
-                    90  => '1.5 hours',
-                    120 => '2 hours',
-                ],
-            ],
-        ]);
-    }
-});
-
-    CartProduct::extend(function ($model) {
-        // Ensure the property exists and is an array before modifying
-        $model->addFillable('booking_data');
-        $model->addJsonable('booking_data');
-    });
-
-    OrderProduct::extend(function ($model) {
-    $model->belongsTo['cart_product'] = [
-        CartProduct::class,
-        'key' => 'cart_product_id', // this must match the column in `order_products` table
-    ];
-});
-
-Event::listen('mall.cart.product.added', function (CartProduct $cartItem) {
-    $bookingTime = post('booking_time');
-
-    if ($bookingTime) {
-        $cartItem->booking_data = [
-            'booking_time' => $bookingTime,
-        ];
-
-        // Save booking data into the JSON column
-        $cartItem->save();
-    }
-});
-
-Event::listen('mall.orderProduct.beforeCreate', function ($orderProduct, $cartProduct) {
-    $orderProduct->cart_product_id = $cartProduct->id;
-});
-
-Event::listen('mall.order.afterCreate', function (Order $order, $cart) {
-    // No 'billing_address' relation, so don't load it here
-    $order->load('products.product', 'customer.user');
-
-    foreach ($order->products as $orderProduct) {
-        // Find matching CartProduct by product_id and variant_id
-        $matchedCartProduct = $cart->products->first(function ($cartProduct) use ($orderProduct) {
-            return $cartProduct->product_id === $orderProduct->product_id &&
-                   $cartProduct->variant_id === $orderProduct->variant_id;
+        \OFFLINE\Mall\Models\Product::extend(function ($model) {
+            $model->addFillable(['isbookable']);
+            $model->casts['isbookable'] = 'boolean';
         });
 
-        if (!$matchedCartProduct) {
-            logger()->warning('No matching CartProduct found for OrderProduct', [
-                'order_product_id' => $orderProduct->id,
-                'product_id' => $orderProduct->product_id,
-                'variant_id' => $orderProduct->variant_id,
+        Event::listen('backend.form.extendFields', function ($widget) {
+            if (
+                !$widget->getController() instanceof \OFFLINE\Mall\Controllers\Products ||
+                !$widget->model instanceof \OFFLINE\Mall\Models\Product
+            ) {
+                return;
+            }
+
+            $widget->addTabFields([
+                'isbookable' => [
+                    'label'   => 'Is bookable',
+                    'comment' => 'Indicates whether this product can be booked.',
+                    'type'    => 'switch',
+                    'tab'     => 'offline.mall::lang.product.general',
+                ],
             ]);
-            continue;
-        }
+        });
 
-        // Save cart_product_id on orderProduct if needed
-        $orderProduct->cart_product_id = $matchedCartProduct->id;
-        $orderProduct->save();
+        Event::listen('backend.form.extendFields', function ($widget) {
+            // Only target the correct controller and model
+            if (
+                !$widget->getController() instanceof \OFFLINE\Mall\Controllers\Products ||
+                !$widget->model instanceof Product
+            ) {
+                return;
+            }
 
-        $bookingData = $matchedCartProduct->booking_data ?? [];
+            // Check if 'isbookable' column exists
+            if (!Schema::hasColumn('offline_mall_products', 'isbookable')) {
+                return;
+            }
 
-        if (!empty($bookingData['booking_time'])) {
-            $product = $orderProduct->product;
-
-            if (!$product || !is_scalar($product->id)) {
-                logger()->error('Invalid product or product ID', [
-                    'product' => $product,
-                    'order_product_id' => $orderProduct->id,
+            // Add session length only if the product is bookable
+            if ($widget->model->isbookable) {
+                $widget->addTabFields([
+                    'booking_session_length' => [
+                        'label'   => 'Booking Session Length',
+                        'comment' => 'Duration of each booking slot for this product.',
+                        'type'    => 'dropdown',
+                        'tab'     => 'offline.mall::lang.product.general',
+                        'options' => [
+                            30  => '30 minutes',
+                            60  => '1 hour',
+                            90  => '1.5 hours',
+                            120 => '2 hours',
+                        ],
+                    ],
                 ]);
-                continue;
+            }
+        });
+
+        CartProduct::extend(function ($model) {
+            // Ensure the property exists and is an array before modifying
+            $model->addFillable('booking_data');
+            $model->addJsonable('booking_data');
+        });
+
+        OrderProduct::extend(function ($model) {
+            $model->belongsTo['cart_product'] = [
+                CartProduct::class,
+                'key' => 'cart_product_id', // this must match the column in `order_products` table
+            ];
+        });
+
+        Event::listen('mall.cart.product.added', function (CartProduct $cartItem) {
+            $bookingTime = post('booking_time');
+
+            if ($bookingTime) {
+                $cartItem->booking_data = [
+                    'booking_time' => $bookingTime,
+                ];
+
+                // Save booking data into the JSON column
+                $cartItem->save();
+            }
+        });
+
+        Event::listen('mall.orderProduct.beforeCreate', function ($orderProduct, $cartProduct) {
+            $orderProduct->cart_product_id = $cartProduct->id;
+        });
+
+        Event::listen('mall.order.afterCreate', function (Order $order, $cart) {
+            // No 'billing_address' relation, so don't load it here
+            $order->load('products.product', 'customer.user');
+
+            foreach ($order->products as $orderProduct) {
+                // Find matching CartProduct by product_id and variant_id
+                $matchedCartProduct = $cart->products->first(function ($cartProduct) use ($orderProduct) {
+                    return $cartProduct->product_id === $orderProduct->product_id &&
+                        $cartProduct->variant_id === $orderProduct->variant_id;
+                });
+
+                if (!$matchedCartProduct) {
+                    logger()->warning('No matching CartProduct found for OrderProduct', [
+                        'order_product_id' => $orderProduct->id,
+                        'product_id' => $orderProduct->product_id,
+                        'variant_id' => $orderProduct->variant_id,
+                    ]);
+                    continue;
+                }
+
+                // Save cart_product_id on orderProduct if needed
+                $orderProduct->cart_product_id = $matchedCartProduct->id;
+                $orderProduct->save();
+
+                $bookingData = $matchedCartProduct->booking_data ?? [];
+
+                if (!empty($bookingData['booking_time'])) {
+                    $product = $orderProduct->product;
+
+                    if (!$product || !is_scalar($product->id)) {
+                        logger()->error('Invalid product or product ID', [
+                            'product' => $product,
+                            'order_product_id' => $orderProduct->id,
+                        ]);
+                        continue;
+                    }
+
+                    $booking = new \Tohur\Bookings\Models\Booking();
+                    $booking->product_id = $product->id;
+                    $booking->date = $bookingData['booking_time'];
+                    $booking->session_length = $product->session_length ?? 30;
+                    $booking->status_id = 1;
+                    $booking->order_number = $order->order_number;
+
+                    $booking->email = $order->customer->user->email ?? null;
+                    $booking->name = $order->customer->firstname ?? null;
+                    $booking->lastname = $order->customer->lastname ?? null;
+
+                    // Parse billing_address which is JSON string or array
+                    $address = $order->billing_address;
+                    if (is_string($address)) {
+                        $address = json_decode($address, true) ?: [];
+                    }
+
+                    $booking->street = $address['lines'] ?? null;
+                    $booking->town = $address['city'] ?? null;
+                    $booking->zip = $address['zip'] ?? null;
+
+                    $booking->save();
+                }
+            }
+        });
+
+        Event::listen('mall.order.state.changed', function (\OFFLINE\Mall\Models\Order $order) {
+            // Map order_state_id directly to booking status_id
+            $map = [
+                1 => 1, // New        → Received
+                2 => 1, // In Progress → Received
+                3 => 3, // Disputed    → Canceled (or custom?)
+                4 => 3, // Cancelled   → Canceled
+                5 => 2, // Complete    → Approved
+            ];
+
+            $stateId = $order->order_state_id;
+
+            if (!isset($map[$stateId])) {
+                logger()->warning('Unhandled order_state_id during booking sync', [
+                    'order_number' => $order->order_number,
+                    'order_state_id' => $stateId,
+                ]);
+                return;
             }
 
-            $booking = new \Tohur\Bookings\Models\Booking();
-            $booking->product_id = $product->id;
-            $booking->date = $bookingData['booking_time'];
-            $booking->session_length = $product->session_length ?? 30;
-            $booking->status_id = 1;
-            $booking->order_number = $order->order_number;
-
-            $booking->email = $order->customer->user->email ?? null;
-            $booking->name = $order->customer->firstname ?? null;
-            $booking->lastname = $order->customer->lastname ?? null;
-
-            // Parse billing_address which is JSON string or array
-            $address = $order->billing_address;
-            if (is_string($address)) {
-                $address = json_decode($address, true) ?: [];
-            }
-
-            $booking->street = $address['lines'] ?? null;
-            $booking->town = $address['city'] ?? null;
-            $booking->zip = $address['zip'] ?? null;
-
-            $booking->save();
-        }
-    }
-});
-
-Event::listen('mall.order.state.changed', function (\OFFLINE\Mall\Models\Order $order) {
-    // Map order_state_id directly to booking status_id
-    $map = [
-        1 => 1, // New        → Received
-        2 => 1, // In Progress → Received
-        3 => 3, // Disputed    → Canceled (or custom?)
-        4 => 3, // Cancelled   → Canceled
-        5 => 2, // Complete    → Approved
-    ];
-
-    $stateId = $order->order_state_id;
-
-    if (!isset($map[$stateId])) {
-        logger()->warning('Unhandled order_state_id during booking sync', [
-            'order_number' => $order->order_number,
-            'order_state_id' => $stateId,
-        ]);
-        return;
-    }
-
-    \Tohur\Bookings\Models\Booking::where('order_number', $order->order_number)->update([
-        'status_id' => $map[$stateId],
-    ]);
-});
-
+            \Tohur\Bookings\Models\Booking::where('order_number', $order->order_number)->update([
+                'status_id' => $map[$stateId],
+            ]);
+        });
     }
 
     public function registerNavigation()
@@ -282,15 +283,15 @@ Event::listen('mall.order.state.changed', function (\OFFLINE\Mall\Models\Order $
             'tohur.bookings::mail.booking-admin-ru' => 'Booking confirmation for admin RU',
         ];
     }
-public function registerFormWidgets()
-{
-    return [
-        'Tohur\Bookings\FormWidgets\TimePicker' => [
-            'label' => 'Custom Time Picker',
-            'code' => 'tohur_bookings_timepicker',
-        ],
-    ];
-}
+    public function registerFormWidgets()
+    {
+        return [
+            'Tohur\Bookings\FormWidgets\TimePicker' => [
+                'label' => 'Custom Time Picker',
+                'code' => 'tohur_bookings_timepicker',
+            ],
+        ];
+    }
     public function registerSettings()
     {
         return [

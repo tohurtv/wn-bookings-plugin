@@ -1,4 +1,6 @@
-<?php namespace Tohur\Bookings\Components;
+<?php
+
+namespace Tohur\Bookings\Components;
 
 use Cms\Classes\ComponentBase;
 use Tohur\Bookings\Models\Settings;
@@ -105,46 +107,46 @@ class BookingForm extends ComponentBase
         $this->availableTimes = $allTimes;
     }
 
-  public function onBookRequest()
-{
-    $data = post();
+    public function onBookRequest()
+    {
+        $data = post();
 
-    $rules = [
-        'email' => 'required|email',
-        'name' => 'required|max:300',
-        'street' => 'nullable|max:300',
-        'town' => 'nullable|max:300',
-        'zip' => 'nullable|numeric',
-        'phone' => 'nullable|max:300',
-        'message' => 'nullable|max:3000',
-        'booking_date' => 'required|date',
-        'booking_time' => 'required|string',
-    ];
+        $rules = [
+            'email' => 'required|email',
+            'name' => 'required|max:300',
+            'street' => 'nullable|max:300',
+            'town' => 'nullable|max:300',
+            'zip' => 'nullable|numeric',
+            'phone' => 'nullable|max:300',
+            'message' => 'nullable|max:3000',
+            'booking_date' => 'required|date',
+            'booking_time' => 'required|string',
+        ];
 
-    $validator = Validator::make($data, $rules);
+        $validator = Validator::make($data, $rules);
 
-    if ($validator->fails()) {
-        throw new ValidationException($validator);
+        if ($validator->fails()) {
+            throw new ValidationException($validator);
+        }
+
+        $start = Carbon::parse($data['booking_time']);
+
+        $booking = new Booking();
+        $booking->email = $data['email'];
+        $booking->name = $data['name'];
+        $booking->street = $data['street'] ?? null;
+        $booking->town = $data['town'] ?? null;
+        $booking->zip = $data['zip'] ?? null;
+        $booking->phone = $data['phone'] ?? null;
+        $booking->message = $data['message'] ?? null;
+        $booking->date = $start->toDateString();
+        $booking->start = $start->toDateTimeString();
+        $booking->length = $this->settings->default_session_length;
+        $booking->status_id = 1; // Received
+        $booking->user_id = Auth::getUser()?->id;
+
+        $booking->save();
+
+        Flash::success('Your booking has been received. We will contact you shortly.');
     }
-
-    $start = Carbon::parse($data['booking_time']);
-
-    $booking = new Booking();
-    $booking->email = $data['email'];
-    $booking->name = $data['name'];
-    $booking->street = $data['street'] ?? null;
-    $booking->town = $data['town'] ?? null;
-    $booking->zip = $data['zip'] ?? null;
-    $booking->phone = $data['phone'] ?? null;
-    $booking->message = $data['message'] ?? null;
-    $booking->date = $start->toDateString();
-    $booking->start = $start->toDateTimeString();
-    $booking->length = $this->settings->default_session_length;
-    $booking->status_id = 1; // Received
-    $booking->user_id = Auth::getUser()?->id;
-
-    $booking->save();
-
-    Flash::success('Your booking has been received. We will contact you shortly.');
-}
 }

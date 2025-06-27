@@ -1,4 +1,6 @@
-<?php namespace Tohur\Bookings\Classes;
+<?php
+
+namespace Tohur\Bookings\Classes;
 
 use Config;
 use Tohur\Bookings\Models\Settings;
@@ -7,7 +9,7 @@ class Variables
 {
     public static function getDateTimeFormat()
     {
-        return self::getDateFormat().' '.self::getTimeFormat();
+        return self::getDateFormat() . ' ' . self::getTimeFormat();
     }
 
     public static function getDateFormat()

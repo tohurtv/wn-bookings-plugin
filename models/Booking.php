@@ -1,4 +1,6 @@
-<?php namespace Tohur\Bookings\Models;
+<?php
+
+namespace Tohur\Bookings\Models;
 
 use App;
 use Carbon\Carbon;
@@ -42,9 +44,20 @@ class Booking extends Model
     ];
 
     public $fillable = [
-        'status', 'date', 'locale', 'email', 'name', 'lastname',
-        'street', 'town', 'zip', 'phone', 'message', 'session_length',
-        'order_id', 'product_id',
+        'status',
+        'date',
+        'locale',
+        'email',
+        'name',
+        'lastname',
+        'street',
+        'town',
+        'zip',
+        'phone',
+        'message',
+        'session_length',
+        'order_id',
+        'product_id',
     ];
 
     public $dates = ['date', 'created_at', 'updated_at', 'deleted_at'];
@@ -100,7 +113,7 @@ class Booking extends Model
     {
         $cancelledStatuses = Config::get('tohur.bookings::config.statuses.cancelled', ['cancelled']);
 
-        return $query->whereHas('status', function($query) use ($cancelledStatuses) {
+        return $query->whereHas('status', function ($query) use ($cancelledStatuses) {
             $query->whereNotIn('ident', $cancelledStatuses);
         });
     }
@@ -168,7 +181,7 @@ class Booking extends Model
      */
     public function getUniqueNumber()
     {
-    	// init
+        // init
         $min = Config::get('tohur.bookings::config.number.min', 123456);
         $max = Config::get('tohur.bookings::config.number.max', 999999);
         if ($min == 0 || $max == 0) {
@@ -179,7 +192,6 @@ class Booking extends Model
         $count = 0;
         do {
             $number = mt_rand($min, $max);
-
         } while ((self::where('number', $number)->count() > 0) && (++$count < 1000));
 
         return $count >= 1000 ? null : $number;

@@ -1,4 +1,6 @@
-<?php namespace Tohur\Bookings\Updates;
+<?php
+
+namespace Tohur\Bookings\Updates;
 
 use Schema;
 use Winter\Storm\Database\Schema\Blueprint;
@@ -8,13 +10,12 @@ class AddOrderNumberToMallBookings extends Migration
 {
     public function up()
     {
-    if (Schema::hasTable('tohur_bookings_bookings')) {
-   Schema::table('tohur_bookings_bookings', function (Blueprint $table) {
-    $table->integer('order_number')->default(30)->comment('Length in minutes');
-    });
-   
+        if (Schema::hasTable('tohur_bookings_bookings')) {
+            Schema::table('tohur_bookings_bookings', function (Blueprint $table) {
+                $table->integer('order_number')->default(30)->comment('Length in minutes');
+            });
+        }
     }
-}
 
     public function down()
     {

@@ -1,4 +1,6 @@
-<?php namespace Tohur\Bookings\Classes;
+<?php
+
+namespace Tohur\Bookings\Classes;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;

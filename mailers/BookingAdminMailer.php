@@ -1,4 +1,6 @@
-<?php namespace Tohur\Bookings\Mailers;
+<?php
+
+namespace Tohur\Bookings\Mailers;
 
 use App;
 use Mail;
@@ -43,8 +45,7 @@ class BookingAdminMailer extends BaseMailer
             return;
         }
 
-        Mail::send($template, $templateParameters, function($message) use ($recipients)
-        {
+        Mail::send($template, $templateParameters, function ($message) use ($recipients) {
             $message->to($recipients['email'], $recipients['name']);
 
             if (!empty($recipients['bcc_email']) && !empty($recipients['bcc_name'])) {

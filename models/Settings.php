@@ -1,4 +1,6 @@
-<?php namespace Tohur\Bookings\Models;
+<?php
+
+namespace Tohur\Bookings\Models;
 
 use Config;
 use Winter\Storm\Database\Model;
@@ -18,56 +20,56 @@ class Settings extends Model
         'returning_mark' => 'numeric'
     ];
     public $jsonable = [
-    'working_schedule',
-    'working_schedule.*.time_blocks'
-];
+        'working_schedule',
+        'working_schedule.*.time_blocks'
+    ];
 
-public static function getWorkingHoursByDay(string $day): array
-{
-    $settings = self::instance();
-    $schedule = $settings->working_schedule ?? [];
+    public static function getWorkingHoursByDay(string $day): array
+    {
+        $settings = self::instance();
+        $schedule = $settings->working_schedule ?? [];
 
-    $hours = [];
+        $hours = [];
 
-    foreach ($schedule as $entry) {
-        if (strtolower($entry['day']) !== strtolower($day)) {
-            continue;
-        }
+        foreach ($schedule as $entry) {
+            if (strtolower($entry['day']) !== strtolower($day)) {
+                continue;
+            }
 
-        foreach (($entry['time_blocks'] ?? []) as $block) {
-            $hours[] = [
-                'from' => $block['from'],
-                'to'   => $block['to'],
-            ];
-        }
-    }
-
-    return $hours;
-}
-public function beforeSave()
-{
-    $schedule = $this->working_schedule;  // get a copy
-
-    if (is_array($schedule)) {
-        foreach ($schedule as &$day) {
-            if (!empty($day['time_blocks']) && is_array($day['time_blocks'])) {
-                foreach ($day['time_blocks'] as &$block) {
-                    // For example, normalize or clean values here
-                    if (isset($block['from_raw'])) {
-                        $block['from'] = $block['from_raw'];
-                        unset($block['from_raw']);
-                    }
-                    if (isset($block['to_raw'])) {
-                        $block['to'] = $block['to_raw'];
-                        unset($block['to_raw']);
-                    }
-                }
-                unset($block);
+            foreach (($entry['time_blocks'] ?? []) as $block) {
+                $hours[] = [
+                    'from' => $block['from'],
+                    'to'   => $block['to'],
+                ];
             }
         }
-        unset($day);
 
-        $this->working_schedule = $schedule; // re-assign modified array
+        return $hours;
     }
-}
+    public function beforeSave()
+    {
+        $schedule = $this->working_schedule;  // get a copy
+
+        if (is_array($schedule)) {
+            foreach ($schedule as &$day) {
+                if (!empty($day['time_blocks']) && is_array($day['time_blocks'])) {
+                    foreach ($day['time_blocks'] as &$block) {
+                        // For example, normalize or clean values here
+                        if (isset($block['from_raw'])) {
+                            $block['from'] = $block['from_raw'];
+                            unset($block['from_raw']);
+                        }
+                        if (isset($block['to_raw'])) {
+                            $block['to'] = $block['to_raw'];
+                            unset($block['to_raw']);
+                        }
+                    }
+                    unset($block);
+                }
+            }
+            unset($day);
+
+            $this->working_schedule = $schedule; // re-assign modified array
+        }
+    }
 }

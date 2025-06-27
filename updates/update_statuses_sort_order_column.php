@@ -1,4 +1,6 @@
-<?php namespace Tohur\BookingsUnits\Updates;
+<?php
+
+namespace Tohur\BookingsUnits\Updates;
 
 use Schema;
 use Winter\Storm\Database\Schema\Blueprint;

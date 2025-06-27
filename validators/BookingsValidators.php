@@ -1,4 +1,6 @@
-<?php namespace Tohur\Bookings\Validators;
+<?php
+
+namespace Tohur\Bookings\Validators;
 
 use App;
 use Carbon\Carbon;
@@ -24,14 +26,14 @@ class BookingsValidators extends Validator
      *
      * @return bool
      */
-	public function validateBooking($attribute, $value)
-	{
-	    if ($attribute === 'date') {
+    public function validateBooking($attribute, $value)
+    {
+        if ($attribute === 'date') {
             return $this->validateDateAttribute($value);
         }
 
-		return false;
-	}
+        return false;
+    }
 
     /**
      * Validate date attribute.
@@ -40,7 +42,7 @@ class BookingsValidators extends Validator
      *
      * @return bool
      */
-	protected function validateDateAttribute($value)
+    protected function validateDateAttribute($value)
     {
         $date = $this->getDateAsCarbon($value);
         $bookingId = isset($this->data['id']) ? $this->data['id'] : null;

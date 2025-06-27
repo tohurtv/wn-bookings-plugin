@@ -1,4 +1,6 @@
-<?php namespace Tohur\Bookings\Updates;
+<?php
+
+namespace Tohur\Bookings\Updates;
 
 use Schema;
 use Winter\Storm\Database\Schema\Blueprint;
@@ -8,8 +10,7 @@ class CreateBookingsTable extends Migration
 {
     public function up()
     {
-        Schema::create('tohur_bookings_bookings', function(Blueprint $table)
-        {
+        Schema::create('tohur_bookings_bookings', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->increments('id');
 
@@ -44,8 +45,7 @@ class CreateBookingsTable extends Migration
 
     public function down()
     {
-        Schema::table('tohur_bookings_bookings', function($table)
-        {
+        Schema::table('tohur_bookings_bookings', function ($table) {
             $table->dropForeign('tohur_bookings_bookings_status_id_foreign');
         });
         Schema::dropIfExists('tohur_bookings_bookings');

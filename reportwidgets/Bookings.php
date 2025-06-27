@@ -1,4 +1,6 @@
-<?php namespace Tohur\Bookings\ReportWidgets;
+<?php
+
+namespace Tohur\Bookings\ReportWidgets;
 
 use Backend\Classes\ReportWidgetBase;
 use Carbon\Carbon;
@@ -45,7 +47,6 @@ class Bookings extends ReportWidgetBase
 
         try {
             $bookings = $this->loadData();
-
         } catch (Exception $ex) {
             $error = $ex->getMessage();
         }
@@ -107,8 +108,7 @@ class Bookings extends ReportWidgetBase
     {
         $all = [];
 
-        foreach ($items as $item)
-        {
+        foreach ($items as $item) {
             // date
             $timestamp = strtotime($item->created_at) * 1000;
             $day = Carbon::createFromFormat('Y-m-d H:i:s', $item->created_at)->format('Y-m-d');

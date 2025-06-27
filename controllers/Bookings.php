@@ -1,4 +1,6 @@
-<?php namespace Tohur\Bookings\Controllers;
+<?php
+
+namespace Tohur\Bookings\Controllers;
 
 use App;
 use Backend\Classes\Controller;

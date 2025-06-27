@@ -1,4 +1,6 @@
-<?php namespace Tohur\Bookings\Models;
+<?php
+
+namespace Tohur\Bookings\Models;
 
 use Backend\Facades\BackendAuth;
 use Backend\Models\ExportModel;
@@ -20,7 +22,8 @@ class BookingExport extends ExportModel
     ];
 
     public $fillable = [
-        'status_enabled', 'status',
+        'status_enabled',
+        'status',
     ];
 
     /**
@@ -42,8 +45,7 @@ class BookingExport extends ExportModel
 
         // prepare columns
         $bookings = $query->get();
-        $bookings->each(function($item) use ($columns)
-        {
+        $bookings->each(function ($item) use ($columns) {
             $item->addVisible($columns);
             $item->status_id = $item->status->name;
         });

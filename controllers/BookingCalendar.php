@@ -1,4 +1,6 @@
-<?php namespace Tohur\Bookings\Controllers;
+<?php
+
+namespace Tohur\Bookings\Controllers;
 
 use BackendMenu;
 use Backend\Classes\Controller;
@@ -16,19 +18,19 @@ class BookingCalendar extends Controller
         BackendMenu::setContext('Tohur.Bookings', 'bookings', 'calendar');
     }
 
-public function index()
-{
-    $this->pageTitle = 'Booking Calendar';
-    $bookings = \Tohur\Bookings\Models\Booking::where('status_id', 2)->get();
+    public function index()
+    {
+        $this->pageTitle = 'Booking Calendar';
+        $bookings = \Tohur\Bookings\Models\Booking::where('status_id', 2)->get();
 
-    $events = [];
-    foreach ($bookings as $booking) {
-        $events[] = [
-            'title' => $booking->name,
-            'start' => $booking->date->format('Y-m-d\TH:i:s'),
-        ];
+        $events = [];
+        foreach ($bookings as $booking) {
+            $events[] = [
+                'title' => $booking->name,
+                'start' => $booking->date->format('Y-m-d\TH:i:s'),
+            ];
+        }
+
+        $this->vars['events'] = json_encode($events);
     }
-
-    $this->vars['events'] = json_encode($events);
-}
 }

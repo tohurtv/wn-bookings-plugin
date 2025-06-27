@@ -1,4 +1,6 @@
-<?php namespace Tohur\Bookings\Models;
+<?php
+
+namespace Tohur\Bookings\Models;
 
 use Model;
 use Winter\Storm\Database\Traits\SoftDelete as SoftDeletingTrait;

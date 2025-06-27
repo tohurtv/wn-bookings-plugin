@@ -1,4 +1,6 @@
-<?php namespace Tohur\Bookings\Updates;
+<?php
+
+namespace Tohur\Bookings\Updates;
 
 use File;
 use Tohur\Bookings\Models\Status;
@@ -25,8 +27,7 @@ class SeedStatusesTable extends Seeder
         $items = Yaml::parse(File::get($seedFile));
 
         // process each line
-        foreach ($items as $item)
-        {
+        foreach ($items as $item) {
             // create new Status
             $status = Status::create([
                 'name' => trim($item['name']),

@@ -1,4 +1,6 @@
-<?php namespace Tohur\Bookings\Mailers;
+<?php
+
+namespace Tohur\Bookings\Mailers;
 
 use App;
 use Config;

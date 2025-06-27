@@ -1,4 +1,6 @@
-<?php namespace Tohur\Bookings\FormWidgets;
+<?php
+
+namespace Tohur\Bookings\FormWidgets;
 
 use Backend\Classes\FormWidgetBase;
 
